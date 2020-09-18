@@ -155,7 +155,7 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	
 #pragma endregion
 
-#pragma region [2단계: Double Buffering- 스왑체인]
+#pragma region [2단계: Double Buffering- 스왑체인] 픽셀 데이터를 어떻게 세팅할지
 	/// 스왑 체인의 description 구조체 채우기
 	// ┕실제로 렌더링이 기록되는 프론트버퍼와 백버퍼
 
@@ -172,13 +172,14 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	swapChainDesc.BufferDesc.Height = screenHeight;
 	
 	// Set regular 32-bit surface for the back buffer.
-	swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;	// 현재는 unsigned normal data type
 
 	/// 주사율(초당 몇장의 백버퍼를 프론트 버퍼와 스왑하는지)
 	// Set the refresh rate of the back buffer.
 	// 백버퍼의 새로고침 비율 설정
 	if (m_vsync_enabled)
 	{
+		// 모니터의 성능에 맞춘 속도로
 		swapChainDesc.BufferDesc.RefreshRate.Numerator = numerator;
 		swapChainDesc.BufferDesc.RefreshRate.Denominator = denominator;
 	}
@@ -229,15 +230,15 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	///스왑체인 세팅 끝!
 
 	// Set the feature level to DirectX 11.
-	// 피쳐 레벨(DirectX 버전)을 DirectX 11로 설정
+	// 피쳐 레벨(DirectX 버전)을 DirectX 11로 설정 (DirectX 11의 기능읆 쓸 거야!)
 	featureLevel = D3D_FEATURE_LEVEL_11_0;
 	
 	// Create the swap chain, Direct3D device, and Direct3D device context.
 	// 스왑 체인, Direct3D 장치, Direct3D 장치 컨텍스트 생성
 	/// 세팅한 값으로 설정하기!
 	result = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, 0,
-		&featureLevel, 1, D3D11_SDK_VERSION, &swapChainDesc, &m_swapChain, &m_device, NULL,
-		&m_deviceContext);
+		&featureLevel, 1, D3D11_SDK_VERSION, &swapChainDesc, &m_swapChain, &m_device, NULL, 
+		&m_deviceContext);		// m_deviceContext: 하드웨어에 데이터 전달
 	if (FAILED(result))
 	{
 		return false;
@@ -268,7 +269,7 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 
 #pragma endregion
 
-#pragma region [3단계: 버퍼(SystemMemory, GPU]
+#pragma region [3단계: 버퍼(SystemMemory, GPU)] 특히 Depth buffer
 	/// 3D공간에서 폴리곤을 올바르게 그리기 위해 깊이버퍼 생성
 	// Initialize the description of the depth buffer.
 	// 깊이 버퍼의 description 초기화
@@ -276,6 +277,7 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 
 	// Set up the description of the depth buffer.
 	// 깊이 버퍼의 description 작성
+	/// 가장 중요한 것은 사이즈와 들어갈 데이터가 무엇인지!
 	depthBufferDesc.Width = screenWidth;
 	depthBufferDesc.Height = screenHeight;
 	depthBufferDesc.MipLevels = 1;
@@ -291,6 +293,7 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	// Create the texture for the depth buffer using the filled out description.
 	// 깊이/스텐실 버퍼 생성
 	/// 스텐실 버퍼(모션블러, 볼류메트릭 그림자 등의 효과)를 깊이 버퍼에 연결
+	/// GPU 메모리에 만들겠다!
 	result = m_device->CreateTexture2D(&depthBufferDesc, NULL, &m_depthStencilBuffer);
 	if (FAILED(result))
 	{
@@ -303,7 +306,7 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	// Set up the description of the stencil state.
 	depthStencilDesc.DepthEnable = true;
 	depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-	depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
+	depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;			// depth가 더 작은걸로(가까운걸로!)
 	depthStencilDesc.StencilEnable = true;
 	depthStencilDesc.StencilReadMask = 0xFF;
 	depthStencilDesc.StencilWriteMask = 0xFF;
