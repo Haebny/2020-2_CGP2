@@ -15,7 +15,7 @@ cbuffer MatrixBuffer
 struct VertexInputType
 {
 	float4 position : POSITION;
-	float2 tex : TEXCOORD0;
+	float2 tex : TEXCOORD0;		// 텍스트용 data
 };
 
 // 픽셀 셰이더

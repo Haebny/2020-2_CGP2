@@ -31,13 +31,13 @@ public:
 		ID3D11ShaderResourceView*);	//셰이더에 사용되는 변수설정 + 셰이더로 준비된 모델의 정점들을 그려냅니다.
 
 private:
-	bool InitializeShader(ID3D11Device*, HWND, const WCHAR*, const WCHAR*);
+	bool InitializeShader(ID3D11Device*, HWND, const WCHAR*, const WCHAR*);				// 1
 	void ShutdownShader();
 	void OutputShaderErrorMessage(ID3D10Blob*, HWND, const WCHAR*);
 
-	bool SetShaderParameters(ID3D11DeviceContext*, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX,
+	bool SetShaderParameters(ID3D11DeviceContext*, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX,	// 2
 		ID3D11ShaderResourceView*);
-	void RenderShader(ID3D11DeviceContext*, int);
+	void RenderShader(ID3D11DeviceContext*, int);										// 3
 
 private:
 	ID3D11VertexShader* m_vertexShader;
@@ -47,4 +47,4 @@ private:
 	ID3D11SamplerState* m_sampleState;
 };
 
-#endif
+#endif

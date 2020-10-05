@@ -165,6 +165,8 @@
     <ClCompile Include="textureclass.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="color.ps" />
+    <None Include="color.vs" />
     <None Include="texture.ps" />
     <None Include="texture.vs" />
   </ItemGroup>

@@ -44,10 +44,16 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="texture.ps">
+      <Filter>소스 파일</Filter>
+    </None>
     <None Include="texture.vs">
       <Filter>소스 파일</Filter>
     </None>
-    <None Include="texture.ps">
+    <None Include="color.vs">
+      <Filter>소스 파일</Filter>
+    </None>
+    <None Include="color.ps">
       <Filter>소스 파일</Filter>
     </None>
   </ItemGroup>

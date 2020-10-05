@@ -56,7 +56,8 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	}
 
 	// Initialize the model object.
-	result = m_Model->Initialize(m_D3D->GetDevice(), L"../Engine/data/seafloor.dds");
+	// 모델 텍스쳐도 같이 지정
+	result = m_Model->Initialize(m_D3D->GetDevice(), "../Engine/data/cube.txt", L"../Engine/data/seafloor.dds");
 	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
@@ -122,9 +123,18 @@ bool GraphicsClass::Frame()
 {
 	bool result;
 
+	static float rotation = 0.0f;
+
+	// Update the rotation variable each frame.
+	rotation += (float)D3DX_PI * 0.01f;
+	if (rotation > 360.0f)
+	{
+		rotation -= 360.0f;
+	}
+
 	// Render the graphics scene.
 	// 그래픽 렌더링 수행
-	result = Render();
+	result = Render(rotation);
 	if (!result)
 	{
 		return false;
@@ -133,7 +143,7 @@ bool GraphicsClass::Frame()
 	return true;
 }
 
-bool GraphicsClass::Render()
+bool GraphicsClass::Render(float rotation)
 {
 	D3DXMATRIX viewMatrix, projectionMatrix, worldMatrix;
 	bool result;
@@ -141,7 +151,7 @@ bool GraphicsClass::Render()
 	// Clear the buffers to begin the scene.
 	// 씬 그리기를 위해 버퍼의 내용을 지움(화면을 특정 색으로 초기화)
 	m_D3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
-
+#pragma region (삼각형) 출력
 	// Generate the view matrix based on the camera's position.
 	// Initialize 함수에서 지정한 카메라의 위치로 뷰 행렬을 만들기 위해 호출
 	m_Camera->Render();
@@ -151,6 +161,9 @@ bool GraphicsClass::Render()
 	m_Camera->GetViewMatrix(viewMatrix);
 	m_D3D->GetWorldMatrix(worldMatrix);
 	m_D3D->GetProjectionMatrix(projectionMatrix);
+
+	// Rotate the world matrix by the rotation value so that the triangle will spin.
+	D3DXMatrixRotationY(&worldMatrix, rotation);
 
 	// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
 	// 그래픽 파이프라인에 모델을 그림
@@ -163,6 +176,7 @@ bool GraphicsClass::Render()
 	{
 		return false;
 	}
+#pragma endregion
 
 	// Present the rendered scene to the screen.
 	// 버퍼에 그려진 씬 화면에 표시

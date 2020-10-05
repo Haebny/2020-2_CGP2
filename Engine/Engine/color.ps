@@ -1,0 +1,14 @@
+// 픽셀 셰이더: 화면에 그려지는 도형의 각 픽셀들을 그림
+
+// Type definitions
+struct PixelInputType
+{
+	float4 position : SV_POSITION;	// SV_POSITION, COLOR와 같은 것들은 Syntax
+	float4 color : COLOR;
+};
+
+// Pixel Shader
+float4 ColorPixelShader(PixelInputType input) : SV_TARGET
+{
+	return input.color;
+}

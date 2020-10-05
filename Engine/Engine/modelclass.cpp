@@ -5,6 +5,7 @@ ModelClass::ModelClass()
 	m_vertexBuffer = 0;
 	m_indexBuffer = 0;
 	m_Texture = 0;
+	m_model = 0;
 }
 
 ModelClass::ModelClass(const ModelClass& other)
@@ -15,12 +16,20 @@ ModelClass::~ModelClass()
 {
 }
 
-bool ModelClass::Initialize(ID3D11Device* device, const WCHAR* textureFilename)
+bool ModelClass::Initialize(ID3D11Device* device, const char* modelFilename, const WCHAR* textureFilename)
 {
 	bool result;
+	
+	// Load in the model data,
+	result = LoadModel(modelFilename);
+	if (!result)
+	{
+		return false;
+	}
 
 	// Initialize the vertex and index buffer that hold the geometry for the triangle.
 	// 정점 버퍼와 인덱스 버퍼의 초기화 함수 호출
+	/// device는 GPU 메모리를 건드릴 때 사용
 	result = InitializeBuffers(device);
 	if (!result)
 	{
@@ -47,11 +56,14 @@ void ModelClass::Shutdown()
 	// Release the vertex and index buffers.
 	ShutdownBuffers();
 
+	// Release the model data.
+	ReleaseModel();
+
 	return;
 }
 
 // [Called by GraphicsClass::Render]
-// 정점 버퍼와 인덱스 버퍼를 그래픽 파이프라인에 넣어 컬러 셰이더가 이들을 그릴 수 있게 함
+// 그래픽 카드에 모델들의 기하 정보(정점버퍼,인덱스버퍼)를 그래픽 파이프라인에 넣고 컬러 셰이더로 그릴 준비를 함
 void ModelClass::Render(ID3D11DeviceContext* deviceContext)
 {
 	// Put the vertex and index buffers on the graphics pipeline to prepare them for drawing.
@@ -84,13 +96,6 @@ bool ModelClass::InitializeBuffers(ID3D11Device* device)
 	D3D11_SUBRESOURCE_DATA vertexData, indexData;
 	HRESULT result;
 
-	/// 배열 길이 설정
-	// Set the number of vertices in the vertex array.
-	m_vertexCount = 3;
-
-	// Set the number of indices in the index array.
-	m_indexCount = 3;
-
 	/// 배열 생성
 	// Create the vertex array.
 	vertices = new VertexType[m_vertexCount];
@@ -106,21 +111,16 @@ bool ModelClass::InitializeBuffers(ID3D11Device* device)
 		return false;
 	}
 
-	/// 배열의 값을 시계방향으로 넣음
-	// Load the vertex array with data.
-	vertices[0].position = D3DXVECTOR3(-1.0f, -1.0f, 0.0f); // Bottom left.
-	vertices[0].texture = D3DXVECTOR2(0.0f, 1.0f);
+	int i;
 
-	vertices[1].position = D3DXVECTOR3(0.0f, 1.0f, 0.0f); // Top middle.
-	vertices[1].texture = D3DXVECTOR2(0.5f, 0.0f);
-
-	vertices[2].position = D3DXVECTOR3(1.0f, -1.0f, 0.0f); // Bottom right.
-	vertices[2].texture = D3DXVECTOR2(1.0f, 1.0f);
-
-	// Load the index array with data.
-	indices[0] = 0; // Bottom left.
-	indices[1] = 1; // Top middle.
-	indices[2] = 2; // Bottom right.
+	// Load the vertex array and index array with data.
+	for (i = 0; i < m_vertexCount; i++)
+	{
+		vertices[i].position = D3DXVECTOR3(m_model[i].x, m_model[i].y, m_model[i].z);
+		vertices[i].texture = D3DXVECTOR2(m_model[i].tu, m_model[i].tv);
+		vertices[i].normal = D3DXVECTOR3(m_model[i].nx, m_model[i].ny, m_model[i].nz);
+		indices[i] = i;
+	}
 
 	/// 각 배열의 description 작성
 	// Set up the description of the static vertex buffer.
@@ -253,5 +253,74 @@ void ModelClass::ReleaseTexture()
 		delete m_Texture;
 		m_Texture = 0;
 	}
+	return;
+}
+
+// Parsing(.txt파일)
+bool ModelClass::LoadModel(const char* filename)
+{
+	ifstream fin;
+	char input;
+	int i;
+
+	// Open the model file.
+	fin.open(filename);
+
+	// If it could not open the file then exit.
+	if (fin.fail())
+	{
+		return false;
+	}
+
+	// Read up to the value of vertex count.
+	fin.get(input);
+	while (input != ':')
+	{
+		fin.get(input);
+	}
+
+	// Read in the vertex count.
+	fin >> m_vertexCount;
+
+	// Set the number of indices to be the same as the vertex count.
+	m_indexCount = m_vertexCount;
+
+	// Create the model using the vertex count that was read in.
+	m_model = new ModelType[m_vertexCount];
+	if (!m_model)
+	{
+		return false;
+	}
+
+	// Read up to the beginning of the data.
+	fin.get(input);
+	while (input != ':')
+	{
+		fin.get(input);
+	}
+	fin.get(input);
+
+	// Read in the vertex data.
+	for (i = 0; i < m_vertexCount; i++)
+	{
+		fin >> m_model[i].x >> m_model[i].y >> m_model[i].z;
+		fin >> m_model[i].tu >> m_model[i].tv;
+		fin >> m_model[i].nx >> m_model[i].ny >> m_model[i].nz;
+	}
+
+	// Close the model file.
+	fin.close();
+
+	return true;
+}
+
+void ModelClass::ReleaseModel()
+{
+	if (m_model)
+	{
+		delete[] m_model;
+		m_model = 0;
+	}
+
 	return;
 }
