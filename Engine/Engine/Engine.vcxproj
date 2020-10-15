@@ -155,6 +155,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="cameraclass.cpp" />
+    <ClCompile Include="lightshaderclass.cpp" />
+    <ClCompile Include="lightclass.cpp" />
     <ClCompile Include="textureshaderclass.cpp" />
     <ClCompile Include="d3dclass.cpp" />
     <ClCompile Include="graphicsclass.cpp" />
@@ -167,11 +169,15 @@
   <ItemGroup>
     <None Include="color.ps" />
     <None Include="color.vs" />
+    <None Include="light.ps" />
+    <None Include="light.vs" />
     <None Include="texture.ps" />
     <None Include="texture.vs" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cameraclass.h" />
+    <ClInclude Include="lightshaderclass.h" />
+    <ClInclude Include="lightclass.h" />
     <ClInclude Include="textureshaderclass.h" />
     <ClInclude Include="d3dclass.h" />
     <ClInclude Include="graphicsclass.h" />
