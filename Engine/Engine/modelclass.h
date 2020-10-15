@@ -20,6 +20,13 @@ private:
 		D3DXVECTOR3 normal;
 	}; // ColorShaderClass에서 사용할 것과 구조가 같아야 함
 
+	struct FaceType
+	{
+		int vIndex1, vIndex2, vIndex3;
+		int tIndex1, tIndex2, tIndex3;
+		int nIndex1, nIndex2, nIndex3;
+	};
+
 	// Model을 이루는 정점들의 구조체
 	struct ModelType
 	{
@@ -43,6 +50,9 @@ public:
 	bool LoadModel(const char*);
 	void ReleaseModel();
 
+	bool ReadFileCounts(const char*, int&, int&, int&, int&);
+	bool LoadDataStructures(const char*, int, int, int, int);
+
 private:
 	bool InitializeBuffers(ID3D11Device*);
 	void ShutdownBuffers();
@@ -53,7 +63,7 @@ private:
 
 private:
 	ID3D11Buffer *m_vertexBuffer, *m_indexBuffer;	// 정점 버퍼와 인덱스 버퍼(생성 시 버퍼 description으로 구분)
-	int m_vertexCount, m_indexCount;				// 버퍼의 크기 정보
+	int m_vertexCount, m_indexCount, m_textureCount, m_normalCount, m_faceCount;
 	TextureClass* m_Texture;						// 모델의 텍스쳐 로드/반환/접근
 	ModelType* m_model;
 };

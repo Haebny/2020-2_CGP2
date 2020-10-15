@@ -1,7 +1,7 @@
 #ifndef _LIGHTCLASS_H_
 #define _LIGHTCLASS_H_
 #include <d3d11.h>
-#include <d3dx11tex.h>_
+#include <d3dx11tex.h>
 #include <d3dx10math.h>
 
 // 텍스쳐 자원 로드/해제/접근

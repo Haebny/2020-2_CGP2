@@ -7,6 +7,7 @@
 #include "textureshaderclass.h"
 #include "lightshaderclass.h"
 #include "lightclass.h"
+#include <vector>
 
 // Globals
 const bool FULL_SCREEN = false;			// 풀스크린 
@@ -22,12 +23,12 @@ public:
 	struct Model
 	{
 		ModelClass* model;
-		char* obj_path;
-		WCHAR* tex_path;
+		const char* obj_path;
+		const WCHAR* tex_path;
 
 		//bool isMoving;
 		//D3DXVECTOR3 pos;
-		//char* name;
+		const char* name;
 	};
 public:
 	GraphicsClass();
@@ -44,7 +45,9 @@ private:
 private:
 	D3DClass* m_D3D;
 	CameraClass* m_Camera;
-	ModelClass* m_Model;
+	//ModelClass* m_Model;
+	vector<Model> m_Models;
+	Model cat, cupcake, floor;
 	TextureShaderClass* m_TextureShader;
 	LightShaderClass* m_LightShader;
 	LightClass* m_Light;

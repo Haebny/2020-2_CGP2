@@ -3,10 +3,22 @@ GraphicsClass::GraphicsClass()
 {
 	m_D3D = 0;
 	m_Camera = 0;
-	m_Model = 0;
+	//m_Model = 0;
 	m_TextureShader = 0;
 	m_LightShader = 0;
 	m_Light = 0;
+
+	floor.obj_path = "../Engine/data/models/floor.obj";
+	floor.tex_path = L"../Engine/data/textures/metal.dds";
+	floor.name = "floor";
+
+	cupcake.obj_path = "../Engine/data/models/cupcake.obj";
+	cupcake.tex_path = L"../Engine/data/textures/cupcake.dds";
+	cupcake.name = "cupcake";
+
+	cat.obj_path = "../Engine/data/models/cat.obj";
+	cat.tex_path = L"../Engine/data/textures/cat.dds";
+	cat.name = "cat";
 }
 
 GraphicsClass::GraphicsClass(const GraphicsClass& other)
@@ -48,22 +60,31 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	}
 
 	// Set the initial position of the camera.
-	m_Camera->SetPosition(0.0f, 0.0f, -10.0f);
+	m_Camera->SetPosition(0.0f, 7.0f, -20.0f);
+	m_Camera->SetRotation(20.0f, 0.0f, 0.0f);
 
-	// Create the model object.
-	m_Model = new ModelClass;
-	if (!m_Model)
-	{
-		return false;
-	}
+	m_Models.push_back(floor);
+	m_Models.push_back(cupcake);
+	m_Models.push_back(cat);
 
 	// Initialize the model object.
 	// 모델 텍스쳐도 같이 지정
-	result = m_Model->Initialize(m_D3D->GetDevice(), "../Engine/data/cube.txt", L"../Engine/data/seafloor.dds");
-	if (!result)
+	for (int i = 0; i < m_Models.size(); i++) 
 	{
-		MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
-		return false;
+		// Create the model object.
+		m_Models.at(i).model = new ModelClass;
+		if (!m_Models.at(i).model)
+		{
+			MessageBox(hwnd, L"Could not create the model object.", L"Error", MB_OK);
+			return false;
+		}
+
+		result = m_Models.at(i).model->Initialize(m_D3D->GetDevice(), m_Models.at(i).obj_path, m_Models.at(i).tex_path);
+		if (!result)
+		{
+			MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
+			return false;
+		}
 	}
 
 	//// Create the texture shader object.
@@ -139,11 +160,15 @@ void GraphicsClass::Shutdown()
 	//}
 
 	// Release the model object.
-	if (m_Model)
+	for (int i = 0; i < m_Models.size(); i++)
 	{
-		m_Model->Shutdown();
-		delete m_Model;
-		m_Model = 0;
+		if (m_Models.at(i).model)
+		{
+			m_Models.at(i).model->Shutdown();
+			delete m_Models.at(i).model;
+			m_Models.at(i).model = 0;
+		}
+
 	}
 
 	// Release the camera object.
@@ -191,12 +216,14 @@ bool GraphicsClass::Frame()
 bool GraphicsClass::Render(float rotation)
 {
 	D3DXMATRIX viewMatrix, projectionMatrix, worldMatrix;
+	D3DXMATRIX translation, scale;
 	bool result;
 
 	// Clear the buffers to begin the scene.
 	// 씬 그리기를 위해 버퍼의 내용을 지움(화면을 특정 색으로 초기화)
 	m_D3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
-#pragma region (삼각형) 출력
+
+#pragma region 출력
 	// Generate the view matrix based on the camera's position.
 	// Initialize 함수에서 지정한 카메라의 위치로 뷰 행렬을 만들기 위해 호출
 	m_Camera->Render();
@@ -207,22 +234,44 @@ bool GraphicsClass::Render(float rotation)
 	m_D3D->GetWorldMatrix(worldMatrix);
 	m_D3D->GetProjectionMatrix(projectionMatrix);
 
-	// Rotate the world matrix by the rotation value so that the triangle will spin.
-	D3DXMatrixRotationY(&worldMatrix, rotation);
-
 	// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
 	// 그래픽 파이프라인에 모델을 그림
-	m_Model->Render(m_D3D->GetDeviceContext());
-
-	// Render the model using the texture shader.
-	// Render the model using the light shader.
-	result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix,
-		viewMatrix, projectionMatrix, m_Model->GetTexture(), m_Light->GetDirection(),
-		m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(), m_Camera->GetPosition(),
-		m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
-	if (!result)
+	for (int i = 0; i < m_Models.size(); i++)
 	{
-		return false;
+		if (m_Models.at(i).name != "floor")
+		{
+			D3DXMatrixTranslation(&translation, 0.0f, 1.0f, 0.0f);
+
+			// Rotate the world matrix by the rotation value so that the triangle will spin.
+			D3DXMatrixRotationY(&worldMatrix, rotation);
+
+			worldMatrix *= translation;
+		}
+		if (m_Models.at(i).name == "cupcake")
+		{
+			D3DXMatrixTranslation(&translation, -5.0f, 0.0f, 0.0f);
+
+			worldMatrix *= translation;
+		}
+		if (m_Models.at(i).name == "cat")
+		{
+			// 고양이 크기가 너무 크므로 기존 크기의 10%로 줄이기
+			D3DXMatrixScaling(&scale, 0.1f, 0.1f, 0.1f);
+
+			worldMatrix *= scale;
+		}
+		
+		m_Models.at(i).model->Render(m_D3D->GetDeviceContext());
+
+		// Render the model using the light shader.
+		result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_Models.at(i).model->GetIndexCount(), worldMatrix,
+			viewMatrix, projectionMatrix, m_Models.at(i).model->GetTexture(), m_Light->GetDirection(),
+			m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(), m_Camera->GetPosition(),
+			m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
+		if (!result)
+		{
+			return false;
+		}
 	}
 #pragma endregion
 
