@@ -1,5 +1,6 @@
 #ifndef _LIGHTCLASS_H_
-#define _LIGHTCLASS_H_
+#define _LIGHTCLASS_H_
+
 #include <d3d11.h>
 #include <d3dx11tex.h>
 #include <d3dx10math.h>
@@ -33,6 +34,8 @@ public:
 	float GetSpecularPower();
 
 	D3DXVECTOR4 GetPosition();
+
+	void TurnOnLight(int, bool);
 
 private:
 	ID3D11ShaderResourceView* m_texture;

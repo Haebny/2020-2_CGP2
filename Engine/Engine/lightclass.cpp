@@ -111,3 +111,45 @@ D3DXVECTOR4 LightClass::GetPosition()
 {
 	return m_position;
 }
+
+void LightClass::TurnOnLight(int key, bool turnOn)
+{
+	switch (key)
+	{
+	case 1:	// ambient light
+	{
+		if (turnOn == true)
+			SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
+		else
+			SetAmbientColor(0.0f, 0.0f, 0.0f, 1.0f);
+		break;
+	}
+	case 2:	// diffuse light
+	{
+		if (turnOn == true)
+			SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
+		else
+			SetDiffuseColor(0.0f, 0.0f, 0.0f, 1.0f);
+		break;
+	}
+	case 3:	// specular light
+	{
+		if (turnOn == true)
+		{
+			SetSpecularColor(1.0f, 0.0f, 0.0f, 1.0f);
+			SetSpecularPower(32.0f);
+		}
+		else
+		{
+			SetSpecularColor(0.0f, 0.0f, 0.0f, 1.0f);
+			SetSpecularPower(99999.0f);
+		}
+			
+		break;
+	}
+	default:
+		break;
+	}
+
+	return;
+}

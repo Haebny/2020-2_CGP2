@@ -31,6 +31,9 @@ private:
 
 	InputClass* m_Input;
 	GraphicsClass* m_Graphics;
+
+	int m_key;
+	bool m_state;
 };
 
 // Function prototypes

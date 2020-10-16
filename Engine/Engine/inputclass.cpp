@@ -22,6 +22,10 @@ void InputClass::Initialize()
 		m_keys[i] = false;
 	}
 
+	num1 = true;
+	num2 = true;
+	num3 = true;
+
 	return;
 }
 
@@ -43,4 +47,56 @@ bool InputClass::IsKeyDown(unsigned int key)
 {
 	// Return what state the key is in (pressed/not pressed).
 	return m_keys[key];
+}
+
+void InputClass::SetKeyState(int key)
+{
+	switch (key)
+	{
+	case 1:
+	{
+		num1 = !num1;
+		break;
+	}
+	case 2:
+	{
+		num2 = !num2;
+		break;
+	}
+	case 3:
+	{
+		num3 = !num3;
+		break;
+	}
+	default:
+		break;
+	}
+
+	return;
+}
+
+bool InputClass::GetKeyState(int key)
+{
+	bool keyState;
+
+	switch (key)
+	{
+	case 1:
+	{
+		return num1;
+		break;
+	}
+	case 2:
+	{
+		return num2;
+		break;
+	}
+	case 3:
+	{
+		return num3;
+		break;
+	}
+	default:
+		break;
+	}
 }

@@ -135,12 +135,39 @@ bool SystemClass::Frame()
 		return false;
 	}
 
+	// 1 key
+	if (m_Input->IsKeyDown(0x31))
+	{
+		m_Input->SetKeyState(1);
+		m_key = 1;
+		m_state = m_Input->GetKeyState(1);
+		m_Input->KeyUp(0x31);
+	}
+	// 2 key
+	if (m_Input->IsKeyDown(0x32))
+	{
+		m_Input->SetKeyState(2);
+		m_key = 2;
+		m_state = m_Input->GetKeyState(2);
+		m_Input->KeyUp(0x32);
+	}
+	// 3 key
+	if (m_Input->IsKeyDown(0x33))
+	{
+		m_Input->SetKeyState(3);
+		m_key = 3;
+		m_state = m_Input->GetKeyState(3);
+		m_Input->KeyUp(0x33);
+	}
+
 	// Do the frame processing for the graphics object.
-	result = m_Graphics->Frame();
+	result = m_Graphics->Frame(m_key, m_state);
 	if (!result)
 	{
 		return false;
 	}
+
+	m_key = NULL;
 
 	return true;
 }

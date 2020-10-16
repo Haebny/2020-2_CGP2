@@ -19,6 +19,10 @@ GraphicsClass::GraphicsClass()
 	cat.obj_path = "../Engine/data/models/cat.obj";
 	cat.tex_path = L"../Engine/data/textures/cat.dds";
 	cat.name = "cat";
+
+	dog.obj_path = "../Engine/data/models/dog.obj";
+	dog.tex_path = L"../Engine/data/textures/dog.dds";
+	dog.name = "dog";
 }
 
 GraphicsClass::GraphicsClass(const GraphicsClass& other)
@@ -66,6 +70,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_Models.push_back(floor);
 	m_Models.push_back(cupcake);
 	m_Models.push_back(cat);
+	m_Models.push_back(dog);
 
 	// Initialize the model object.
 	// 모델 텍스쳐도 같이 지정
@@ -189,8 +194,11 @@ void GraphicsClass::Shutdown()
 	return;
 }
 
-bool GraphicsClass::Frame()
+bool GraphicsClass::Frame(int key, bool state)
 {
+	// Update the light states
+	m_Light->TurnOnLight(key, state);
+
 	bool result;
 
 	static float rotation = 0.0f;
@@ -238,27 +246,45 @@ bool GraphicsClass::Render(float rotation)
 	// 그래픽 파이프라인에 모델을 그림
 	for (int i = 0; i < m_Models.size(); i++)
 	{
-		if (m_Models.at(i).name != "floor")
+		if (m_Models.at(i).name == "floor")
 		{
-			D3DXMatrixTranslation(&translation, 0.0f, 1.0f, 0.0f);
-
-			// Rotate the world matrix by the rotation value so that the triangle will spin.
-			D3DXMatrixRotationY(&worldMatrix, rotation);
+			// Transtlate object
+			D3DXMatrixTranslation(&translation, 0.0f, -2.0f, 0.0f);
 
 			worldMatrix *= translation;
 		}
 		if (m_Models.at(i).name == "cupcake")
 		{
-			D3DXMatrixTranslation(&translation, -5.0f, 0.0f, 0.0f);
+			// Rotate object
+			D3DXMatrixRotationX(&worldMatrix, rotation);
+
+			D3DXMatrixTranslation(&translation, -7.0f, 0.0f, 0.0f);
 
 			worldMatrix *= translation;
 		}
 		if (m_Models.at(i).name == "cat")
 		{
-			// 고양이 크기가 너무 크므로 기존 크기의 10%로 줄이기
-			D3DXMatrixScaling(&scale, 0.1f, 0.1f, 0.1f);
+			// Rotate object
+			D3DXMatrixRotationZ(&worldMatrix, rotation);
 
+			// 크기 조정
+			D3DXMatrixScaling(&scale, 0.1f, 0.1f, 0.1f);
 			worldMatrix *= scale;
+
+			D3DXMatrixTranslation(&translation, 7.0f, 1.0f, 0.0f);
+			worldMatrix *= translation;
+		}
+		if (m_Models.at(i).name == "dog")
+		{
+			// Rotate object
+			D3DXMatrixRotationY(&worldMatrix, rotation);
+
+			// 크기 조정
+			D3DXMatrixScaling(&scale, 0.15f, 0.15f, 0.15f);
+			worldMatrix *= scale;
+
+			D3DXMatrixTranslation(&translation, 0.0f, 0.0f, 0.0f);
+			worldMatrix *= translation;
 		}
 		
 		m_Models.at(i).model->Render(m_D3D->GetDeviceContext());

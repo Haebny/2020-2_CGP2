@@ -37,7 +37,7 @@ public:
 
 	bool Initialize(int, int, HWND);
 	void Shutdown();
-	bool Frame();
+	bool Frame(int, bool);
 
 private:
 	bool Render(float);
@@ -47,7 +47,7 @@ private:
 	CameraClass* m_Camera;
 	//ModelClass* m_Model;
 	vector<Model> m_Models;
-	Model cat, cupcake, floor;
+	Model dog, cat, cupcake, floor;
 	TextureShaderClass* m_TextureShader;
 	LightShaderClass* m_LightShader;
 	LightClass* m_Light;
