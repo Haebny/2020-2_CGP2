@@ -77,24 +77,19 @@ void InputClass::SetKeyState(int key)
 
 bool InputClass::GetKeyState(int key)
 {
-	bool keyState;
-
 	switch (key)
 	{
 	case 1:
 	{
 		return num1;
-		break;
 	}
 	case 2:
 	{
 		return num2;
-		break;
 	}
 	case 3:
 	{
 		return num3;
-		break;
 	}
 	default:
 		break;

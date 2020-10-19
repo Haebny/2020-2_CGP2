@@ -15,7 +15,7 @@ cbuffer MatrixBuffer
 
 cbuffer LightPositionBuffer
 {
-	float4 lightPosition[NUM_LIGHTS];
+	float4 lightPositions[NUM_LIGHTS];
 };
 
 cbuffer CameraBuffer
@@ -39,6 +39,10 @@ struct PixelInputType
 	float2 tex : TEXCOORD0;
 	float3 normal : NORMAL;
 	float3 viewDirection : TEXCOORD1;
+	float3 lightPos1 : TEXCOORD2;
+	float3 lightPos2 : TEXCOORD3;
+	float3 lightPos3 : TEXCOORD4;
+	float3 lightPos4 : TEXCOORD5;
 };
 
 // Vertex Shader
@@ -76,6 +80,18 @@ PixelInputType LightVertexShader(VertexInputType input)
 
 	// Normalize the viewing direction vector.
 	output.viewDirection = normalize(output.viewDirection);
+
+	// Determine the light positions based on the position of the lights and the position of the vertex in the world.
+	output.lightPos1.xyz = lightPositions[0].xyz - worldPosition.xyz;
+	output.lightPos2.xyz = lightPositions[1].xyz - worldPosition.xyz;
+	output.lightPos3.xyz = lightPositions[2].xyz - worldPosition.xyz;
+	output.lightPos4.xyz = lightPositions[3].xyz - worldPosition.xyz;
+	
+	// Normalize the light position vectors.
+	output.lightPos1 = normalize(output.lightPos1);
+	output.lightPos2 = normalize(output.lightPos2);
+	output.lightPos3 = normalize(output.lightPos3);
+	output.lightPos4 = normalize(output.lightPos4);
 
 	return output;
 }

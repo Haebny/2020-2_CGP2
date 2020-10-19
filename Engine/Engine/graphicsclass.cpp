@@ -7,14 +7,18 @@ GraphicsClass::GraphicsClass()
 	m_TextureShader = 0;
 	m_LightShader = 0;
 	m_Light = 0;
+	m_Light1 = 0;
+	m_Light2 = 0;
+	m_Light3 = 0;
+	m_Light4 = 0;
 
 	floor.obj_path = "../Engine/data/models/floor.obj";
 	floor.tex_path = L"../Engine/data/textures/metal.dds";
 	floor.name = "floor";
 
-	cupcake.obj_path = "../Engine/data/models/cupcake.obj";
-	cupcake.tex_path = L"../Engine/data/textures/cupcake.dds";
-	cupcake.name = "cupcake";
+	wood.obj_path = "../Engine/data/models/wood.obj";
+	wood.tex_path = L"../Engine/data/textures/wood.dds";
+	wood.name = "wood";
 
 	cat.obj_path = "../Engine/data/models/cat.obj";
 	cat.tex_path = L"../Engine/data/textures/cat.dds";
@@ -68,7 +72,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_Camera->SetRotation(20.0f, 0.0f, 0.0f);
 
 	m_Models.push_back(floor);
-	m_Models.push_back(cupcake);
+	//m_Models.push_back(wood);
 	m_Models.push_back(cat);
 	m_Models.push_back(dog);
 
@@ -135,12 +139,78 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_Light->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
 	m_Light->SetSpecularPower(32.0f);
 
+	// Create the first light object.
+	m_Light1 = new LightClass;
+	if (!m_Light1)
+	{
+		return false;
+	}
+
+	// Initialize the first light object.
+	m_Light1->SetDiffuseColor(1.0f, 0.0f, 0.0f, 1.0f);
+	m_Light1->SetPosition(-3.0f, 1.0f, 3.0f);
+	
+	// Create the second light object.
+	m_Light2 = new LightClass;
+	if (!m_Light2)
+	{
+		return false;
+	}
+
+	// Initialize the second light object.
+	m_Light2->SetDiffuseColor(0.0f, 1.0f, 0.0f, 1.0f);
+	m_Light2->SetPosition(3.0f, 1.0f, 3.0f);
+	
+	// Create the third light object.
+	m_Light3 = new LightClass;
+	if (!m_Light3)
+	{
+		return false;
+	}
+
+	// Initialize the third light object.
+	m_Light3->SetDiffuseColor(0.0f, 0.0f, 1.0f, 1.0f);
+	m_Light3->SetPosition(-3.0f, 1.0f, -3.0f);
+	
+	// Create the fourth light object.
+	m_Light4 = new LightClass;
+	if (!m_Light4)
+	{
+		return false;
+	}
+
+	// Initialize the fourth light object.
+	m_Light4->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
+	m_Light4->SetPosition(3.0f, 1.0f, -3.0f);
+
 	return true;
 }
 
 //모든 그래픽 객체의 해제
 void GraphicsClass::Shutdown()
 {
+	// Release the light objects.
+	if (m_Light1)
+	{
+		delete m_Light1;
+		m_Light1 = 0;
+	}
+	if (m_Light2)
+	{
+		delete m_Light2;
+		m_Light2 = 0;
+	}
+	if (m_Light3)
+	{
+		delete m_Light3;
+		m_Light3 = 0;
+	}
+	if (m_Light4)
+	{
+		delete m_Light4;
+		m_Light4 = 0;
+	}
+
 	// Release the light object.
 	if (m_Light)
 	{
@@ -226,6 +296,21 @@ bool GraphicsClass::Render(float rotation)
 	D3DXMATRIX viewMatrix, projectionMatrix, worldMatrix;
 	D3DXMATRIX translation, scale;
 	bool result;
+	D3DXVECTOR4 diffuseColors[4];
+	D3DXVECTOR4 lightPositions[4];
+
+	// Create the diffuse color array from the four light colors.
+	diffuseColors[0] = m_Light1->GetDiffuseColor();
+	diffuseColors[1] = m_Light2->GetDiffuseColor();
+	diffuseColors[2] = m_Light3->GetDiffuseColor();
+	diffuseColors[3] = m_Light4->GetDiffuseColor();
+	
+	// Create the light position array from the four light positions.
+	lightPositions[0] = m_Light1->GetPosition();
+	lightPositions[1] = m_Light2->GetPosition();
+	lightPositions[2] = m_Light3->GetPosition();
+	lightPositions[3] = m_Light4->GetPosition();
+	
 
 	// Clear the buffers to begin the scene.
 	// 씬 그리기를 위해 버퍼의 내용을 지움(화면을 특정 색으로 초기화)
@@ -253,15 +338,15 @@ bool GraphicsClass::Render(float rotation)
 
 			worldMatrix *= translation;
 		}
-		if (m_Models.at(i).name == "cupcake")
-		{
-			// Rotate object
-			D3DXMatrixRotationX(&worldMatrix, rotation);
+		//if (m_Models.at(i).name == "wood")
+		//{
+		//	// Rotate object
+		//	D3DXMatrixRotationX(&worldMatrix, rotation);
 
-			D3DXMatrixTranslation(&translation, -7.0f, 0.0f, 0.0f);
+		//	D3DXMatrixTranslation(&translation, -7.0f, 0.0f, 0.0f);
 
-			worldMatrix *= translation;
-		}
+		//	worldMatrix *= translation;
+		//}
 		if (m_Models.at(i).name == "cat")
 		{
 			// Rotate object
@@ -293,7 +378,7 @@ bool GraphicsClass::Render(float rotation)
 		result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_Models.at(i).model->GetIndexCount(), worldMatrix,
 			viewMatrix, projectionMatrix, m_Models.at(i).model->GetTexture(), m_Light->GetDirection(),
 			m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(), m_Camera->GetPosition(),
-			m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
+			m_Light->GetSpecularColor(), m_Light->GetSpecularPower(), diffuseColors, lightPositions);
 		if (!result)
 		{
 			return false;

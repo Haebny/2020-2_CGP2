@@ -47,7 +47,7 @@ private:
 	CameraClass* m_Camera;
 	//ModelClass* m_Model;
 	vector<Model> m_Models;
-	Model dog, cat, cupcake, floor;
+	Model dog, cat, wood, floor;
 	TextureShaderClass* m_TextureShader;
 	LightShaderClass* m_LightShader;
 	LightClass* m_Light;
