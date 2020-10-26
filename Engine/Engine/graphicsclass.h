@@ -4,9 +4,10 @@
 #include "d3dclass.h"
 #include "cameraclass.h"
 #include "modelclass.h"
-#include "textureshaderclass.h"
 #include "lightshaderclass.h"
 #include "lightclass.h"
+#include "textureshaderclass.h"
+#include "bitmapclass.h"
 #include <vector>
 
 // Globals
@@ -25,9 +26,6 @@ public:
 		ModelClass* model;
 		const char* obj_path;
 		const WCHAR* tex_path;
-
-		//bool isMoving;
-		//D3DXVECTOR3 pos;
 		const char* name;
 	};
 public:
@@ -39,8 +37,10 @@ public:
 	void Shutdown();
 	bool Frame(int, bool);
 
+	void SetSwitch(int);
+
 private:
-	bool Render(float);
+	bool Render(float, int);
 
 private:
 	D3DClass* m_D3D;
@@ -48,10 +48,13 @@ private:
 	//ModelClass* m_Model;
 	vector<Model> m_Models;
 	Model dog, cat, wood, floor;
-	TextureShaderClass* m_TextureShader;
 	LightShaderClass* m_LightShader;
 	LightClass* m_Light;
-	LightClass *m_Light1, *m_Light2, *m_Light3, *m_Light4;
+	LightClass *m_Light2, *m_Light3, *m_Light4;
+	TextureShaderClass* m_TextureShader;
+	BitmapClass* m_Bitmap;
+
+	int m_switch;
 };
 
 #endif

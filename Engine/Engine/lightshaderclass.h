@@ -1,7 +1,8 @@
 #ifndef _LIGHTSHADERCLASS_H_
 #define _LIGHTSHADERCLASS_H_
 
-const int NUM_LIGHTS = 4;
+const int NUM_LIGHTS = 3;
+
 
 #include <d3d11.h>
 #include <d3dx10math.h>
@@ -44,7 +45,7 @@ private:
 
 	struct LightPositionBufferType
 	{
-		D3DXVECTOR4 lightPositions[NUM_LIGHTS];
+		D3DXVECTOR4 lightPosition[NUM_LIGHTS];
 	};
 
 public:
@@ -56,17 +57,17 @@ public:
 	void Shutdown();
 	bool Render(ID3D11DeviceContext*, int, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX,
 		ID3D11ShaderResourceView*, D3DXVECTOR3, D3DXVECTOR4, D3DXVECTOR4,
-		D3DXVECTOR3, D3DXVECTOR4, float, D3DXVECTOR4[], D3DXVECTOR4[]);	//셰이더에 사용되는 변수설정 + 셰이더로 준비된 모델의 정점들을 그려냅니다.
+		D3DXVECTOR3, D3DXVECTOR4, float, D3DXVECTOR4[],	D3DXVECTOR4[]);
 
 private:
-	bool InitializeShader(ID3D11Device*, HWND, const WCHAR*, const WCHAR*);				// 1
+	bool InitializeShader(ID3D11Device*, HWND, const WCHAR*, const WCHAR*);
 	void ShutdownShader();
 	void OutputShaderErrorMessage(ID3D10Blob*, HWND, const WCHAR*);
 
 	bool SetShaderParameters(ID3D11DeviceContext*, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX,
 		ID3D11ShaderResourceView*, D3DXVECTOR3, D3DXVECTOR4, D3DXVECTOR4,
 		D3DXVECTOR3, D3DXVECTOR4, float, D3DXVECTOR4[], D3DXVECTOR4[]);
-	void RenderShader(ID3D11DeviceContext*, int);										// 3
+	void RenderShader(ID3D11DeviceContext*, int);
 
 private:
 	ID3D11VertexShader* m_vertexShader;

@@ -36,6 +36,8 @@ public:
 	D3DXVECTOR4 GetPosition();
 
 	void TurnOnLight(int, bool);
+	void TurnOnPointLight(int key, bool turnOn);
+	void StoreDiffuseColor();
 
 private:
 	ID3D11ShaderResourceView* m_texture;
@@ -47,6 +49,7 @@ private:
 	float m_specularPower;
 
 	D3DXVECTOR4 m_position;
+	D3DXVECTOR4 m_storedDiffuse;
 };
 
 #endif

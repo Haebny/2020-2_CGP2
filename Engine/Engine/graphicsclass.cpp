@@ -4,13 +4,10 @@ GraphicsClass::GraphicsClass()
 	m_D3D = 0;
 	m_Camera = 0;
 	//m_Model = 0;
-	m_TextureShader = 0;
 	m_LightShader = 0;
 	m_Light = 0;
-	m_Light1 = 0;
-	m_Light2 = 0;
-	m_Light3 = 0;
-	m_Light4 = 0;
+	m_TextureShader = 0;
+	m_Bitmap = 0;
 
 	floor.obj_path = "../Engine/data/models/floor.obj";
 	floor.tex_path = L"../Engine/data/textures/metal.dds";
@@ -27,6 +24,8 @@ GraphicsClass::GraphicsClass()
 	dog.obj_path = "../Engine/data/models/dog.obj";
 	dog.tex_path = L"../Engine/data/textures/dog.dds";
 	dog.name = "dog";
+
+	m_switch = 0;
 }
 
 GraphicsClass::GraphicsClass(const GraphicsClass& other)
@@ -72,7 +71,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_Camera->SetRotation(20.0f, 0.0f, 0.0f);
 
 	m_Models.push_back(floor);
-	//m_Models.push_back(wood);
+	m_Models.push_back(wood);
 	m_Models.push_back(cat);
 	m_Models.push_back(dog);
 
@@ -96,20 +95,35 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		}
 	}
 
-	//// Create the texture shader object.
-	//m_TextureShader = new TextureShaderClass;
-	//if (!m_TextureShader)
-	//{
-	//	return false;
-	//}
+	// Create the texture shader object.
+	m_TextureShader = new TextureShaderClass;
+	if (!m_TextureShader)
+	{
+		return false;
+	}
+	// Initialize the texture shader object.
+	result = m_TextureShader->Initialize(m_D3D->GetDevice(), hwnd);
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the texture shader object.", L"Error", MB_OK);
+		return false;
+	}
 
-	//// Initialize the color shader object.
-	//result = m_TextureShader->Initialize(m_D3D->GetDevice(), hwnd);
-	//if (!result)
-	//{
-	//	MessageBox(hwnd, L"Could not initialize the color shader object.", L"Error", MB_OK);
-	//	return false;
-	//}
+	// Create the bitmap object.
+	m_Bitmap = new BitmapClass;
+	if (!m_Bitmap)
+	{
+		return false;
+	}
+
+	// Initialize the bitmap object.
+	result = m_Bitmap->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight,
+		L"../Engine/data/seafloor.dds", 256, 256);
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the bitmap object.", L"Error", MB_OK);
+		return false;
+	}
 
 	// Create the light shader object.
 	m_LightShader = new LightShaderClass;
@@ -117,6 +131,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	{
 		return false;
 	}
+
 	// Initialize the light shader object.
 	result = m_LightShader->Initialize(m_D3D->GetDevice(), hwnd);
 	if (!result)
@@ -135,53 +150,36 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	// Initialize the light object.
 	m_Light->SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
 	m_Light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
-	m_Light->SetDirection(0.0f, 0.0f, 1.0f);
+	m_Light->SetDirection(0.0f, -0.5f, 1.0f);
 	m_Light->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
 	m_Light->SetSpecularPower(32.0f);
 
-	// Create the first light object.
-	m_Light1 = new LightClass;
-	if (!m_Light1)
-	{
-		return false;
-	}
-
-	// Initialize the first light object.
-	m_Light1->SetDiffuseColor(1.0f, 0.0f, 0.0f, 1.0f);
-	m_Light1->SetPosition(-3.0f, 1.0f, 3.0f);
-	
-	// Create the second light object.
 	m_Light2 = new LightClass;
 	if (!m_Light2)
 	{
 		return false;
 	}
+	m_Light2->SetDiffuseColor(1.0f, 0.0f, 0.0f, 1.0f);
+	m_Light2->SetPosition(-7.0f, 3.0f, 0.0f);
+	m_Light2->StoreDiffuseColor();
 
-	// Initialize the second light object.
-	m_Light2->SetDiffuseColor(0.0f, 1.0f, 0.0f, 1.0f);
-	m_Light2->SetPosition(3.0f, 1.0f, 3.0f);
-	
-	// Create the third light object.
 	m_Light3 = new LightClass;
 	if (!m_Light3)
 	{
 		return false;
 	}
+	m_Light3->SetDiffuseColor(0.0f, 1.0f, 0.0f, 1.0f);
+	m_Light3->SetPosition(0.0f, 3.0f, 0.0f);
+	m_Light3->StoreDiffuseColor();
 
-	// Initialize the third light object.
-	m_Light3->SetDiffuseColor(0.0f, 0.0f, 1.0f, 1.0f);
-	m_Light3->SetPosition(-3.0f, 1.0f, -3.0f);
-	
-	// Create the fourth light object.
 	m_Light4 = new LightClass;
 	if (!m_Light4)
 	{
 		return false;
 	}
-
-	// Initialize the fourth light object.
-	m_Light4->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
-	m_Light4->SetPosition(3.0f, 1.0f, -3.0f);
+	m_Light4->SetDiffuseColor(0.0f, 0.0f, 1.0f, 1.0f);
+	m_Light4->SetPosition(7.0f, 3.0f, 0.0f);
+	m_Light4->StoreDiffuseColor();
 
 	return true;
 }
@@ -189,12 +187,6 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 //모든 그래픽 객체의 해제
 void GraphicsClass::Shutdown()
 {
-	// Release the light objects.
-	if (m_Light1)
-	{
-		delete m_Light1;
-		m_Light1 = 0;
-	}
 	if (m_Light2)
 	{
 		delete m_Light2;
@@ -226,13 +218,21 @@ void GraphicsClass::Shutdown()
 		m_LightShader = 0;
 	}
 
-	//// Release the texture shader object.
-	//if(m_TextureShader)
-	//{
-	//	m_TextureShader->Shutdown();
-	//	delete m_TextureShader;
-	//	m_TextureShader = 0;
-	//}
+	// Release the bitmap object.
+	if (m_Bitmap)
+	{
+		m_Bitmap->Shutdown();
+		delete m_Bitmap;
+		m_Bitmap = 0;
+	}
+
+	// Release the texture shader object.
+	if (m_TextureShader)
+	{
+		m_TextureShader->Shutdown();
+		delete m_TextureShader;
+		m_TextureShader = 0;
+	}
 
 	// Release the model object.
 	for (int i = 0; i < m_Models.size(); i++)
@@ -268,6 +268,9 @@ bool GraphicsClass::Frame(int key, bool state)
 {
 	// Update the light states
 	m_Light->TurnOnLight(key, state);
+	m_Light2->TurnOnPointLight(key, state);
+	m_Light3->TurnOnPointLight(key, state);
+	m_Light4->TurnOnPointLight(key, state);
 
 	bool result;
 
@@ -282,7 +285,7 @@ bool GraphicsClass::Frame(int key, bool state)
 
 	// Render the graphics scene.
 	// 그래픽 렌더링 수행
-	result = Render(rotation);
+	result = Render(rotation, key);
 	if (!result)
 	{
 		return false;
@@ -291,26 +294,23 @@ bool GraphicsClass::Frame(int key, bool state)
 	return true;
 }
 
-bool GraphicsClass::Render(float rotation)
+bool GraphicsClass::Render(float rotation, int key)
 {
-	D3DXMATRIX viewMatrix, projectionMatrix, worldMatrix;
+	D3DXMATRIX viewMatrix, projectionMatrix, worldMatrix, orthoMatrix;
 	D3DXMATRIX translation, scale;
 	bool result;
-	D3DXVECTOR4 diffuseColors[4];
-	D3DXVECTOR4 lightPositions[4];
+	D3DXVECTOR4 diffuseColors[3];
+	D3DXVECTOR4 lightPosition[3];
 
 	// Create the diffuse color array from the four light colors.
-	diffuseColors[0] = m_Light1->GetDiffuseColor();
-	diffuseColors[1] = m_Light2->GetDiffuseColor();
-	diffuseColors[2] = m_Light3->GetDiffuseColor();
-	diffuseColors[3] = m_Light4->GetDiffuseColor();
-	
+	diffuseColors[0] = m_Light2->GetDiffuseColor();
+	diffuseColors[1] = m_Light3->GetDiffuseColor();
+	diffuseColors[2] = m_Light4->GetDiffuseColor();
+
 	// Create the light position array from the four light positions.
-	lightPositions[0] = m_Light1->GetPosition();
-	lightPositions[1] = m_Light2->GetPosition();
-	lightPositions[2] = m_Light3->GetPosition();
-	lightPositions[3] = m_Light4->GetPosition();
-	
+	lightPosition[0] = m_Light2->GetPosition();
+	lightPosition[1] = m_Light3->GetPosition();
+	lightPosition[2] = m_Light4->GetPosition();
 
 	// Clear the buffers to begin the scene.
 	// 씬 그리기를 위해 버퍼의 내용을 지움(화면을 특정 색으로 초기화)
@@ -326,6 +326,24 @@ bool GraphicsClass::Render(float rotation)
 	m_Camera->GetViewMatrix(viewMatrix);
 	m_D3D->GetWorldMatrix(worldMatrix);
 	m_D3D->GetProjectionMatrix(projectionMatrix);
+	m_D3D->GetOrthoMatrix(orthoMatrix);
+
+	// Turn off the Z buffer to begin all 2D rendering.
+	m_D3D->TurnZBufferOff();	// Put the bitmap vertex and index buffers on the graphics pipeline to prepare them for drawing.
+	result = m_Bitmap->Render(m_D3D->GetDeviceContext(), 100, 100);
+	if (!result)
+	{
+		return false;
+	}	// Render the bitmap with the texture shader.
+	result = m_TextureShader->Render(m_D3D->GetDeviceContext(), m_Bitmap->GetIndexCount(),
+		worldMatrix, viewMatrix, orthoMatrix, m_Bitmap->GetTexture());
+	if (!result)
+	{
+		return false;
+	}
+
+	// Turn the Z buffer back on now that all 2D rendering has completed.
+	m_D3D->TurnZBufferOn();
 
 	// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
 	// 그래픽 파이프라인에 모델을 그림
@@ -338,15 +356,15 @@ bool GraphicsClass::Render(float rotation)
 
 			worldMatrix *= translation;
 		}
-		//if (m_Models.at(i).name == "wood")
-		//{
-		//	// Rotate object
-		//	D3DXMatrixRotationX(&worldMatrix, rotation);
+		if (m_Models.at(i).name == "wood")
+		{
+			// Rotate object
+			D3DXMatrixRotationX(&worldMatrix, rotation);
 
-		//	D3DXMatrixTranslation(&translation, -7.0f, 0.0f, 0.0f);
+			D3DXMatrixTranslation(&translation, -7.0f, 0.0f, 0.0f);
 
-		//	worldMatrix *= translation;
-		//}
+			worldMatrix *= translation;
+		}
 		if (m_Models.at(i).name == "cat")
 		{
 			// Rotate object
@@ -368,21 +386,22 @@ bool GraphicsClass::Render(float rotation)
 			D3DXMatrixScaling(&scale, 0.15f, 0.15f, 0.15f);
 			worldMatrix *= scale;
 
-			D3DXMatrixTranslation(&translation, 0.0f, 0.0f, 0.0f);
+			D3DXMatrixTranslation(&translation, 0.0f, -2.0f, 0.0f);
 			worldMatrix *= translation;
 		}
-		
+
 		m_Models.at(i).model->Render(m_D3D->GetDeviceContext());
 
 		// Render the model using the light shader.
 		result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_Models.at(i).model->GetIndexCount(), worldMatrix,
 			viewMatrix, projectionMatrix, m_Models.at(i).model->GetTexture(), m_Light->GetDirection(),
 			m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(), m_Camera->GetPosition(),
-			m_Light->GetSpecularColor(), m_Light->GetSpecularPower(), diffuseColors, lightPositions);
+			m_Light->GetSpecularColor(), m_Light->GetSpecularPower(), diffuseColors, lightPosition);
 		if (!result)
 		{
 			return false;
 		}
+		
 	}
 #pragma endregion
 
@@ -393,4 +412,10 @@ bool GraphicsClass::Render(float rotation)
 	// 이 이후는 외부 API
 
 	return true;
+}
+
+
+void GraphicsClass::SetSwitch(int key)
+{
+	m_switch = key;
 }

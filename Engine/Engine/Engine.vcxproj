@@ -154,6 +154,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="bitmapclass.cpp" />
     <ClCompile Include="cameraclass.cpp" />
     <ClCompile Include="lightshaderclass.cpp" />
     <ClCompile Include="lightclass.cpp" />
@@ -175,6 +176,7 @@
     <None Include="texture.vs" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="bitmapclass.h" />
     <ClInclude Include="cameraclass.h" />
     <ClInclude Include="lightshaderclass.h" />
     <ClInclude Include="lightclass.h" />

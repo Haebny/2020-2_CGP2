@@ -142,7 +142,7 @@ void LightClass::TurnOnLight(int key, bool turnOn)
 		else
 		{
 			SetSpecularColor(0.0f, 0.0f, 0.0f, 1.0f);
-			SetSpecularPower(99999.0f);
+			SetSpecularPower(5000000.0f);
 		}
 			
 		break;
@@ -152,4 +152,22 @@ void LightClass::TurnOnLight(int key, bool turnOn)
 	}
 
 	return;
+}
+
+void LightClass::TurnOnPointLight(int key, bool turnOn)
+{
+	if (key != 4)
+		return;
+
+	if (turnOn == true)
+		SetDiffuseColor(m_storedDiffuse.x, m_storedDiffuse.y, m_storedDiffuse.z, 1.0f);
+	else
+		SetDiffuseColor(0.0f, 0.0f, 0.0f, 1.0f);
+
+	return;
+}
+
+void LightClass::StoreDiffuseColor()
+{
+	m_storedDiffuse = GetDiffuseColor();
 }

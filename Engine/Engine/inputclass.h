@@ -19,7 +19,7 @@ public:
 
 private:
 	bool m_keys[256];
-	bool num1, num2, num3;
+	bool num1, num2, num3, num4;
 };
 
 #endif

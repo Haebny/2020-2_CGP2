@@ -142,6 +142,7 @@ bool SystemClass::Frame()
 		m_key = 1;
 		m_state = m_Input->GetKeyState(1);
 		m_Input->KeyUp(0x31);
+		m_Graphics->SetSwitch(m_key);
 	}
 	// 2 key
 	if (m_Input->IsKeyDown(0x32))
@@ -150,6 +151,7 @@ bool SystemClass::Frame()
 		m_key = 2;
 		m_state = m_Input->GetKeyState(2);
 		m_Input->KeyUp(0x32);
+		m_Graphics->SetSwitch(m_key);
 	}
 	// 3 key
 	if (m_Input->IsKeyDown(0x33))
@@ -158,6 +160,16 @@ bool SystemClass::Frame()
 		m_key = 3;
 		m_state = m_Input->GetKeyState(3);
 		m_Input->KeyUp(0x33);
+		m_Graphics->SetSwitch(m_key);
+	}
+	// 4 key
+	if (m_Input->IsKeyDown(0x34))
+	{
+		m_Input->SetKeyState(4);
+		m_key = 4;
+		m_state = m_Input->GetKeyState(4);
+		m_Input->KeyUp(0x34);
+		m_Graphics->SetSwitch(m_key);
 	}
 
 	// Do the frame processing for the graphics object.
@@ -277,7 +289,7 @@ void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
 	SetFocus(m_hwnd);
 	
 	// Hide the mouse cursor.
-	ShowCursor(false);
+	ShowCursor(true);
 	
 	return;
 }

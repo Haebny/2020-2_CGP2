@@ -33,7 +33,8 @@ bool TextureShaderClass::Initialize(ID3D11Device* device, HWND hwnd)
 }
 
 // 셰이더를 정리하는 함수를 호출
-void TextureShaderClass::Shutdown(){
+void TextureShaderClass::Shutdown()
+{
 	// Shutdown the vertex and pixel shaders as well as the related objects.
 	ShutdownShader();
 

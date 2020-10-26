@@ -1,7 +1,7 @@
 // 셰이더: 실제 모델의 렌더링을 수행하는, HLSL로 작성된 프로그램
 // texture.vs: 텍스쳐 씌우기 추가
 
-#define NUM_LIGHTS 4
+#define NUM_LIGHTS 3
 
 // Globals
 // [중요]셰이더의 효율적인 실행 + 그래픽카드가 어떻게 이 버퍼들을 저장하는지와 관련
@@ -11,11 +11,6 @@ cbuffer MatrixBuffer
 	matrix worldMatrix;
 	matrix viewMatrix;
 	matrix projectionMatrix;
-};
-
-cbuffer LightPositionBuffer
-{
-	float4 lightPositions[NUM_LIGHTS];
 };
 
 cbuffer CameraBuffer
@@ -28,25 +23,28 @@ cbuffer CameraBuffer
 struct VertexInputType
 {
 	float4 position : POSITION;
-	float2 tex : TEXCOORD0;		// 텍스트용 data
+	float2 tex : TEXCOORD0;
 	float3 normal : NORMAL;
+};
+
+cbuffer LightPositionBuffer
+{
+	float4 lightPosition[NUM_LIGHTS];
 };
 
 // 픽셀 셰이더
 struct PixelInputType
 {
-	float4 position : SV_POSITION;		// 픽셀 셰이더에서 동작
+	float4 position : SV_POSITION;
 	float2 tex : TEXCOORD0;
 	float3 normal : NORMAL;
 	float3 viewDirection : TEXCOORD1;
-	float3 lightPos1 : TEXCOORD2;
-	float3 lightPos2 : TEXCOORD3;
-	float3 lightPos3 : TEXCOORD4;
-	float3 lightPos4 : TEXCOORD5;
+	float3 lightPos2 : TEXCOORD2;
+	float3 lightPos3 : TEXCOORD3;
+	float3 lightPos4 : TEXCOORD4;
 };
 
 // Vertex Shader
-// 정점 셰이더: 정점 버퍼의 데이터 처리를 위해 GPU가 호출
 PixelInputType LightVertexShader(VertexInputType input)
 {
 	PixelInputType output;
@@ -80,15 +78,11 @@ PixelInputType LightVertexShader(VertexInputType input)
 
 	// Normalize the viewing direction vector.
 	output.viewDirection = normalize(output.viewDirection);
-
-	// Determine the light positions based on the position of the lights and the position of the vertex in the world.
-	output.lightPos1.xyz = lightPositions[0].xyz - worldPosition.xyz;
-	output.lightPos2.xyz = lightPositions[1].xyz - worldPosition.xyz;
-	output.lightPos3.xyz = lightPositions[2].xyz - worldPosition.xyz;
-	output.lightPos4.xyz = lightPositions[3].xyz - worldPosition.xyz;
 	
-	// Normalize the light position vectors.
-	output.lightPos1 = normalize(output.lightPos1);
+	output.lightPos2.xyz = lightPosition[0].xyz - worldPosition.xyz;
+	output.lightPos3.xyz = lightPosition[1].xyz - worldPosition.xyz;
+	output.lightPos4.xyz = lightPosition[2].xyz - worldPosition.xyz;
+	
 	output.lightPos2 = normalize(output.lightPos2);
 	output.lightPos3 = normalize(output.lightPos3);
 	output.lightPos4 = normalize(output.lightPos4);

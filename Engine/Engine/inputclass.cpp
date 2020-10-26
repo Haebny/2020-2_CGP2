@@ -25,6 +25,7 @@ void InputClass::Initialize()
 	num1 = true;
 	num2 = true;
 	num3 = true;
+	num4 = true;
 
 	return;
 }
@@ -68,6 +69,11 @@ void InputClass::SetKeyState(int key)
 		num3 = !num3;
 		break;
 	}
+	case 4:
+	{
+		num4 = !num4;
+		break;
+	}
 	default:
 		break;
 	}
@@ -82,16 +88,26 @@ bool InputClass::GetKeyState(int key)
 	case 1:
 	{
 		return num1;
+		break;
 	}
 	case 2:
 	{
 		return num2;
+		break;
 	}
 	case 3:
 	{
 		return num3;
-	}
-	default:
 		break;
 	}
+	case 4:
+	{
+		return num4;
+		break;
+	}
+	default:
+		return false;
+		break;
+	}
+
 }
