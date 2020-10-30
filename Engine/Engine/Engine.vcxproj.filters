@@ -51,6 +51,15 @@
     <ClCompile Include="bitmapclass.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="fontclass.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="fontshaderclass.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="textclass.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="texture.ps">
@@ -69,6 +78,12 @@
       <Filter>소스 파일</Filter>
     </None>
     <None Include="light.ps">
+      <Filter>소스 파일</Filter>
+    </None>
+    <None Include="font.vs">
+      <Filter>소스 파일</Filter>
+    </None>
+    <None Include="font.ps">
       <Filter>소스 파일</Filter>
     </None>
   </ItemGroup>
@@ -104,6 +119,15 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="bitmapclass.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="fontclass.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="fontshaderclass.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="textclass.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

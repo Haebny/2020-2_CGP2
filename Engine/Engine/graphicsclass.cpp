@@ -39,6 +39,7 @@ GraphicsClass::~GraphicsClass()
 bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 {
 	bool result;
+	D3DXMATRIX baseViewMatrix;
 
 	// D3DClass == Direct3D 기능들을 다루는 클래스
 	// Create the Direct3D object.
@@ -67,8 +68,8 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	}
 
 	// Set the initial position of the camera.
-	m_Camera->SetPosition(0.0f, 7.0f, -20.0f);
-	m_Camera->SetRotation(20.0f, 0.0f, 0.0f);
+	m_Camera->SetPosition(0.0f, 0.0f, 0.0f);
+	m_Camera->SetRotation(0.0f, 0.0f, 0.0f);
 
 	m_Models.push_back(floor);
 	m_Models.push_back(wood);
@@ -124,6 +125,9 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		MessageBox(hwnd, L"Could not initialize the bitmap object.", L"Error", MB_OK);
 		return false;
 	}
+
+	m_Camera->Render();
+	m_Camera->GetViewMatrix(baseViewMatrix);
 
 	// Create the light shader object.
 	m_LightShader = new LightShaderClass;
@@ -272,6 +276,8 @@ bool GraphicsClass::Frame(int key, bool state)
 	m_Light3->TurnOnPointLight(key, state);
 	m_Light4->TurnOnPointLight(key, state);
 
+	m_Camera->SetPosition(0.0f, 3.0f, -20.0f);
+
 	bool result;
 
 	static float rotation = 0.0f;
@@ -330,7 +336,7 @@ bool GraphicsClass::Render(float rotation, int key)
 
 	// Turn off the Z buffer to begin all 2D rendering.
 	m_D3D->TurnZBufferOff();	// Put the bitmap vertex and index buffers on the graphics pipeline to prepare them for drawing.
-	result = m_Bitmap->Render(m_D3D->GetDeviceContext(), 100, 100);
+	result = m_Bitmap->Render(m_D3D->GetDeviceContext(), 0, 0);
 	if (!result)
 	{
 		return false;
