@@ -335,12 +335,16 @@ bool GraphicsClass::Render(float rotation, int key)
 	m_D3D->GetOrthoMatrix(orthoMatrix);
 
 	// Turn off the Z buffer to begin all 2D rendering.
-	m_D3D->TurnZBufferOff();	// Put the bitmap vertex and index buffers on the graphics pipeline to prepare them for drawing.
+	m_D3D->TurnZBufferOff();
+
+	// Put the bitmap vertex and index buffers on the graphics pipeline to prepare them for drawing.
 	result = m_Bitmap->Render(m_D3D->GetDeviceContext(), 0, 0);
 	if (!result)
 	{
 		return false;
-	}	// Render the bitmap with the texture shader.
+	}
+
+	// Render the bitmap with the texture shader.
 	result = m_TextureShader->Render(m_D3D->GetDeviceContext(), m_Bitmap->GetIndexCount(),
 		worldMatrix, viewMatrix, orthoMatrix, m_Bitmap->GetTexture());
 	if (!result)
