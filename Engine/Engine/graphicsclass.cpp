@@ -3,7 +3,6 @@ GraphicsClass::GraphicsClass()
 {
 	m_D3D = 0;
 	m_Camera = 0;
-	//m_Model = 0;
 	m_LightShader = 0;
 	m_Light = 0;
 	m_TextureShader = 0;
@@ -25,7 +24,21 @@ GraphicsClass::GraphicsClass()
 	dog.tex_path = L"../Engine/data/textures/dog.dds";
 	dog.name = "dog";
 
-	m_switch = 0;
+	//m_switch = 0;
+
+	// Initializing position and rotation of camera.
+	PreX = 0.0f;
+	PreY = 0.0f;
+	
+	CamPos.x = 0.0f;
+	CamPos.y = 0.0f;
+	CamPos.z = 0.0f;
+
+	CamRot.x = 0.0f;
+	CamRot.y = 0.0f;
+	CamRot.z = 0.0f;
+
+	speed = 0.5f;
 }
 
 GraphicsClass::GraphicsClass(const GraphicsClass& other)
@@ -68,8 +81,8 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	}
 
 	// Set the initial position of the camera.
-	m_Camera->SetPosition(0.0f, 0.0f, 0.0f);
-	m_Camera->SetRotation(0.0f, 0.0f, 0.0f);
+	m_Camera->SetPosition(CamPos.x, CamPos.y, CamPos.z);
+	m_Camera->SetRotation(CamRot.x, CamRot.y, CamRot.z);
 
 	m_Models.push_back(floor);
 	m_Models.push_back(wood);
@@ -94,6 +107,11 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 			MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
 			return false;
 		}
+
+		if (m_Models.at(i).name == "dog")
+		{
+			m_Player = m_Models.at(i);
+		}
 	}
 
 	// Create the texture shader object.
@@ -110,6 +128,9 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
+	m_Camera->Render();
+	m_Camera->GetViewMatrix(baseViewMatrix);
+
 	// Create the bitmap object.
 	m_Bitmap = new BitmapClass;
 	if (!m_Bitmap)
@@ -119,15 +140,12 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 	// Initialize the bitmap object.
 	result = m_Bitmap->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight,
-		L"../Engine/data/seafloor.dds", 256, 256);
+		L"../Engine/data/textures/sky.dds", screenWidth, screenHeight);
 	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the bitmap object.", L"Error", MB_OK);
 		return false;
 	}
-
-	m_Camera->Render();
-	m_Camera->GetViewMatrix(baseViewMatrix);
 
 	// Create the light shader object.
 	m_LightShader = new LightShaderClass;
@@ -184,6 +202,16 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_Light4->SetDiffuseColor(0.0f, 0.0f, 1.0f, 1.0f);
 	m_Light4->SetPosition(7.0f, 3.0f, 0.0f);
 	m_Light4->StoreDiffuseColor();
+
+
+	// Set the position and rotation of camera.
+	CamPos.x = 0.0f;
+	CamPos.y = 3.0f;
+	CamPos.z = -20.0f;
+
+	CamRot.x = 0.0f;
+	CamRot.y = 0.0f;
+	CamRot.z = 0.0f;
 
 	return true;
 }
@@ -268,30 +296,21 @@ void GraphicsClass::Shutdown()
 	return;
 }
 
-bool GraphicsClass::Frame(int key, bool state)
+bool GraphicsClass::Frame(int mouseX, int mouseY, char key)
 {
-	// Update the light states
-	m_Light->TurnOnLight(key, state);
-	m_Light2->TurnOnPointLight(key, state);
-	m_Light3->TurnOnPointLight(key, state);
-	m_Light4->TurnOnPointLight(key, state);
-
-	m_Camera->SetPosition(0.0f, 3.0f, -20.0f);
-
+	m_key = key;
 	bool result;
 
-	static float rotation = 0.0f;
-
-	// Update the rotation variable each frame.
-	rotation += (float)D3DX_PI * 0.005f;
-	if (rotation > 360.0f)
-	{
-		rotation -= 360.0f;
-	}
+	// Set the location of the mouse.
+	//result = m_Text->SetMousePosition(mouseX, mouseY, m_D3D->GetDeviceContext());
+	//if (!result)
+	//{
+	//	return false;
+	//}
 
 	// Render the graphics scene.
 	// 그래픽 렌더링 수행
-	result = Render(rotation, key);
+	result = Render();
 	if (!result)
 	{
 		return false;
@@ -300,10 +319,10 @@ bool GraphicsClass::Frame(int key, bool state)
 	return true;
 }
 
-bool GraphicsClass::Render(float rotation, int key)
+bool GraphicsClass::Render()
 {
 	D3DXMATRIX viewMatrix, projectionMatrix, worldMatrix, orthoMatrix;
-	D3DXMATRIX translation, scale;
+	D3DXMATRIX translation, scale, rotation;
 	bool result;
 	D3DXVECTOR4 diffuseColors[3];
 	D3DXVECTOR4 lightPosition[3];
@@ -355,6 +374,7 @@ bool GraphicsClass::Render(float rotation, int key)
 	// Turn the Z buffer back on now that all 2D rendering has completed.
 	m_D3D->TurnZBufferOn();
 
+
 	// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
 	// 그래픽 파이프라인에 모델을 그림
 	for (int i = 0; i < m_Models.size(); i++)
@@ -363,41 +383,37 @@ bool GraphicsClass::Render(float rotation, int key)
 		{
 			// Transtlate object
 			D3DXMatrixTranslation(&translation, 0.0f, -2.0f, 0.0f);
-
 			worldMatrix *= translation;
 		}
 		if (m_Models.at(i).name == "wood")
 		{
-			// Rotate object
-			D3DXMatrixRotationX(&worldMatrix, rotation);
-
 			D3DXMatrixTranslation(&translation, -7.0f, 0.0f, 0.0f);
-
 			worldMatrix *= translation;
 		}
 		if (m_Models.at(i).name == "cat")
 		{
-			// Rotate object
-			D3DXMatrixRotationZ(&worldMatrix, rotation);
-
 			// 크기 조정
 			D3DXMatrixScaling(&scale, 0.1f, 0.1f, 0.1f);
 			worldMatrix *= scale;
-
-			D3DXMatrixTranslation(&translation, 7.0f, 1.0f, 0.0f);
-			worldMatrix *= translation;
 		}
 		if (m_Models.at(i).name == "dog")
 		{
-			// Rotate object
-			D3DXMatrixRotationY(&worldMatrix, rotation);
-
 			// 크기 조정
-			D3DXMatrixScaling(&scale, 0.15f, 0.15f, 0.15f);
+			D3DXMatrixScaling(&scale, 4.0f, 4.0f, 4.0f);
 			worldMatrix *= scale;
 
-			D3DXMatrixTranslation(&translation, 0.0f, -2.0f, 0.0f);
-			worldMatrix *= translation;
+			MovePlayer(m_key);
+
+			if (m_key == 'a' || 'd')
+			{
+				D3DXMatrixRotationY(&rotation, m_Player.rot.y);
+				worldMatrix *= rotation;
+			}
+			if (m_key == 'w' || 's')
+			{
+				D3DXMatrixTranslation(&translation, m_Player.pos.x, m_Player.pos.y, m_Player.pos.z);
+				worldMatrix *= translation;
+			}
 		}
 
 		m_Models.at(i).model->Render(m_D3D->GetDeviceContext());
@@ -410,8 +426,7 @@ bool GraphicsClass::Render(float rotation, int key)
 		if (!result)
 		{
 			return false;
-		}
-		
+		}		
 	}
 #pragma endregion
 
@@ -424,8 +439,64 @@ bool GraphicsClass::Render(float rotation, int key)
 	return true;
 }
 
-
-void GraphicsClass::SetSwitch(int key)
+void GraphicsClass::MovePlayer(char key)
 {
-	m_switch = key;
+	if (key == 'w')	{ GoFoward(); }
+
+	if (key == 'a')	{ TurnLeft(); }
+
+	if (key == 's') { GoBack();	}
+
+	if (key == 'd') { TurnRight(); }
+	
+	D3DXMATRIX translatePlayer;
+	D3DXMatrixTranslation(&translatePlayer, m_Player.pos.x, m_Player.pos.y, m_Player.pos.z);
+
+	//  카메라 이동
+	m_Camera->SetPosition(CamPos.x, CamPos.y, CamPos.z);
+	//m_Camera->SetRotation(CamRot.x, CamRot.y, CamRot.z);
+
+	return;
+}
+
+void GraphicsClass::GoFoward()
+{
+	D3DXMATRIX Dir;
+	D3DXMatrixIdentity(&Dir);
+	D3DXVECTOR3 Direction(0, 0, 1);
+	D3DXMatrixRotationYawPitchRoll(&Dir, m_Player.rot.y * 0.0174532925f, m_Player.rot.x * 0.0174532925f, m_Player.rot.z * 0.0174532925f);
+	D3DXVec3TransformCoord(&Direction, &Direction, &Dir);
+	m_Player.pos += Direction * speed;
+}
+
+void GraphicsClass::GoBack()
+{
+	D3DXMATRIX Dir;
+	D3DXMatrixIdentity(&Dir);
+	D3DXVECTOR3 Direction(0, 0, -1);
+	D3DXMatrixRotationYawPitchRoll(&Dir, m_Player.rot.y * 0.0174532925f, m_Player.rot.x * 0.0174532925f, m_Player.rot.z * 0.0174532925f);
+	D3DXVec3TransformCoord(&Direction, &Direction, &Dir);
+	m_Player.pos += Direction * speed;;
+}
+
+void GraphicsClass::TurnLeft()
+{
+	D3DXMATRIX Dir;
+	D3DXMatrixIdentity(&Dir);
+	D3DXVECTOR3 Direction(0, 1, 0);
+	D3DXMatrixRotationYawPitchRoll(&Dir, m_Player.rot.y * 0.0174532925f, m_Player.rot.x * 0.0174532925f, m_Player.rot.z * 0.0174532925f);
+	D3DXVec3TransformCoord(&Direction, &Direction, &Dir);
+
+	m_Player.rot -= Direction * speed * 0.01;
+}
+
+void GraphicsClass::TurnRight()
+{
+	D3DXMATRIX Dir;
+	D3DXMatrixIdentity(&Dir);
+	D3DXVECTOR3 Direction(0, -1, 0);
+	D3DXMatrixRotationYawPitchRoll(&Dir, m_Player.rot.y * 0.0174532925f, m_Player.rot.x * 0.0174532925f, m_Player.rot.z * 0.0174532925f);
+	D3DXVec3TransformCoord(&Direction, &Direction, &Dir);
+
+	m_Player.rot -= Direction * speed * 0.01;
 }

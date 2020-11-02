@@ -169,7 +169,6 @@
     <ClCompile Include="fontshaderclass.cpp" />
     <ClCompile Include="lightshaderclass.cpp" />
     <ClCompile Include="lightclass.cpp" />
-    <ClCompile Include="PhysXClass.cpp" />
     <ClCompile Include="textclass.cpp" />
     <ClCompile Include="textureshaderclass.cpp" />
     <ClCompile Include="d3dclass.cpp" />
@@ -197,7 +196,6 @@
     <ClInclude Include="fontshaderclass.h" />
     <ClInclude Include="lightshaderclass.h" />
     <ClInclude Include="lightclass.h" />
-    <ClInclude Include="PhysXClass.h" />
     <ClInclude Include="textclass.h" />
     <ClInclude Include="textureshaderclass.h" />
     <ClInclude Include="d3dclass.h" />

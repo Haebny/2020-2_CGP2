@@ -7,7 +7,8 @@
 #include "lightshaderclass.h"
 #include "lightclass.h"
 #include "textureshaderclass.h"
-#include "bitmapclass.h"
+#include "bitmapclass.h"
+
 #include <vector>
 
 // Globals
@@ -27,6 +28,8 @@ public:
 		const char* obj_path;
 		const WCHAR* tex_path;
 		const char* name;
+		D3DXVECTOR3 pos;
+		D3DXVECTOR3 rot;
 	};
 public:
 	GraphicsClass();
@@ -35,17 +38,20 @@ public:
 
 	bool Initialize(int, int, HWND);
 	void Shutdown();
-	bool Frame(int, bool);
+	bool Frame(int, int, char);
 
-	void SetSwitch(int);
+	void MovePlayer(char);
+	void GoFoward();
+	void GoBack();
+	void TurnLeft();
+	void TurnRight();
 
 private:
-	bool Render(float, int);
+	bool Render();
 
 private:
 	D3DClass* m_D3D;
 	CameraClass* m_Camera;
-	//ModelClass* m_Model;
 	vector<Model> m_Models;
 	Model dog, cat, wood, floor;
 	LightShaderClass* m_LightShader;
@@ -53,8 +59,13 @@ private:
 	LightClass *m_Light2, *m_Light3, *m_Light4;
 	TextureShaderClass* m_TextureShader;
 	BitmapClass* m_Bitmap;
+	Model m_Player;
 
-	int m_switch;
+	//int m_switch;
+	char m_key;
+	float PreX, PreY;
+	D3DXVECTOR3 CamPos, CamRot;
+	float speed;
 };
 
 #endif
