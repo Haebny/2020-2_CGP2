@@ -1,5 +1,5 @@
 #ifndef _GRAPHICSCLASS_H_
-#define _GRAPHICSCLASS_H_
+#define _GRAPHICSCLASS_H_ 
 
 #include "d3dclass.h"
 #include "cameraclass.h"
@@ -7,27 +7,28 @@
 #include "lightshaderclass.h"
 #include "lightclass.h"
 #include "textureshaderclass.h"
-#include "bitmapclass.h"
+#include "bitmapclass.h"
+#include "textclass.h"
+
 #include <vector>
+using namespace std;
 
 // Globals
-const bool FULL_SCREEN = false;			// 풀스크린 
-const bool VSYNC_ENABLED = true;
-const float SCREEN_DEPTH = 1000.0f;		// 스크린 깊이
+const bool FULL_SCREEN = false;
+const bool VSYNC_ENABLED = false;
+const float SCREEN_DEPTH = 1000.0f;
 const float SCREEN_NEAR = 0.1f;
 
-// Exercise 1-2: FULL_SCREEN = true;
-
-class GraphicsClass
-{
-public:
+class GraphicsClass {
+private:
 	struct Model
 	{
 		ModelClass* model;
-		const char* obj_path;
-		const WCHAR* tex_path;
-		const char* name;
+		char* obj_path;
+		WCHAR* tex_path;
+		char* name;
 	};
+
 public:
 	GraphicsClass();
 	GraphicsClass(const GraphicsClass&);
@@ -35,17 +36,17 @@ public:
 
 	bool Initialize(int, int, HWND);
 	void Shutdown();
-	bool Frame(int, bool);
+	bool Frame(int, int, int, int, float);
 
-	void SetSwitch(int);
-
-private:
-	bool Render(float, int);
+public:
+	int m_input;
 
 private:
-	D3DClass* m_D3D;
+	bool Render(float);
+
+private:
 	CameraClass* m_Camera;
-	//ModelClass* m_Model;
+	D3DClass* m_D3D;
 	vector<Model> m_Models;
 	Model dog, cat, wood, floor;
 	LightShaderClass* m_LightShader;
@@ -53,8 +54,7 @@ private:
 	LightClass *m_Light2, *m_Light3, *m_Light4;
 	TextureShaderClass* m_TextureShader;
 	BitmapClass* m_Bitmap;
-
-	int m_switch;
+	TextClass* m_Text;
 };
 
-#endif
+#endif 

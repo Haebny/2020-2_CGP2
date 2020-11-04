@@ -1,4 +1,4 @@
-﻿#include "fontclass.h"
+#include "fontclass.h"
 
 FontClass::FontClass()
 {
@@ -8,13 +8,15 @@ FontClass::FontClass()
 
 FontClass::FontClass(const FontClass& other)
 {
+
 }
 
 FontClass::~FontClass()
 {
+
 }
 
-bool FontClass::Initialize(ID3D11Device* device, const char* fontFilename, const WCHAR* textureFilename)
+bool FontClass::Initialize(ID3D11Device* device, char* fontFilename, WCHAR* textureFilename)
 {
 	bool result;
 
@@ -46,7 +48,7 @@ void FontClass::Shutdown()
 	return;
 }
 
-bool FontClass::LoadFontData(const char* filename)
+bool FontClass::LoadFontData(char* filename)
 {
 	ifstream fin;
 	int i;
@@ -86,6 +88,7 @@ bool FontClass::LoadFontData(const char* filename)
 
 	// Close the file.
 	fin.close();
+
 	return true;
 }
 
@@ -101,7 +104,7 @@ void FontClass::ReleaseFontData()
 	return;
 }
 
-bool FontClass::LoadTexture(ID3D11Device* device, const WCHAR* filename)
+bool FontClass::LoadTexture(ID3D11Device* device, WCHAR* filename)
 {
 	bool result;
 
@@ -118,6 +121,7 @@ bool FontClass::LoadTexture(ID3D11Device* device, const WCHAR* filename)
 	{
 		return false;
 	}
+
 	return true;
 }
 
@@ -139,7 +143,7 @@ ID3D11ShaderResourceView* FontClass::GetTexture()
 	return m_Texture->GetTexture();
 }
 
-void FontClass::BuildVertexArray(void* vertices, const char* sentence, float drawX, float drawY)
+void FontClass::BuildVertexArray(void* vertices, char* sentence, float drawX, float drawY)
 {
 	VertexType* vertexPtr;
 	int numLetters, index, i, letter;
@@ -170,33 +174,31 @@ void FontClass::BuildVertexArray(void* vertices, const char* sentence, float dra
 			vertexPtr[index].position = D3DXVECTOR3(drawX, drawY, 0.0f);
 			vertexPtr[index].texture = D3DXVECTOR2(m_Font[letter].left, 0.0f);
 			index++;
-			vertexPtr[index].position = D3DXVECTOR3((drawX + m_Font[letter].size), (drawY - 16), 0.0f); // Bottom right.
+			vertexPtr[index].position = D3DXVECTOR3((drawX + m_Font[letter].size), (drawY -
+				16), 0.0f); // Bottom right.
 			vertexPtr[index].texture = D3DXVECTOR2(m_Font[letter].right, 1.0f);
 			index++;
-
 			// Bottom left.
 			vertexPtr[index].position = D3DXVECTOR3(drawX, (drawY - 16), 0.0f);
 			vertexPtr[index].texture = D3DXVECTOR2(m_Font[letter].left, 1.0f);
 			index++;
-
 			// Second triangle in quad.
 			vertexPtr[index].position = D3DXVECTOR3(drawX, drawY, 0.0f); // Top left.
 			vertexPtr[index].texture = D3DXVECTOR2(m_Font[letter].left, 0.0f);
 			index++;
-
 			// Top right.
 			vertexPtr[index].position = D3DXVECTOR3(drawX + m_Font[letter].size, drawY, 0.0f);
 			vertexPtr[index].texture = D3DXVECTOR2(m_Font[letter].right, 0.0f);
 			index++;
-
 			// Bottom right.
-			vertexPtr[index].position = D3DXVECTOR3((drawX + m_Font[letter].size), (drawY - 16), 0.0f);
+			vertexPtr[index].position = D3DXVECTOR3((drawX + m_Font[letter].size), (drawY -
+				16), 0.0f);
 			vertexPtr[index].texture = D3DXVECTOR2(m_Font[letter].right, 1.0f);
 			index++;
-
 			// Update the x location for drawing by the size of the letter and one pixel.
 			drawX = drawX + m_Font[letter].size + 1.0f;
 		}
 	}
+
 	return;
 }
