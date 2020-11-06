@@ -7,8 +7,9 @@
 #include "lightshaderclass.h"
 #include "lightclass.h"
 #include "textureshaderclass.h"
-#include "bitmapclass.h"
+//#include "bitmapclass.h"
 #include "textclass.h"
+#include "skyboxclass.h"
 
 #include <vector>
 using namespace std;
@@ -38,6 +39,11 @@ public:
 	void Shutdown();
 	bool Frame(int, int, int, int, float);
 
+	void GoForward();
+	void GoLeft();
+	void GoBack();
+	void GoRight();
+
 public:
 	int m_input;
 
@@ -53,8 +59,13 @@ private:
 	LightClass* m_Light;
 	LightClass *m_Light2, *m_Light3, *m_Light4;
 	TextureShaderClass* m_TextureShader;
-	BitmapClass* m_Bitmap;
+	//BitmapClass* m_Bitmap;
 	TextClass* m_Text;
+	SkyboxClass* m_Skybox;
+
+	D3DXVECTOR3 CamPos, CamRot;
+	float speed;
+	float PreX, PreY;
 };
 
 #endif 

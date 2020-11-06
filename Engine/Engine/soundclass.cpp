@@ -29,7 +29,7 @@ bool SoundClass::Initialize(HWND hwnd)
 	}
 
 	// Load a wave audio file onto a secondary buffer.
-	result = LoadWaveFile("../Engine/data/sounds/sound01.wav", &m_secondaryBuffer1);
+	result = LoadWaveFile("../Engine/data/sounds/K.K.8Bit.wav", &m_secondaryBuffer1);
 	if (!result)
 	{
 		return false;

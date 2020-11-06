@@ -25,9 +25,9 @@ bool InputClass::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, int
 	m_screenWidth = screenWidth;
 	m_screenHeight = screenHeight;
 
-	// Initialize the location of the mouse on the screen.
-	m_mouseX = 0;
-	m_mouseY = 0;
+	// Initialize the location of the mouse to the middle of the screen.
+	m_mouseX = screenWidth/2;
+	m_mouseY = screenHeight/2;
 
 	// Initialize the main direct input interface.
 	result = DirectInput8Create(hinstance, DIRECTINPUT_VERSION, IID_IDirectInput8,
@@ -197,11 +197,12 @@ void InputClass::ProcessInput()
 	m_mouseX += m_mouseState.lX;
 	m_mouseY += m_mouseState.lY;
 
+	// FREE CAM을 위해 마우스 이동 제한을 해제합니다.
 	// Ensure the mouse location doesn't exceed the screen width or height.
-	if (m_mouseX < 0) { m_mouseX = 0; }
-	if (m_mouseY < 0) { m_mouseY = 0; }
-	if (m_mouseX > m_screenWidth) { m_mouseX = m_screenWidth; }
-	if (m_mouseY > m_screenHeight) { m_mouseY = m_screenHeight; }
+	//if (m_mouseX < 0) { m_mouseX = 0; }
+	//if (m_mouseY < 0) { m_mouseY = 0; }
+	//if (m_mouseX > m_screenWidth) { m_mouseX = m_screenWidth; }
+	//if (m_mouseY > m_screenHeight) { m_mouseY = m_screenHeight; }
 
 	return;
 }
@@ -223,3 +224,36 @@ void InputClass::GetMouseLocation(int& mouseX, int& mouseY)
 	mouseY = m_mouseY;
 	return;
 }
+
+bool InputClass::IsWDown()
+{
+	if (m_keyboardState[DIK_W] & 0x80)
+		return true;
+
+	return false;
+}
+
+bool InputClass::IsADown()
+{
+	if (m_keyboardState[DIK_A] & 0x80)
+		return true;
+
+	return false;
+}
+
+bool InputClass::IsSDown()
+{
+	if (m_keyboardState[DIK_S] & 0x80)
+		return true;
+
+	return false;
+}
+
+bool InputClass::IsDDown()
+{
+	if (m_keyboardState[DIK_D] & 0x80)
+		return true;
+
+	return false;
+}
+

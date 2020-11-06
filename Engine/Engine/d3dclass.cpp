@@ -546,10 +546,19 @@ ID3D11Device* D3DClass::GetDevice()
 	return m_device;
 }
 
-
 ID3D11DeviceContext* D3DClass::GetDeviceContext()
 {
 	return m_deviceContext;
+}
+
+ID3D11RenderTargetView* D3DClass::GetRenderTarget()
+{
+	return m_renderTargetView;
+}
+
+ID3D11DepthStencilView * D3DClass::GetDepthStencil()
+{
+	return m_depthStencilView;
 }
 
 void D3DClass::GetProjectionMatrix(D3DXMATRIX& projectionMatrix)

@@ -242,6 +242,22 @@ bool SystemClass::Frame()
 		return false;
 	}
 
+	if (m_Input->IsWDown())
+		m_Graphics->GoForward();
+
+	if (m_Input->IsADown())
+		m_Graphics->GoLeft();
+	
+	if (m_Input->IsSDown())
+		m_Graphics->GoBack();
+	
+	if (m_Input->IsDDown())
+		m_Graphics->GoRight();
+
+	// Game(main) Loop
+	//CollisionDetection->Update
+
+
 	// Get the location of the mouse from the input object,
 	m_Input->GetMouseLocation(mouseX, mouseY);
 
@@ -326,6 +342,7 @@ void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight) {
 
 	// Bring the window up on the screen and set it as main focus.
 	ShowWindow(m_hwnd, SW_SHOW);
+	UpdateWindow(m_hwnd);
 	SetForegroundWindow(m_hwnd);
 	SetFocus(m_hwnd); 
 
@@ -366,6 +383,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
 {	
 	switch (umessage)
 	{
+		// Windows message pump
 		// Check if the window is being destroyed.
 		case WM_DESTROY:
 		{
