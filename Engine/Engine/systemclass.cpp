@@ -31,7 +31,8 @@ bool SystemClass::Initialize()
 	screenHeight = 0; 
 
 	// Initialize the windows api.
-	InitializeWindows(screenWidth, screenHeight); 
+	InitializeWindows(screenWidth, screenHeight);
+	UpdateWindow(m_hwnd);
 
 	// Create the input object.  This object will be used to handle reading the keyboard input from the user.
 	m_Input = new InputClass;
@@ -242,6 +243,7 @@ bool SystemClass::Frame()
 		return false;
 	}
 
+	// Check the Moving Camera Inputs
 	if (m_Input->IsWDown())
 		m_Graphics->GoForward();
 
@@ -254,9 +256,20 @@ bool SystemClass::Frame()
 	if (m_Input->IsDDown())
 		m_Graphics->GoRight();
 
-	// Game(main) Loop
-	//CollisionDetection->Update
+	// Check the Player Movement Inputs
+	if (m_Input->IsLeftDown())
+		m_Graphics->MoveLeft();
+	
+	if (m_Input->IsRightDown())
+		m_Graphics->MoveRight();
 
+	// Check the player wants to restarting Game
+	if (m_Input->IsEnterDown())
+		m_Graphics->RestartGame();
+
+	// Check the player wants to starting Game
+	if (m_Input->IsSpacebarDown() && !m_Graphics->GetResult())
+		m_Graphics->StartGame();
 
 	// Get the location of the mouse from the input object,
 	m_Input->GetMouseLocation(mouseX, mouseY);
@@ -342,7 +355,6 @@ void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight) {
 
 	// Bring the window up on the screen and set it as main focus.
 	ShowWindow(m_hwnd, SW_SHOW);
-	UpdateWindow(m_hwnd);
 	SetForegroundWindow(m_hwnd);
 	SetFocus(m_hwnd); 
 

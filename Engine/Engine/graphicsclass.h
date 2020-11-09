@@ -44,6 +44,24 @@ public:
 	void GoBack();
 	void GoRight();
 
+	void MoveLeft();
+	void MoveRight();
+
+	void EnemyMoves();
+	void PepsiMoves();
+
+	int GetPlayerScore();
+	int GetEnemyScore();
+
+	void IncreasePlayerScore();
+	void IncreaseEnemyScore();
+
+	void ShowGameResult();
+	void RestartGame();
+	void StartGame();
+
+	bool GetResult();
+
 public:
 	int m_input;
 
@@ -54,7 +72,7 @@ private:
 	CameraClass* m_Camera;
 	D3DClass* m_D3D;
 	vector<Model> m_Models;
-	Model dog, cat, wood, floor;
+	Model dog, cat, woods, cushions, table, floor, d_cup, c_cup, pepsi;
 	LightShaderClass* m_LightShader;
 	LightClass* m_Light;
 	LightClass *m_Light2, *m_Light3, *m_Light4;
@@ -63,9 +81,15 @@ private:
 	TextClass* m_Text;
 	SkyboxClass* m_Skybox;
 
-	D3DXVECTOR3 CamPos, CamRot;
-	float speed;
+private:
+	D3DXVECTOR3 m_CamPos, m_CamRot;
 	float PreX, PreY;
+
+	D3DXVECTOR3 m_PlaPos, m_EnePos, m_PepPos, m_PepRot;
+	D3DXVECTOR3 lastColPos;
+	bool start, turn, result;
+	float camSpeed, playerSpeed, enemySpeed, pepsiSpeed;
+	int p_score, e_score;
 };
 
 #endif 

@@ -26,6 +26,11 @@ public:
 	bool IsSDown();
 	bool IsDDown();
 
+	bool IsLeftDown();
+	bool IsRightDown();
+	bool IsEnterDown();
+	bool IsSpacebarDown();
+
 private:
 	bool ReadKeyboard();
 	bool ReadMouse();

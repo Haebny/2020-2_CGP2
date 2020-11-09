@@ -50,7 +50,7 @@ public:
 	~SkyboxClass();
 
 	bool Initialize(ID3D11Device* device, ID3D11DeviceContext* d3d11DevCon, HWND hwnd);
-	void Frame(D3DXVECTOR3 CamPos);
+	void Frame(D3DXVECTOR3 m_CamPos);
 	void Render(ID3D11DeviceContext* deviceContext, 
 		ID3D11RenderTargetView* renderTargetView, ID3D11DepthStencilView* depthStencilView, 
 		D3DXMATRIX camView, D3DXMATRIX camProjection);

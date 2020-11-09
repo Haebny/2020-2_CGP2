@@ -143,7 +143,7 @@ bool SkyboxClass::Initialize(ID3D11Device* d3d11Device, ID3D11DeviceContext* d3d
 	// we are loading a texture cube.
 	ID3D11Texture2D* SMTexture = 0;
 
-	result = D3DX11CreateTextureFromFile(d3d11Device, L"../Engine/data/textures/skymap.dds", &loadSMInfo, 0, (ID3D11Resource**)&SMTexture, 0);
+	result = D3DX11CreateTextureFromFile(d3d11Device, L"../Engine/data/textures/lake.dds", &loadSMInfo, 0, (ID3D11Resource**)&SMTexture, 0);
 	if (FAILED(result))
 	{
 		MessageBox(hwnd, L"Could not Create Skybox Texture.", L"Error", MB_OK);
@@ -370,7 +370,7 @@ bool SkyboxClass::CreateSphere(ID3D11Device* d3d11Device, int LatLines, int Long
 	return true;
 }
 
-void SkyboxClass::Frame(D3DXVECTOR3 CamPos)
+void SkyboxClass::Frame(D3DXVECTOR3 m_CamPos)
 {
 	//Reset sphereWorld
 	D3DXMatrixIdentity(&sphereWorld);
@@ -379,7 +379,7 @@ void SkyboxClass::Frame(D3DXVECTOR3 CamPos)
 	D3DXMatrixScaling(&Scale, 5.0f, 5.0f, 5.0f);
 
 	//Make sure the sphere is always centered around camera
-	D3DXMatrixTranslation(&Translation, CamPos.x, CamPos.y, CamPos.z);
+	D3DXMatrixTranslation(&Translation, m_CamPos.x, m_CamPos.y, m_CamPos.z);
 
 	//Set sphereWorld's world space using the transformations
 	sphereWorld = Scale * Translation;

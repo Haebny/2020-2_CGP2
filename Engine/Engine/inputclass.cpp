@@ -52,7 +52,7 @@ bool InputClass::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, int
 	}
 
 	// Set the cooperative level of the keyboard to not share with other programs.
-	result = m_keyboard->SetCooperativeLevel(hwnd, DISCL_FOREGROUND | DISCL_EXCLUSIVE);
+	result = m_keyboard->SetCooperativeLevel(hwnd, DISCL_BACKGROUND | DISCL_NONEXCLUSIVE);	// DISCL_FOREGROUND | DISCL_EXCLUSIVE로 설정하면 키보드 및 마우스 출력이 안됨
 	if (FAILED(result))
 	{
 		return false;
@@ -79,7 +79,7 @@ bool InputClass::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, int
 	}
 
 	// Set the cooperative level of the mouse to share with other programs.
-	result = m_mouse->SetCooperativeLevel(hwnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
+	result = m_mouse->SetCooperativeLevel(hwnd, DISCL_BACKGROUND | DISCL_NONEXCLUSIVE);
 	if (FAILED(result))
 	{
 		return false;
@@ -254,6 +254,34 @@ bool InputClass::IsDDown()
 	if (m_keyboardState[DIK_D] & 0x80)
 		return true;
 
+	return false;
+}
+
+bool InputClass::IsLeftDown()
+{
+	if (m_keyboardState[DIK_LEFTARROW] & 0x80)
+		return true;
+	return false;
+}
+
+bool InputClass::IsRightDown()
+{
+	if (m_keyboardState[DIK_RIGHTARROW] & 0x80)
+		return true;
+	return false;
+}
+
+bool InputClass::IsEnterDown()
+{
+	if (m_keyboardState[DIK_RETURN] & 0x80)
+		return true;
+	return false;
+}
+
+bool InputClass::IsSpacebarDown()
+{
+	if (m_keyboardState[DIK_SPACE] & 0x80)
+		return true;
 	return false;
 }
 
