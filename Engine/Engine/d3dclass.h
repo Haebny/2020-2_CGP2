@@ -14,6 +14,9 @@
 #include <d3dcommon.h>		// directX에서 자주 쓰이는 함수
 #include <d3d11.h>
 #include <d3dx10math.h>
+#include <wrl.h>
+
+using namespace Microsoft::WRL;
 
 // 캡슐화된 클래스
 class D3DClass
@@ -43,6 +46,9 @@ public:
 
 	void TurnOnAlphaBlending();
 	void TurnOffAlphaBlending();
+
+	bool CreateVertexBuffer(const void*, unsigned int, ComPtr<ID3D11Buffer>&);
+	bool CreateIndexBuffer(const void*, unsigned int, ComPtr<ID3D11Buffer>&);
 
 private:
 	bool m_vsync_enabled;

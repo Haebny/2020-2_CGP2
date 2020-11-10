@@ -686,4 +686,52 @@ void D3DClass::TurnOffAlphaBlending()
 	return;
 }
 
+bool D3DClass::CreateVertexBuffer(const void* buffer, unsigned int bufferByteSize, ComPtr<ID3D11Buffer>& vertexBuffer)
+{
+	// Buffer를 Vertex Buffer로 설정한다.
+	D3D11_BUFFER_DESC vertexBufferDescription = { };
+	vertexBufferDescription.Usage = D3D11_USAGE_IMMUTABLE;
+	vertexBufferDescription.ByteWidth = bufferByteSize;
+	vertexBufferDescription.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	vertexBufferDescription.CPUAccessFlags = 0;
+	vertexBufferDescription.MiscFlags = 0;
+	vertexBufferDescription.StructureByteStride = 0;
+
+	// Vertex Buffer의 초기값을 지정한다.
+	D3D11_SUBRESOURCE_DATA vertexBufferData = { };
+	vertexBufferData.pSysMem = buffer;
+
+	// Vertex Buffer를 생성한다.
+	if (FAILED(m_device->CreateBuffer(&vertexBufferDescription, &vertexBufferData, vertexBuffer.ReleaseAndGetAddressOf())))
+	{
+		return false;
+	}
+
+	return true;
+}
+
+bool D3DClass::CreateIndexBuffer(const void* buffer, unsigned int bufferByteSize, ComPtr<ID3D11Buffer>& indexBuffer)
+{
+	// Set buffer to index buffer.
+	D3D11_BUFFER_DESC indexBufferDescription = { };
+	indexBufferDescription.Usage = D3D11_USAGE_IMMUTABLE;
+	indexBufferDescription.ByteWidth = bufferByteSize;
+	indexBufferDescription.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	indexBufferDescription.CPUAccessFlags = 0;
+	indexBufferDescription.MiscFlags = 0;
+	indexBufferDescription.StructureByteStride = 0;
+
+	// Initialize the index buffer.
+	D3D11_SUBRESOURCE_DATA indexBufferData = { };
+	indexBufferData.pSysMem = buffer;
+
+	// Create index buffer.
+	if (FAILED(m_device->CreateBuffer(&indexBufferDescription, &indexBufferData, indexBuffer.ReleaseAndGetAddressOf())))
+	{
+		return false;
+	}
+
+	return true;
+}
+
 #pragma endregion

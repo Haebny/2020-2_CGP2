@@ -1,0 +1,26 @@
+// Globals
+Texture2D shaderTexture;		// 텍스쳐 자원: 모델에 텍스쳐를 그릴 때 사용
+SamplerState SampleType;		// 샘플러 상태: 도형에 셰이딩-> 어떻게 텍스쳐의 픽셀이 씌워지는지를 수정할 수 있게(텍스쳐 필터링 관련)
+
+// Type definitions
+struct PixelInputType
+{
+	float4 position : SV_POSITION;
+	float4 tex : TEXCOORD0;
+};
+
+// Pixel Shader
+// ㄴ정점 셰이더의 결과물을 픽셀 셰이더에서 사용
+// 픽셀 셰이더: 화면에 그려지는 도형의 각 픽셀들을 실제로 그림
+float4 TexturePixelShader(PixelInputType input) : SV_TARGET
+{
+	float4 textureColor;
+	
+	// Sample the pixel color from the texture using the sampler at this texture coordinate location.
+	// SampleType: 외부에서 지정된 타입
+	// input.tex: vertex shader에서 넘어온 데이터
+	// shaderTexture.Sample(): HSLS 제공 함수
+	textureColor = shaderTexture.Sample(SampleType, input.tex);
+
+	return textureColor;
+}

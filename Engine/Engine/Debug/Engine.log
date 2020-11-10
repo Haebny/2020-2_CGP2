@@ -1,7 +1,0 @@
-﻿  graphicsclass.cpp
-d:\해빈\github\2020-2_cgp2\engine\engine\graphicsclass.cpp(94): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
-d:\해빈\github\2020-2_cgp2\engine\engine\graphicsclass.cpp(270): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
-d:\해빈\github\2020-2_cgp2\engine\engine\graphicsclass.cpp(380): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
-d:\해빈\github\2020-2_cgp2\engine\engine\graphicsclass.cpp(471): warning C4305: '인수': 'double'에서 'FLOAT'(으)로 잘립니다.
-d:\해빈\github\2020-2_cgp2\engine\engine\graphicsclass.cpp(494): warning C4305: '인수': 'double'에서 'FLOAT'(으)로 잘립니다.
-  Engine.vcxproj -> D:\해빈\GitHub\2020-2_CGP2\Engine\Debug\Engine.exe

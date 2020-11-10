@@ -23,7 +23,7 @@ bool TextureShaderClass::Initialize(ID3D11Device* device, HWND hwnd)
 
 	// Initialize the vertex and pixel shaders.
 	// 셰이더 초기화 함수 호출(셰이더 파일의 이름을 넘김)
-	result = InitializeShader(device, hwnd, L"../Engine/texture.vs", L"../Engine/texture.ps");
+	result = InitializeShader(device, hwnd, L"../Engine/Shader/texture.vs", L"../Engine/Shader/texture.ps");
 	if (!result)
 	{
 		return false;

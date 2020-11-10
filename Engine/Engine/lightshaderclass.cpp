@@ -27,7 +27,7 @@ bool LightShaderClass::Initialize(ID3D11Device* device, HWND hwnd)
 
 	// Initialize the vertex and pixel shaders.
 	// 셰이더 초기화 함수 호출(셰이더 파일의 이름을 넘김)
-	result = InitializeShader(device, hwnd, L"../Engine/light.vs", L"../Engine/light.ps");
+	result = InitializeShader(device, hwnd, L"../Engine/Shader/light.vs", L"../Engine/Shader/light.ps");
 	if (!result)
 	{
 		return false;
