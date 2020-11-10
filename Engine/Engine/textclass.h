@@ -1,7 +1,7 @@
 #ifndef _TEXTCLASS_H_
 #define _TEXTCLASS_H_
 
-#define MAX_SENTENCES 10
+#define MAX_SENTENCES 20
 
 #include "fontclass.h"
 #include "fontshaderclass.h"
@@ -38,6 +38,10 @@ public:
 
 	bool SetScore(int, int, ID3D11DeviceContext*);
 	bool SetResult(int, ID3D11DeviceContext*);
+
+#ifdef DEBUG
+	bool SetPos(float, float, float, float, float, float, ID3D11DeviceContext*);
+#endif
 
 private:
 	bool InitializeSentence(SentenceType**, int, ID3D11Device*);

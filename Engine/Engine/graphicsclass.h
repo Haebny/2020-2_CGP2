@@ -49,6 +49,7 @@ public:
 
 	void EnemyMoves();
 	void PepsiMoves();
+	bool CheckCollision();
 
 	int GetPlayerScore();
 	int GetEnemyScore();
@@ -85,10 +86,9 @@ private:
 	D3DXVECTOR3 m_CamPos, m_CamRot;
 	float PreX, PreY;
 
-	D3DXVECTOR3 m_PlaPos, m_EnePos, m_PepPos, m_PepRot;
-	D3DXVECTOR3 lastColPos;
-	bool start, turn, result;
-	float camSpeed, playerSpeed, enemySpeed, pepsiSpeed;
+	D3DXVECTOR3 m_PlaPos, m_EnePos, m_PepPos, m_PepDir;
+	bool start, turn, m_result, isPlayerWin;
+	float camSpeed, playerSpeed, enemySpeed, pepsiSpeed, angle;
 	int p_score, e_score;
 };
 

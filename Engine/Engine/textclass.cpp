@@ -468,13 +468,14 @@ bool TextClass::SetScore(int playerScore, int enemyScore, ID3D11DeviceContext *d
 	char scoreString[16];
 	char playerString[16];
 	char enemyString[16];
+	char startString[32];
 	bool result;
 
 	// Setup the player score string.
 	strcpy_s(scoreString, "Score");
 
 	// Update the sentence vertex buffer with the new string information.
-	result = UpdateSentence(m_sentences[4], scoreString, m_screenWidth/2, 60, 0.0f, 0.0f, 0.0f, deviceContext);
+	result = UpdateSentence(m_sentences[4], scoreString, m_screenWidth/2, 60, 1.0f, 1.0f, 1.0f, deviceContext);
 	if (!result)
 	{
 		return false;
@@ -509,6 +510,15 @@ bool TextClass::SetScore(int playerScore, int enemyScore, ID3D11DeviceContext *d
 		return false;
 	}
 
+	strcpy_s(startString, "Press Spacebar to Start Game!");
+
+	// Update the sentence vertex buffer with the new string information.
+	result = UpdateSentence(m_sentences[7], startString, (m_screenWidth/7) * 3, 100, 0.5f, 1.0f, 1.0f, deviceContext);
+	if (!result)
+	{
+		return false;
+	}
+
 	return true;
 }
 
@@ -523,7 +533,7 @@ bool TextClass::SetResult(int num, ID3D11DeviceContext *deviceContext)
 		// Setup the player win string.
 		strcpy_s(resultString, "W I N !!!");
 
-		result = UpdateSentence(m_sentences[7], resultString, m_screenWidth/2, 20, 0.7f, 0.0f, 0.7f, deviceContext);
+		result = UpdateSentence(m_sentences[8], resultString, m_screenWidth/2, 20, 0.7f, 0.0f, 0.7f, deviceContext);
 		if (!result)
 		{
 			return false;
@@ -534,7 +544,7 @@ bool TextClass::SetResult(int num, ID3D11DeviceContext *deviceContext)
 		// Setup the player win string.
 		strcpy_s(resultString, "L O S E ...");
 
-		result = UpdateSentence(m_sentences[7], resultString, m_screenWidth/2, 20, 0.5f, 0.0f, 0.5f, deviceContext);
+		result = UpdateSentence(m_sentences[8], resultString, m_screenWidth/2, 20, 0.5f, 0.0f, 0.5f, deviceContext);
 		if (!result)
 		{
 			return false;
@@ -542,12 +552,27 @@ bool TextClass::SetResult(int num, ID3D11DeviceContext *deviceContext)
 		break;
 	
 	default:
+		// Erase the result string.
+		strcpy_s(resultString, "");
+
+		result = UpdateSentence(m_sentences[8], resultString, m_screenWidth / 2, 20, 0.5f, 0.0f, 0.5f, deviceContext);
+		if (!result)
+		{
+			return false;
+		}
 		break;
 	}
 
-	strcpy_s(resultString, "Press Enter to Restart!");
+	if (num == -1)
+	{
+		strcpy_s(resultString, "");
+	}
+	else
+	{
+		strcpy_s(resultString, "Press Enter to Restart!");
+	}
 
-	result = UpdateSentence(m_sentences[8], resultString, m_screenWidth/2, 40, 1.0f, 0.0f, 0.0f, deviceContext);
+	result = UpdateSentence(m_sentences[9], resultString, m_screenWidth / 2, 40, 1.0f, 0.0f, 0.0f, deviceContext);
 	if (!result)
 	{
 		return false;
@@ -555,3 +580,98 @@ bool TextClass::SetResult(int num, ID3D11DeviceContext *deviceContext)
 
 	return true;
 }
+
+#ifdef DEBUG
+bool TextClass::SetPos(float pepX, float pepZ, float plaX, float plaZ, float eneX, float eneZ, ID3D11DeviceContext *deviceContext)
+{
+	char tempString[16];
+	char printString[16];
+	bool result;
+
+	// Convert the mouseX integer to string format.
+	_itoa_s((int)pepX, tempString, 10);
+
+	// Setup the mouseX string.
+	strcpy_s(printString, "Pepsi X: ");
+	strcat_s(printString, tempString);
+
+	// Update the sentence vertex buffer with the new string information.
+	result = UpdateSentence(m_sentences[10], printString, 20, 100, 1.0f, 1.0f, 1.0f, deviceContext);
+	if (!result)
+	{
+		return false;
+	}
+
+	// Convert the mouseX integer to string format.
+	_itoa_s((int)pepZ, tempString, 10);
+
+	// Setup the mouseX string.
+	strcpy_s(printString, "Pepsi Z: ");
+	strcat_s(printString, tempString);
+
+	// Update the sentence vertex buffer with the new string information.
+	result = UpdateSentence(m_sentences[11], printString, 20, 120, 1.0f, 1.0f, 1.0f, deviceContext);
+	if (!result)
+	{
+		return false;
+	}
+
+	// Convert the mouseX integer to string format.
+	_itoa_s((int)plaX, tempString, 10);
+
+	// Setup the mouseX string.
+	strcpy_s(printString, "Player X: ");
+	strcat_s(printString, tempString);
+
+	// Update the sentence vertex buffer with the new string information.
+	result = UpdateSentence(m_sentences[12], printString, 20, 140, 1.0f, 1.0f, 1.0f, deviceContext);
+	if (!result)
+	{
+		return false;
+	}
+
+	// Convert the mouseX integer to string format.
+	_itoa_s((int)plaZ, tempString, 10);
+
+	// Setup the mouseX string.
+	strcpy_s(printString, "Player Z: ");
+	strcat_s(printString, tempString);
+
+	// Update the sentence vertex buffer with the new string information.
+	result = UpdateSentence(m_sentences[13], printString, 20, 160, 1.0f, 1.0f, 1.0f, deviceContext);
+	if (!result)
+	{
+		return false;
+	}
+
+	// Convert the mouseX integer to string format.
+	_itoa_s((int)eneX, tempString, 10);
+
+	// Setup the mouseX string.
+	strcpy_s(printString, "Enemy X: ");
+	strcat_s(printString, tempString);
+
+	// Update the sentence vertex buffer with the new string information.
+	result = UpdateSentence(m_sentences[14], printString, 20, 180, 1.0f, 1.0f, 1.0f, deviceContext);
+	if (!result)
+	{
+		return false;
+	}
+
+	// Convert the mouseX integer to string format.
+	_itoa_s((int)eneZ, tempString, 10);
+
+	// Setup the mouseX string.
+	strcpy_s(printString, "Enemy Z: ");
+	strcat_s(printString, tempString);
+
+	// Update the sentence vertex buffer with the new string information.
+	result = UpdateSentence(m_sentences[15], printString, 20, 200, 1.0f, 1.0f, 1.0f, deviceContext);
+	if (!result)
+	{
+		return false;
+	}
+
+	return true;
+}
+#endif

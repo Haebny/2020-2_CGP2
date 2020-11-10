@@ -1,5 +1,5 @@
 #include "graphicsclass.h"
-
+#include <ctime>
 
 GraphicsClass::GraphicsClass()
 {
@@ -49,20 +49,24 @@ GraphicsClass::GraphicsClass()
 	pepsi.name = "pepsi";
 
 	camSpeed = 0.005f;
-	playerSpeed = 0.0025f;
-	enemySpeed = 0.0009f;
+	playerSpeed = 0.0015f;
+	enemySpeed = 0.0007f;
 	pepsiSpeed = 0.001f;
 
 	m_PlaPos.x = 5.0f;
 	m_PlaPos.z = 0.0f;
 	m_EnePos.x = -5.0f;
 	m_EnePos.z = 0.0f;
-	
-	D3DXVECTOR3 initVec(0.0f, 0.0f, 0.0f);
-	lastColPos = initVec;
+	m_PepPos.x = 0.0f;
+	m_PepPos.z = 0.0f;
+
+	m_PepDir.x = 1.0f;
+	m_PepDir.z = 1.0f;
 
 	start = false;
-	result = false;
+	m_result = false;
+
+	srand((unsigned int)time(NULL));
 }
 
 
@@ -175,7 +179,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 	// Initialize the light object.
 	m_Light->SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
-	m_Light->SetDiffuseColor(0.5f, 0.5f, 0.5f, 1.0f);
+	m_Light->SetDiffuseColor(0.25f, 0.25f, 0.25f, 1.0f);
 	m_Light->SetDirection(0.0f, -1.0f, 1.0f);
 	m_Light->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
 	m_Light->SetSpecularPower(32.0f);
@@ -258,8 +262,6 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_CamRot.x = 0.0f;
 	m_CamRot.y = 0.0f;
 	m_CamRot.z = 0.0f;
-
-	m_PepRot.y = 20.0f;
 
 	return true;
 }
@@ -388,6 +390,15 @@ bool GraphicsClass::Frame(int mouseX, int mouseY, int fps, int cpu, float frameT
 		return false;
 	}
 
+#ifdef DEBUG
+	// Set the location of the mouse.
+	result = m_Text->SetPos(m_PepPos.x, m_PepPos.z, m_PlaPos.x, m_PlaPos.z, m_EnePos.x, m_EnePos.z, m_D3D->GetDeviceContext());
+	if (!result)
+	{
+		return false;
+	}
+#endif 
+
 	// If player win or lose, show the Result of the game.
 	if ((p_score >= 3 || e_score >= 3) && result)
 	{
@@ -395,6 +406,8 @@ bool GraphicsClass::Frame(int mouseX, int mouseY, int fps, int cpu, float frameT
 	}
 
 	PepsiMoves();
+	m_Light3->SetPosition(m_PepPos.x, 5.0f, m_PepPos.z);
+
 	EnemyMoves();
 
 	static float rotation = 0.0f;
@@ -518,6 +531,13 @@ bool GraphicsClass::Render(float rotation)
 
 		if (m_Models.at(i).name == "cat")
 		{
+			if (m_result && isPlayerWin)
+			{
+				if (angle <= 1.25f)
+					angle += 0.0001;
+				D3DXMatrixRotationX(&worldMatrix, angle);
+			}
+
 			// Resizing the model object.
 			D3DXMatrixScaling(&scale, 0.5f, 0.5f, 0.5f);
 			worldMatrix *= scale;
@@ -528,6 +548,13 @@ bool GraphicsClass::Render(float rotation)
 
 		if (m_Models.at(i).name == "dog")
 		{
+			if (m_result && !isPlayerWin)
+			{
+				if (angle <= 1.25f)
+					angle += 0.0001;
+				D3DXMatrixRotationX(&worldMatrix, angle);
+			}
+
 			// Resizing the model object.
 			D3DXMatrixScaling(&scale, 0.5f, 0.5f, 0.5f);
 			worldMatrix *= scale;
@@ -664,20 +691,16 @@ void GraphicsClass::MoveRight()
 
 void GraphicsClass::EnemyMoves()
 {
-	//// If the pepsi object is going to player, enemy object doesn't need to move.
-	//if (turn)
-	//	return;
-
 	if (m_EnePos.z <= m_PepPos.z)
 		m_EnePos.z += enemySpeed;
 	else
 		m_EnePos.z -= enemySpeed;
 
-	//if (m_EnePos.z < -3.0f)
-	//	m_EnePos.z = -3.0f;
+	if (m_EnePos.z < -3.0f)
+		m_EnePos.z = -3.0f;
 
-	//if (m_EnePos.z > 3.0f)
-	//	m_EnePos.z = 3.0f;
+	else if (m_EnePos.z > 3.0f)
+		m_EnePos.z = 3.0f;
 }
 
 void GraphicsClass::PepsiMoves()
@@ -685,65 +708,31 @@ void GraphicsClass::PepsiMoves()
 	if (!start)
 		return;
 
-	D3DXMATRIX Dir;
-	D3DXMatrixIdentity(&Dir);
-	D3DXVECTOR3 Direction(1.0f, 0.0f, 1.0f);
-	D3DXMatrixRotationYawPitchRoll(&Dir, m_PepRot.y * 0.0174532925f, m_PepRot.x * 0.0174532925f, m_PepRot.z * 0.0174532925f);
-	D3DXVec3TransformCoord(&Direction, &Direction, &Dir);
+	// Pepsi moves to player or enemy.
+	m_PepPos += m_PepDir * pepsiSpeed;
 
-	// Pepsi object moves to player.
-	if (turn)
-	{
-		m_PepPos += Direction * pepsiSpeed;
-	}
-	// Pepsi object moves to enemy.
-	else
-	{
-		m_PepPos -= Direction * pepsiSpeed;
-	}
 
-	// Collision
-	if (turn && m_PepPos.x >= m_PlaPos.x - 1.0f)
+	// Check the pepsi collided with player or enemy.
+	bool collision = CheckCollision();
+
+	if (collision)
 	{
-		// Player 기준
-		if (m_PepPos.z <= m_PlaPos.z + 2.0f || m_PepPos.z >= m_PlaPos.z - 2.0f)
+		turn = !turn;
+		int sign = rand() % 2;
+		if (sign == 0)
 		{
-			turn = !turn;
-
-			D3DXVECTOR3 bounceDir(-(lastColPos.x - m_PepRot.x), 0.0f, -(lastColPos.z - m_PepRot.z));
-			m_PepRot = bounceDir;
-			lastColPos = m_PepPos;
+			m_PepDir.z = -m_PepDir.z;
 		}
-	}
-	else if (!turn && m_PepPos.x >= m_EnePos.x - 1.0f)
-	{
-		// Enemy 기준
-		if (m_PepPos.z >= m_EnePos.z - 2.0f || m_PepPos.z <= m_EnePos.z + 2.0f)
-		{
-			turn = !turn;
-
-			D3DXVECTOR3 bounceDir(-(lastColPos.x - m_PepRot.x), 0.0f, -(lastColPos.z - m_PepRot.z));
-			m_PepRot = bounceDir;
-			lastColPos = m_PepPos;
-		}
+		m_PepDir.x = -m_PepDir.x;
 	}
 
-	// Restricts Pepsi from going out of range.
-	if (m_PepPos.z < -3.0f)
+	if (m_PepPos.z < -3.0f || m_PepPos.z > 3.0f)
 	{
-		D3DXVECTOR3 bounceDir(-(lastColPos.x - m_PepRot.x), 0.0f, -(lastColPos.z - m_PepRot.z));
-		m_PepRot = bounceDir;
-		lastColPos = m_PepPos;
-	}
-	else if (m_PepPos.z > 3.0f)
-	{
-		D3DXVECTOR3 bounceDir(-(lastColPos.x - m_PepRot.x), 0.0f, -(lastColPos.z - m_PepRot.z));
-		m_PepRot = bounceDir;
-		lastColPos = m_PepPos;
+		m_PepDir.z = -m_PepDir.z;
 	}
 
 	// Scoring
-	if (m_PepPos.x >= 7.0f)
+	if (m_PepPos.x >= 6.0f)
 	{
 		start = false;
 
@@ -755,7 +744,7 @@ void GraphicsClass::PepsiMoves()
 		IncreaseEnemyScore();
 		turn = true;
 	}
-	else if (m_PepPos.x <= -7.0f)
+	else if (m_PepPos.x <= -6.0f)
 	{
 		start = false;
 
@@ -767,6 +756,31 @@ void GraphicsClass::PepsiMoves()
 		IncreasePlayerScore();
 		turn = false;
 	}
+}
+
+bool GraphicsClass::CheckCollision()
+{
+	// Check if the pepsi collided with player.
+	// 플레이어를 향해서 어느정도 근접했을 때
+	if (turn && m_PepPos.x >= m_PlaPos.x - 0.7f && m_PepPos.x < m_PlaPos.x)
+	{
+		if (m_PlaPos.z - 0.6f < m_PepPos.z && m_PepPos.z < m_PlaPos.z + 0.6f)
+		{
+			return true;
+		}
+	}
+
+	// Check if the pepsi collided with enemy.
+	// 적을 향해 어느정도 근접했을 때
+	if (!turn && m_PepPos.x <= m_EnePos.x + 0.7f && m_PepPos.x > m_EnePos.x)
+	{
+		if (m_EnePos.z - 0.6f < m_PepPos.z && m_PepPos.z < m_EnePos.z + 0.6f)
+		{
+			return true;
+		}
+	}
+
+	return false;
 }
 
 int GraphicsClass::GetPlayerScore()
@@ -791,21 +805,25 @@ void GraphicsClass::IncreaseEnemyScore()
 
 void GraphicsClass::ShowGameResult()
 {
-	result = true;
+	m_result = true;
 
 	if (p_score >= 3)
 	{
 		m_Text->SetResult(0, m_D3D->GetDeviceContext());
+		isPlayerWin = true;
 	}
 	else if (e_score >= 3)
 	{
 		m_Text->SetResult(1, m_D3D->GetDeviceContext());
+		isPlayerWin = false;
 	}
 }
 
 void GraphicsClass::RestartGame()
 {
-	result = false;
+	start = false;
+	m_result = false;
+	
 	m_CamPos.x = 10.0f;
 	m_CamPos.y = 10.0f;
 	m_CamPos.z = 0.0f;
@@ -818,8 +836,9 @@ void GraphicsClass::RestartGame()
 	p_score = 0;
 	e_score = 0;
 
-	D3DXVECTOR3 initVec(0.0f, 0.0f, 0.0f);
-	lastColPos = initVec;
+	angle = 0.0f;
+
+	m_Text->SetResult(-1, m_D3D->GetDeviceContext());
 }
 
 void GraphicsClass::StartGame()
@@ -831,5 +850,5 @@ void GraphicsClass::StartGame()
 
 bool GraphicsClass::GetResult()
 {
-	return result;
+	return m_result;
 }
