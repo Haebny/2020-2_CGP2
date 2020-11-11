@@ -59,3 +59,5 @@ unsigned int Mesh::GetIndexCount() const
 {
 	return m_indexCount;
 }
+
+class Mesh g_mesh;

@@ -155,7 +155,7 @@ bool SystemClass::Frame()
 	m_Input->GetMouseLocation(mouseX, mouseY);
 
 	// Get the key that player push down;
-	m_key = m_Input->IsPlayerMoves();
+	m_Input->MovePlayer();
 
 	// Do the frame processing for the graphics object.
 	result = m_Graphics->Frame(mouseX, mouseY, m_key);

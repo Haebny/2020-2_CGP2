@@ -46,3 +46,4 @@ private:
 	unsigned int m_indexCount;
 };
 
+extern class Mesh g_mesh;

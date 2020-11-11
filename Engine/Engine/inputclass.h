@@ -20,7 +20,7 @@ public:
 	bool Frame();
 
 	bool IsEscapePressed();
-	char IsPlayerMoves();
+	bool MovePlayer();
 	void GetMouseLocation(int&, int&);
 
 	void SetKeyState(int);

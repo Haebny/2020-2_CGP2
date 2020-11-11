@@ -70,4 +70,6 @@ private:
 	ID3D11BlendState* m_alphaDisableBlendingState;
 };
 
+extern class D3DClass g_d3d11;
+
 #endif

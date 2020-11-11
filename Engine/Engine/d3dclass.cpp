@@ -35,7 +35,8 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	IDXGIFactory* factory;
 	IDXGIAdapter* adapter;
 	IDXGIOutput* adapterOutput;
-	unsigned int numModes, i, numerator, denominator, stringLength;
+	unsigned int numModes, i, numerator, denominator;
+	size_t stringLength;
 	DXGI_MODE_DESC* displayModeList;
 	DXGI_ADAPTER_DESC adapterDesc;
 	int error;
@@ -733,5 +734,7 @@ bool D3DClass::CreateIndexBuffer(const void* buffer, unsigned int bufferByteSize
 
 	return true;
 }
+
+class D3DClass g_d3d11;
 
 #pragma endregion

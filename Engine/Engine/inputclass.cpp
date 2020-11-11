@@ -50,7 +50,7 @@ bool InputClass::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, int
 	}
 
 	// Set the cooperative level of the keyboard to not share with other programs.
-	result = m_keyboard->SetCooperativeLevel(hwnd, DISCL_FOREGROUND | DISCL_EXCLUSIVE);
+	result = m_keyboard->SetCooperativeLevel(hwnd, DISCL_BACKGROUND | DISCL_NONEXCLUSIVE);
 	if (FAILED(result))
 	{
 		return false;
@@ -77,7 +77,7 @@ bool InputClass::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, int
 	}
 
 	// Set the cooperative level of the mouse to share with other programs.
-	result = m_mouse->SetCooperativeLevel(hwnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
+	result = m_mouse->SetCooperativeLevel(hwnd, DISCL_BACKGROUND | DISCL_NONEXCLUSIVE);
 	if (FAILED(result))
 	{
 		return false;
@@ -266,7 +266,8 @@ bool InputClass::ReadMouse()
 		}
 	}
 
-	return true;
+	return true;
+
 }
 
 void InputClass::ProcessInput()
@@ -284,23 +285,23 @@ void InputClass::ProcessInput()
 	return;
 }
 
-char InputClass::IsPlayerMoves()
+bool InputClass::MovePlayer()
 {
 	// W
 	if (m_keyboardState[DIK_W] & 0x80)
-		return 'w';
+		return true;
 
 	// A
 	if (m_keyboardState[DIK_A] & 0x80)
-		return 'a';
+		return true;
 
 	// S
 	if (m_keyboardState[DIK_S] & 0x80)
-		return 's';
+		return true;
 
 	// D
 	if (m_keyboardState[DIK_D] & 0x80)
-		return 'd';
+		return true;
 
 	else
 		return NULL;
