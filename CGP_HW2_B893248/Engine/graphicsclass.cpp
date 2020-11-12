@@ -585,7 +585,7 @@ bool GraphicsClass::Render(float rotation, float frameTime)
 
 		if (m_Models.at(i).name == "pepsi")
 		{
-			D3DXMatrixRotationY(&worldMatrix, rotation * frameTime);
+			D3DXMatrixRotationY(&worldMatrix, rotation);
 			
 			// Resizing the model object.
 			D3DXMatrixScaling(&scale, 0.5f, 0.5f, 0.5f);
@@ -675,7 +675,7 @@ void GraphicsClass::GoRight(float frameTime)
 /// Player Movements
 void GraphicsClass::MoveLeft(float frameTime)
 {
-	m_PlaPos.z -= frameTime * playerSpeed;
+	m_PlaPos.z -= playerSpeed * frameTime;
 
 	if (m_PlaPos.z < -3.0f)
 		m_PlaPos.z = -3.0f;
@@ -683,7 +683,7 @@ void GraphicsClass::MoveLeft(float frameTime)
 
 void GraphicsClass::MoveRight(float frameTime)
 {
-	m_PlaPos.z += frameTime * playerSpeed;
+	m_PlaPos.z += playerSpeed * frameTime;
 
 	if (m_PlaPos.z > 3.0f)
 		m_PlaPos.z = 3.0f;
