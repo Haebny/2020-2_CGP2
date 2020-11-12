@@ -47,8 +47,8 @@ public:
 	void MoveLeft();
 	void MoveRight();
 
-	void EnemyMoves();
-	void PepsiMoves();
+	void EnemyMoves(float);
+	void PepsiMoves(float);
 	bool CheckCollision();
 
 	int GetPlayerScore();

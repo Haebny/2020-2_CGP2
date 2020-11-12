@@ -50,8 +50,8 @@ GraphicsClass::GraphicsClass()
 
 	camSpeed = 0.005f;
 	playerSpeed = 0.0015f;
-	enemySpeed = 0.0007f;
-	pepsiSpeed = 0.001f;
+	enemySpeed = 0.003f;
+	pepsiSpeed = 0.005f;
 
 	m_PlaPos.x = 5.0f;
 	m_PlaPos.z = 0.0f;
@@ -405,10 +405,10 @@ bool GraphicsClass::Frame(int mouseX, int mouseY, int fps, int cpu, float frameT
 		ShowGameResult();
 	}
 
-	PepsiMoves();
+	PepsiMoves(frameTime);
 	m_Light3->SetPosition(m_PepPos.x, 5.0f, m_PepPos.z);
 
-	EnemyMoves();
+	EnemyMoves(frameTime);
 
 	static float rotation = 0.0f;
 
@@ -689,12 +689,12 @@ void GraphicsClass::MoveRight()
 		m_PlaPos.z = 3.0f;
 }
 
-void GraphicsClass::EnemyMoves()
+void GraphicsClass::EnemyMoves(float frameTime)
 {
 	if (m_EnePos.z <= m_PepPos.z)
-		m_EnePos.z += enemySpeed;
+		m_EnePos.z += frameTime * enemySpeed;
 	else
-		m_EnePos.z -= enemySpeed;
+		m_EnePos.z -= frameTime * enemySpeed;
 
 	if (m_EnePos.z < -3.0f)
 		m_EnePos.z = -3.0f;
@@ -703,13 +703,13 @@ void GraphicsClass::EnemyMoves()
 		m_EnePos.z = 3.0f;
 }
 
-void GraphicsClass::PepsiMoves()
+void GraphicsClass::PepsiMoves(float frameTime)
 {
 	if (!start)
 		return;
 
 	// Pepsi moves to player or enemy.
-	m_PepPos += m_PepDir * pepsiSpeed;
+	m_PepPos += m_PepDir * frameTime * pepsiSpeed;
 
 
 	// Check the pepsi collided with player or enemy.
