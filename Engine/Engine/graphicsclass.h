@@ -7,9 +7,12 @@
 #include "lightshaderclass.h"
 #include "lightclass.h"
 #include "textureshaderclass.h"
-#include "bitmapclass.h"
+//#include "bitmapclass.h"
+#include "textclass.h"
+#include "skyboxclass.h"
 
 #include <vector>
+using namespace std;
 
 // Globals
 const bool FULL_SCREEN = false;			// 풀스크린 
@@ -17,7 +20,6 @@ const bool VSYNC_ENABLED = true;
 const float SCREEN_DEPTH = 1000.0f;		// 스크린 깊이
 const float SCREEN_NEAR = 0.1f;
 
-// Exercise 1-2: FULL_SCREEN = true;
 
 class GraphicsClass
 {
@@ -38,16 +40,19 @@ public:
 
 	bool Initialize(int, int, HWND);
 	void Shutdown();
-	bool Frame(int, int, char);
+	bool Frame(int, int, int, int, float);
 
-	void MovePlayer(char);
-	void GoFoward();
+	void GoForward();
+	void GoLeft();
 	void GoBack();
-	void TurnLeft();
-	void TurnRight();
+	void GoRight();
+
+	//void MovePlayer(char);
+	//void TurnLeft();
+	//void TurnRight();
 
 private:
-	bool Render();
+	bool Render(float);
 
 private:
 	D3DClass* m_D3D;
@@ -58,13 +63,13 @@ private:
 	LightClass* m_Light;
 	LightClass *m_Light2, *m_Light3, *m_Light4;
 	TextureShaderClass* m_TextureShader;
-	BitmapClass* m_Bitmap;
-	Model m_Player;
+	//BitmapClass* m_Bitmap;
+	TextClass* m_Text;
+	SkyboxClass* m_Skybox;
 
-	//int m_switch;
-	char m_key;
-	float PreX, PreY;
+private:
 	D3DXVECTOR3 CamPos, CamRot;
+	float PreX, PreY;
 	float speed;
 };
 

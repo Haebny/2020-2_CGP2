@@ -1,4 +1,4 @@
-#include "inputclass.h"
+#include "inputclass.h" 
 
 InputClass::InputClass()
 {
@@ -7,25 +7,27 @@ InputClass::InputClass()
 	m_mouse = 0;
 }
 
+
 InputClass::InputClass(const InputClass& other)
 {
 }
+
 
 InputClass::~InputClass()
 {
 }
 
+
 bool InputClass::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, int screenHeight)
 {
 	HRESULT result;
-
 	// Store the screen size which will be used for positioning the mouse cursor.
 	m_screenWidth = screenWidth;
 	m_screenHeight = screenHeight;
 
-	// Initialize the location of the mouse on the screen.
-	m_mouseX = 0;
-	m_mouseY = 0;
+	// Initialize the location of the mouse to the middle of the screen.
+	m_mouseX = screenWidth/2;
+	m_mouseY = screenHeight/2;
 
 	// Initialize the main direct input interface.
 	result = DirectInput8Create(hinstance, DIRECTINPUT_VERSION, IID_IDirectInput8,
@@ -50,7 +52,7 @@ bool InputClass::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, int
 	}
 
 	// Set the cooperative level of the keyboard to not share with other programs.
-	result = m_keyboard->SetCooperativeLevel(hwnd, DISCL_BACKGROUND | DISCL_NONEXCLUSIVE);
+	result = m_keyboard->SetCooperativeLevel(hwnd, DISCL_FOREGROUND | DISCL_EXCLUSIVE);	// DISCL_FOREGROUND | DISCL_EXCLUSIVE로 설정하면 키보드 및 마우스 출력이 안됨
 	if (FAILED(result))
 	{
 		return false;
@@ -77,7 +79,7 @@ bool InputClass::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, int
 	}
 
 	// Set the cooperative level of the mouse to share with other programs.
-	result = m_mouse->SetCooperativeLevel(hwnd, DISCL_BACKGROUND | DISCL_NONEXCLUSIVE);
+	result = m_mouse->SetCooperativeLevel(hwnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
 	if (FAILED(result))
 	{
 		return false;
@@ -92,6 +94,7 @@ bool InputClass::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, int
 
 	return true;
 }
+
 
 void InputClass::Shutdown()
 {
@@ -141,88 +144,8 @@ bool InputClass::Frame()
 
 	// Process the changes in the mouse and keyboard.
 	ProcessInput();
-
+	
 	return true;
-}
-
-bool InputClass::IsEscapePressed()
-{
-	// Do a bitwise and on the keyboard state to check if the escape key is currently being pressed.
-	if (m_keyboardState[DIK_ESCAPE] & 0x80)
-	{
-		return true;
-	}
-
-	return false;
-}
-
-void InputClass::GetMouseLocation(int &mouseX, int &mouseY)
-{
-	mouseX = m_mouseX;
-	mouseY = m_mouseY;
-	return;
-}
-
-void InputClass::SetKeyState(int key)
-{
-	switch (key)
-	{
-	//case 1:
-	//{
-	//	num1 = !num1;
-	//	break;
-	//}
-	//case 2:
-	//{
-	//	num2 = !num2;
-	//	break;
-	//}
-	//case 3:
-	//{
-	//	num3 = !num3;
-	//	break;
-	//}
-	//case 4:
-	//{
-	//	num4 = !num4;
-	//	break;
-	//}
-	default:
-		break;
-	}
-
-	return;
-}
-
-bool InputClass::GetKeyState(int key)
-{
-	switch (key)
-	{
-	//case 1:
-	//{
-	//	return num1;
-	//	break;
-	//}
-	//case 2:
-	//{
-	//	return num2;
-	//	break;
-	//}
-	//case 3:
-	//{
-	//	return num3;
-	//	break;
-	//}
-	//case 4:
-	//{
-	//	return num4;
-	//	break;
-	//}
-	default:
-		return false;
-		break;
-	}
-
 }
 
 bool InputClass::ReadKeyboard()
@@ -265,9 +188,7 @@ bool InputClass::ReadMouse()
 			return false;
 		}
 	}
-
 	return true;
-
 }
 
 void InputClass::ProcessInput()
@@ -276,33 +197,91 @@ void InputClass::ProcessInput()
 	m_mouseX += m_mouseState.lX;
 	m_mouseY += m_mouseState.lY;
 
+	// FREE CAM을 위해 마우스 이동 제한을 해제합니다.
 	// Ensure the mouse location doesn't exceed the screen width or height.
-	if (m_mouseX < 0) { m_mouseX = 0; }
-	if (m_mouseY < 0) { m_mouseY = 0; }
-	if (m_mouseX > m_screenWidth) { m_mouseX = m_screenWidth; }
-	if (m_mouseY > m_screenHeight) { m_mouseY = m_screenHeight; }
+	//if (m_mouseX < 0) { m_mouseX = 0; }
+	//if (m_mouseY < 0) { m_mouseY = 0; }
+	//if (m_mouseX > m_screenWidth) { m_mouseX = m_screenWidth; }
+	//if (m_mouseY > m_screenHeight) { m_mouseY = m_screenHeight; }
 
 	return;
 }
 
-bool InputClass::MovePlayer()
+bool InputClass::IsEscapePressed()
 {
-	// W
+	// Do a bitwise and on the keyboard state to check if the escape key is currently being pressed.
+	if (m_keyboardState[DIK_ESCAPE] & 0x80)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+void InputClass::GetMouseLocation(int& mouseX, int& mouseY)
+{
+	mouseX = m_mouseX;
+	mouseY = m_mouseY;
+	return;
+}
+
+bool InputClass::IsWDown()
+{
 	if (m_keyboardState[DIK_W] & 0x80)
 		return true;
 
-	// A
+	return false;
+}
+
+bool InputClass::IsADown()
+{
 	if (m_keyboardState[DIK_A] & 0x80)
 		return true;
 
-	// S
+	return false;
+}
+
+bool InputClass::IsSDown()
+{
 	if (m_keyboardState[DIK_S] & 0x80)
 		return true;
 
-	// D
+	return false;
+}
+
+bool InputClass::IsDDown()
+{
 	if (m_keyboardState[DIK_D] & 0x80)
 		return true;
 
-	else
-		return NULL;
+	return false;
 }
+
+bool InputClass::IsLeftDown()
+{
+	if (m_keyboardState[DIK_LEFTARROW] & 0x80)
+		return true;
+	return false;
+}
+
+bool InputClass::IsRightDown()
+{
+	if (m_keyboardState[DIK_RIGHTARROW] & 0x80)
+		return true;
+	return false;
+}
+
+bool InputClass::IsEnterDown()
+{
+	if (m_keyboardState[DIK_RETURN] & 0x80 || m_keyboardState[DIK_NUMPADENTER] & 0x80)
+		return true;
+	return false;
+}
+
+bool InputClass::IsSpacebarDown()
+{
+	if (m_keyboardState[DIK_SPACE] & 0x80)
+		return true;
+	return false;
+}
+

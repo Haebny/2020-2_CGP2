@@ -1,5 +1,5 @@
 #ifndef _INPUTCLASS_H_
-#define _INPUTCLASS_H_
+#define _INPUTCLASS_H_ 
 
 #define DIRECTINPUT_VERSION 0x0800
 
@@ -7,7 +7,6 @@
 #pragma comment(lib, "dxguid.lib")
 
 #include <dinput.h>
-
 class InputClass
 {
 public:
@@ -20,11 +19,17 @@ public:
 	bool Frame();
 
 	bool IsEscapePressed();
-	bool MovePlayer();
 	void GetMouseLocation(int&, int&);
 
-	void SetKeyState(int);
-	bool GetKeyState(int);
+	bool IsWDown();
+	bool IsADown();
+	bool IsSDown();
+	bool IsDDown();
+
+	bool IsLeftDown();
+	bool IsRightDown();
+	bool IsEnterDown();
+	bool IsSpacebarDown();
 
 private:
 	bool ReadKeyboard();
@@ -38,6 +43,7 @@ private:
 
 	unsigned char m_keyboardState[256];
 	DIMOUSESTATE m_mouseState;
+
 	int m_screenWidth, m_screenHeight;
 	int m_mouseX, m_mouseY;
 };

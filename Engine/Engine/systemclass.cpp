@@ -4,6 +4,10 @@ SystemClass::SystemClass()
 {
 	m_Input = 0;
 	m_Graphics = 0;
+	m_Fps = 0;
+	m_Cpu = 0;
+	m_Timer = 0;
+	m_Sound = 0;
 }
 
 SystemClass::SystemClass(const SystemClass& other)
@@ -26,6 +30,7 @@ bool SystemClass::Initialize()
 
 	// Initialize the windows api.
 	InitializeWindows(screenWidth, screenHeight);
+	UpdateWindow(m_hwnd);
 
 	// Create the input object. This object will be used to handle reading the keyboard input from the user.
 	m_Input = new InputClass;
@@ -56,6 +61,56 @@ bool SystemClass::Initialize()
 		return false;
 	}
 
+	// Create the sound object.
+	m_Sound = new SoundClass;
+	if (!m_Sound)
+	{
+		return false;
+	}
+
+	// Initialize the sound object.
+	result = m_Sound->Initialize(m_hwnd);
+	if (!result)
+	{
+		MessageBox(m_hwnd, L"Could not initialize Direct Sound.", L"Error", MB_OK);
+		return false;
+	}
+
+	// Create the fps object.
+	m_Fps = new FpsClass;
+	if (!m_Fps)
+	{
+		return false;
+	}
+
+	// Initialize the fps object.
+	m_Fps->Initialize();
+
+	// Create the cpu object.
+	m_Cpu = new CpuClass;
+	if (!m_Cpu)
+	{
+		return false;
+	}
+
+	// Initialize the cpu object.
+	m_Cpu->Initialize();
+
+	// Create the timer object.
+	m_Timer = new TimerClass;
+	if (!m_Timer)
+	{
+		return false;
+	}
+
+	// Initialize the timer object.
+	result = m_Timer->Initialize();
+	if (!result)
+	{
+		MessageBox(m_hwnd, L"Could not initialize the Timer object.", L"Error", MB_OK);
+		return false;
+	}
+
 	return true;
 }
 
@@ -70,6 +125,44 @@ bool SystemClass::Initialize()
 
 void SystemClass::Shutdown()
 {
+	// Release the timer object.
+	if (m_Timer)
+	{
+		delete m_Timer;
+		m_Timer = 0;
+	}
+
+	// Release the cpu object.
+	if (m_Cpu)
+	{
+		m_Cpu->Shutdown();
+		delete m_Cpu;
+		m_Cpu = 0;
+	}
+
+	// Release the fps object.
+	if (m_Fps)
+	{
+		delete m_Fps;
+		m_Fps = 0;
+	}
+
+	// Release the input object.
+	if (m_Input)
+	{
+		m_Input->Shutdown();
+		delete m_Input;
+		m_Input = 0;
+	}
+
+	// Release the sound object.
+	if (m_Sound)
+	{
+		m_Sound->Shutdown();
+		delete m_Sound;
+		m_Sound = 0;
+	}
+
 	// Release the graphics object.
 	if (m_Graphics)
 	{
@@ -119,7 +212,10 @@ void SystemClass::Run()
 		}
 		else
 		{
-			// Otherwise do the frame processing.
+			if (!m_Sound->CheckPlaying())
+			{
+				m_Sound->PlayMusic();
+			}
 
 			// Check if the user pressed escape and wants to quit.
 			if (m_Input->IsEscapePressed() == true)
@@ -127,6 +223,7 @@ void SystemClass::Run()
 				done = true;
 			}
 
+			// Otherwise do the frame processing.
 			// Frame함수 처리
 			result = Frame();
 			if (!result)
@@ -144,6 +241,12 @@ bool SystemClass::Frame()
 	bool result;
 	int mouseX, mouseY;
 
+	// Update the system stats.
+	m_Timer->Frame();
+	m_Fps->Frame();
+	m_Cpu->Frame();
+
+
 	// Do the input frame processing.
 	result = m_Input->Frame();
 	if (!result)
@@ -151,20 +254,31 @@ bool SystemClass::Frame()
 		return false;
 	}
 
+	// Check the Moving Camera Inputs
+	if (m_Input->IsWDown())
+		m_Graphics->GoForward();
+
+	if (m_Input->IsADown())
+		m_Graphics->GoLeft();
+
+	if (m_Input->IsSDown())
+		m_Graphics->GoBack();
+
+	if (m_Input->IsDDown())
+		m_Graphics->GoRight();
+
 	// Get the location of the mouse from the input object,
 	m_Input->GetMouseLocation(mouseX, mouseY);
 
 	// Get the key that player push down;
-	m_Input->MovePlayer();
+	//m_Input->MovePlayer();
 
 	// Do the frame processing for the graphics object.
-	result = m_Graphics->Frame(mouseX, mouseY, m_key);
+	result = m_Graphics->Frame(mouseX, mouseY, m_Fps->GetFps(), m_Cpu->GetCpuPercentage(), m_Timer->GetTime());
 	if (!result)
 	{
 		return false;
 	}
-
-	m_key = NULL;
 
 	return true;
 }
@@ -247,12 +361,11 @@ void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
 	
 	// Bring the window up on the screen and set it as main focus.
 	ShowWindow(m_hwnd, SW_SHOW);
-	UpdateWindow(m_hwnd);
 	SetForegroundWindow(m_hwnd);
 	SetFocus(m_hwnd);
 	
 	// Hide the mouse cursor.
-	ShowCursor(true);
+	ShowCursor(false);
 	
 	return;
 }

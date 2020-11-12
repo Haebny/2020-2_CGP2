@@ -11,10 +11,12 @@ GraphicsClass::GraphicsClass()
 	m_LightShader = 0;
 	m_Light = 0;
 	m_TextureShader = 0;
-	m_Bitmap = 0;
+	//m_Bitmap = 0;
+	m_Text = 0;
+	m_Skybox = 0;
 
 	floor.obj_path = "../Engine/data/models/floor.obj";
-	floor.tex_path = L"../Engine/data/textures/metal.dds";
+	floor.tex_path = L"../Engine/data/textures/floor.dds";
 	floor.name = "floor";
 
 	wood.obj_path = "../Engine/data/models/wood.obj";
@@ -120,6 +122,19 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_Camera->SetPosition(CamPos.x, CamPos.y, CamPos.z);
 	m_Camera->SetRotation(CamRot.x, CamRot.y, CamRot.z);
 
+	// Initialize a base view matrix with the camera for 2D user interface rendering.
+	m_Camera->Render();
+	m_Camera->GetViewMatrix(baseViewMatrix);
+
+	// Create the skybox object.
+	m_Skybox = new SkyboxClass;
+	result = m_Skybox->Initialize(m_D3D->GetDevice(), m_D3D->GetDeviceContext(), hwnd);
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not Initialize Skybox.", L"Error", MB_OK);
+		return false;
+	}
+
 	m_Models.push_back(floor);
 	m_Models.push_back(wood);
 	m_Models.push_back(cat);
@@ -127,7 +142,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 	// Initialize the model object.
 	// 모델 텍스쳐도 같이 지정
-	for (int i = 0; i < m_Models.size(); i++) 
+	for (int i = 0; i < m_Models.size(); i++)
 	{
 		// Create the model object.
 		m_Models.at(i).model = new ModelClass;
@@ -142,11 +157,6 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		{
 			MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
 			return false;
-		}
-
-		if (m_Models.at(i).name == "dog")
-		{
-			m_Player = m_Models.at(i);
 		}
 	}
 
@@ -239,6 +249,22 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_Light4->SetPosition(7.0f, 3.0f, 0.0f);
 	m_Light4->StoreDiffuseColor();
 
+	// Create the text object.
+	m_Text = new TextClass;
+	if (!m_Text)
+	{
+		return false;
+	}
+
+	// Initialize the text object.
+	result = m_Text->Initialize(m_D3D->GetDevice(), m_D3D->GetDeviceContext(), hwnd, screenWidth,
+		screenHeight, baseViewMatrix);
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the text object.", L"Error", MB_OK);
+		return false;
+	}
+
 
 	// Set the position and rotation of camera.
 	CamPos.x = 0.0f;
@@ -255,6 +281,22 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 //모든 그래픽 객체의 해제
 void GraphicsClass::Shutdown()
 {
+	// Release the skybox object.
+	if (m_Skybox)
+	{
+		m_Skybox->Shutdown();
+		delete m_Skybox;
+		m_Skybox = 0;
+	}
+
+	// Release the text object.
+	if (m_Text)
+	{
+		m_Text->Shutdown();
+		delete m_Text;
+		m_Text = 0;
+	}
+
 	if (m_Light2)
 	{
 		delete m_Light2;
@@ -311,7 +353,6 @@ void GraphicsClass::Shutdown()
 			delete m_Models.at(i).model;
 			m_Models.at(i).model = 0;
 		}
-
 	}
 
 	// Release the camera object.
@@ -332,21 +373,54 @@ void GraphicsClass::Shutdown()
 	return;
 }
 
-bool GraphicsClass::Frame(int mouseX, int mouseY, char key)
+bool GraphicsClass::Frame(int mouseX, int mouseY, int fps, int cpu, float frameTime)
 {
-	m_key = key;
 	bool result;
 
+	// Set the camera movement.
+	CamRot.y -= (PreX - mouseX) * 0.1f;
+	CamRot.x -= (PreY - mouseY) * 0.1f;
+
+	PreX = (float)mouseX;
+	PreY = (float)mouseY;
+
+	m_Camera->SetPosition(CamPos.x, CamPos.y, CamPos.z);
+	m_Camera->SetRotation(CamRot.x, CamRot.y, CamRot.z);
+
+	// Set the skybox.
+	m_Skybox->Frame(CamPos);
+
+	// Set the frames per second.
+	result = m_Text->SetFps(fps, m_D3D->GetDeviceContext());
+	if (!result)
+	{
+		return false;
+	}
+	// Set the cpu usage.
+	result = m_Text->SetCpu(cpu, m_D3D->GetDeviceContext());
+	if (!result)
+	{
+		return false;
+	}
+
 	// Set the location of the mouse.
-	//result = m_Text->SetMousePosition(mouseX, mouseY, m_D3D->GetDeviceContext());
-	//if (!result)
-	//{
-	//	return false;
-	//}
+	result = m_Text->SetMousePosition(mouseX, mouseY, m_D3D->GetDeviceContext());
+	if (!result)
+	{
+		return false;
+	}
+
+	static float rotation = 0.0f;
+
+	// Update the rotation variable each frame.
+	rotation += (float)D3DX_PI * 0.001f;
+	if (rotation > 360.0f)
+	{
+		rotation -= 360.0f;
+	}
 
 	// Render the graphics scene.
-	// 그래픽 렌더링 수행
-	result = Render();
+	result = Render(rotation);
 	if (!result)
 	{
 		return false;
@@ -355,10 +429,10 @@ bool GraphicsClass::Frame(int mouseX, int mouseY, char key)
 	return true;
 }
 
-bool GraphicsClass::Render()
+bool GraphicsClass::Render(float rotation)
 {
 	D3DXMATRIX viewMatrix, projectionMatrix, worldMatrix, orthoMatrix;
-	D3DXMATRIX translation, scale, rotation;
+	D3DXMATRIX translation, scale, baseWorldMat;
 	bool result;
 	D3DXVECTOR4 diffuseColors[3];
 	D3DXVECTOR4 lightPosition[3];
@@ -410,6 +484,7 @@ bool GraphicsClass::Render()
 	//// Turn the Z buffer back on now that all 2D rendering has completed.
 	//m_D3D->TurnZBufferOn();
 
+	baseWorldMat = worldMatrix;
 
 	// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
 	// 그래픽 파이프라인에 모델을 그림
@@ -428,28 +503,21 @@ bool GraphicsClass::Render()
 		}
 		if (m_Models.at(i).name == "cat")
 		{
-			// 크기 조정
-			D3DXMatrixScaling(&scale, 0.1f, 0.1f, 0.1f);
+			// Resizing the model object.
+			D3DXMatrixScaling(&scale, 0.5f, 0.5f, 0.5f);
 			worldMatrix *= scale;
+
+			D3DXMatrixTranslation(&translation, 0.0f, -3.0f, 0.0f);
+			worldMatrix *= translation;
 		}
 		if (m_Models.at(i).name == "dog")
 		{
-			// 크기 조정
-			D3DXMatrixScaling(&scale, 4.0f, 4.0f, 4.0f);
+			// Resizing the model object.
+			D3DXMatrixScaling(&scale, 0.5f, 0.5f, 0.5f);
 			worldMatrix *= scale;
 
-			MovePlayer(m_key);
-
-			if (m_key == 'a' || 'd')
-			{
-				D3DXMatrixRotationY(&rotation, m_Player.rot.y);
-				worldMatrix *= rotation;
-			}
-			if (m_key == 'w' || 's')
-			{
-				D3DXMatrixTranslation(&translation, m_Player.pos.x, m_Player.pos.y, m_Player.pos.z);
-				worldMatrix *= translation;
-			}
+			D3DXMatrixTranslation(&translation, 0.0f, -3.0f, 0.0f);
+			worldMatrix *= translation;
 		}
 
 		m_Models.at(i).model->Render(m_D3D->GetDeviceContext());
@@ -466,6 +534,19 @@ bool GraphicsClass::Render()
 	}
 #pragma endregion
 
+	// Turn on the alpha blending before rendering the text.
+	m_D3D->TurnOnAlphaBlending();
+
+	// Render the text strings.
+	result = m_Text->Render(m_D3D->GetDeviceContext(), baseWorldMat, orthoMatrix);
+	if (!result)
+	{
+		return false;
+	}
+
+	// Turn off alpha blending after rendering the text.
+	m_D3D->TurnOffAlphaBlending();
+
 	// Present the rendered scene to the screen.
 	// 버퍼에 그려진 씬 화면에 표시
 	m_D3D->EndScene();
@@ -475,64 +556,47 @@ bool GraphicsClass::Render()
 	return true;
 }
 
-void GraphicsClass::MovePlayer(char key)
-{
-	if (key == 'w')	{ GoFoward(); }
-
-	if (key == 'a')	{ TurnLeft(); }
-
-	if (key == 's') { GoBack();	}
-
-	if (key == 'd') { TurnRight(); }
-	
-	D3DXMATRIX translatePlayer;
-	D3DXMatrixTranslation(&translatePlayer, m_Player.pos.x, m_Player.pos.y, m_Player.pos.z);
-
-	//  카메라 이동
-	m_Camera->SetPosition(CamPos.x, CamPos.y, CamPos.z);
-	//m_Camera->SetRotation(CamRot.x, CamRot.y, CamRot.z);
-
-	return;
-}
-
-void GraphicsClass::GoFoward()
+/// Camera Movements
+void GraphicsClass::GoForward()
 {
 	D3DXMATRIX Dir;
 	D3DXMatrixIdentity(&Dir);
-	D3DXVECTOR3 Direction(0, 0, 1);
-	D3DXMatrixRotationYawPitchRoll(&Dir, m_Player.rot.y * 0.0174532925f, m_Player.rot.x * 0.0174532925f, m_Player.rot.z * 0.0174532925f);
+	D3DXVECTOR3 Direction(0.0f, 0.0f, 1.0f);
+	D3DXMatrixRotationYawPitchRoll(&Dir, CamRot.y * 0.0174532925f, CamRot.x * 0.0174532925f, CamRot.z * 0.0174532925f);
 	D3DXVec3TransformCoord(&Direction, &Direction, &Dir);
-	m_Player.pos += Direction * speed;
+
+	CamPos += Direction * speed;
+}
+
+void GraphicsClass::GoLeft()
+{
+	D3DXMATRIX Dir;
+	D3DXMatrixIdentity(&Dir);
+	D3DXVECTOR3 Direction(-1.0f, 0.0f, 0.0f);
+	D3DXMatrixRotationYawPitchRoll(&Dir, CamRot.y * 0.0174532925f, CamRot.x * 0.0174532925f, CamRot.z * 0.0174532925f);
+	D3DXVec3TransformCoord(&Direction, &Direction, &Dir);
+
+	CamPos += Direction * speed;
 }
 
 void GraphicsClass::GoBack()
 {
 	D3DXMATRIX Dir;
 	D3DXMatrixIdentity(&Dir);
-	D3DXVECTOR3 Direction(0, 0, -1);
-	D3DXMatrixRotationYawPitchRoll(&Dir, m_Player.rot.y * 0.0174532925f, m_Player.rot.x * 0.0174532925f, m_Player.rot.z * 0.0174532925f);
+	D3DXVECTOR3 Direction(0.0f, 0.0f, -1.0f);
+	D3DXMatrixRotationYawPitchRoll(&Dir, CamRot.y * 0.0174532925f, CamRot.x * 0.0174532925f, CamRot.z * 0.0174532925f);
 	D3DXVec3TransformCoord(&Direction, &Direction, &Dir);
-	m_Player.pos += Direction * speed;;
+
+	CamPos += Direction * speed;
 }
 
-void GraphicsClass::TurnLeft()
+void GraphicsClass::GoRight()
 {
 	D3DXMATRIX Dir;
 	D3DXMatrixIdentity(&Dir);
-	D3DXVECTOR3 Direction(0, 1, 0);
-	D3DXMatrixRotationYawPitchRoll(&Dir, m_Player.rot.y * 0.0174532925f, m_Player.rot.x * 0.0174532925f, m_Player.rot.z * 0.0174532925f);
+	D3DXVECTOR3 Direction(1.0f, 0.0f, 0.0f);
+	D3DXMatrixRotationYawPitchRoll(&Dir, CamRot.y * 0.0174532925f, CamRot.x * 0.0174532925f, CamRot.z * 0.0174532925f);
 	D3DXVec3TransformCoord(&Direction, &Direction, &Dir);
 
-	m_Player.rot -= Direction * speed * 0.01;
-}
-
-void GraphicsClass::TurnRight()
-{
-	D3DXMATRIX Dir;
-	D3DXMatrixIdentity(&Dir);
-	D3DXVECTOR3 Direction(0, -1, 0);
-	D3DXMatrixRotationYawPitchRoll(&Dir, m_Player.rot.y * 0.0174532925f, m_Player.rot.x * 0.0174532925f, m_Player.rot.z * 0.0174532925f);
-	D3DXVec3TransformCoord(&Direction, &Direction, &Dir);
-
-	m_Player.rot -= Direction * speed * 0.01;
+	CamPos += Direction * speed;
 }
