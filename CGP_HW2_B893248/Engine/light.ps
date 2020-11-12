@@ -1,0 +1,95 @@
+#define NUM_LIGHTS 3
+
+// Globals
+Texture2D shaderTexture;		// 텍스쳐 자원: 모델에 텍스쳐를 그릴 때 사용
+SamplerState SampleType;		// 샘플러 상태: 도형에 셰이딩-> 어떻게 텍스쳐의 픽셀이 씌워지는지를 수정할 수 있게(텍스쳐 필터링 관련)
+
+cbuffer LightBuffer
+{
+	float4 ambientColor;
+	float4 diffuseColor;
+	float3 lightDirection;
+	float specularPower;
+	float4 specularColor;
+};
+
+cbuffer LightColorBuffer
+{
+	float4 diffuseColors[NUM_LIGHTS];
+};
+
+// Type definitions
+struct PixelInputType
+{
+	float4 position : SV_POSITION;
+	float4 tex : TEXCOORD0;
+	float3 normal : NORMAL;
+	float3 viewDirection : TEXCOORD1;
+	float3 lightPos2 : TEXCOORD2;
+	float3 lightPos3 : TEXCOORD3;
+	float3 lightPos4 : TEXCOORD4;
+};
+
+// Pixel Shader
+float4 LightPixelShader(PixelInputType input) : SV_TARGET
+{
+	float4 textureColor;
+	float3 lightDir;
+	float lightIntensity;
+	float4 color;
+	float3 reflection;
+	float4 specular;
+	float lightIntensity2, lightIntensity3, lightIntensity4;
+	float4 color2, color3, color4;
+	
+	// Calculate the different amounts of light on this pixel based on the positions of the lights.
+	lightIntensity2 = saturate(dot(input.normal, input.lightPos2));
+	lightIntensity3 = saturate(dot(input.normal, input.lightPos3));
+	lightIntensity4 = saturate(dot(input.normal, input.lightPos4));
+	
+	// Determine the diffuse color amount of each of the four lights.
+	color2 = diffuseColors[0] * lightIntensity2;
+	color3 = diffuseColors[1] * lightIntensity3;
+	color4 = diffuseColors[2] * lightIntensity4;
+	
+	// Sample the pixel color from the texture using the sampler at this texture coordinate location.
+	textureColor = shaderTexture.Sample(SampleType, input.tex);
+
+	// Set the default output color to the ambient light value for all pixels.
+	color = ambientColor;
+
+	// Initialize the specular color.
+	specular = float4(0.0f, 0.0f, 0.0f, 0.0f);
+
+	// Invert the light direction for calculations.
+	lightDir = -lightDirection;
+
+	// Calculate the amount of light on this pixel.
+	lightIntensity = saturate(dot(input.normal, lightDir));
+
+	if (lightIntensity > 0.0f)
+	{
+		// Determine the final diffuse color based on the diffuse color and the amount of light intensity.
+		color += (diffuseColor * lightIntensity);
+
+		// Saturate the ambient and diffuse color.
+		color = saturate(color);
+
+		// Calculate the reflection vector based on the light intensity, normal vector, and light direction.
+		reflection = normalize(2 * lightIntensity * input.normal - lightDir); 
+
+		// Determine the amount of specular light based on the reflection vector, viewing direction, and specular power.
+		specular = pow(saturate(dot(reflection, input.viewDirection)), specularPower);
+	}
+	
+	color += saturate(color2 + color3 + color4);
+
+	// Multiply the texture pixel and the final diffuse color to get the final pixel color result.
+	color = color * textureColor;
+
+	// Add the specular component last to the output color.
+	color = saturate(color + specular);
+	color.w = 1.0f;
+	
+	return color;
+}
