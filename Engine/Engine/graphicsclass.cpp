@@ -82,7 +82,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 	// Mesh 초기화
 	std::unique_ptr<char[]> fileData;
-	std::ifstream file("../Engine/data/models/tricycle.fbx", std::ifstream::binary);
+	std::ifstream file("../Engine/data/models/tricycle.FBX", std::ifstream::binary);
 	size_t fileSize;
 
 	if (file)
@@ -108,8 +108,6 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	{
 		return false;
 	}
-
-	FBXImporter::Shutdown();
 
 	// Create the camera object.
 	m_Camera = new CameraClass;
@@ -355,6 +353,8 @@ void GraphicsClass::Shutdown()
 		}
 	}
 
+	FBXImporter::Shutdown();
+
 	// Release the camera object.
 	if (m_Camera)
 	{
@@ -462,6 +462,10 @@ bool GraphicsClass::Render(float rotation)
 	m_D3D->GetWorldMatrix(worldMatrix);
 	m_D3D->GetProjectionMatrix(projectionMatrix);
 	m_D3D->GetOrthoMatrix(orthoMatrix);
+	
+	// Render the skybox.
+	m_Skybox->Render(m_D3D->GetDeviceContext(), m_D3D->GetRenderTarget(), m_D3D->GetDepthStencil(), viewMatrix, projectionMatrix);
+
 
 	//// Turn off the Z buffer to begin all 2D rendering.
 	//m_D3D->TurnZBufferOff();
@@ -490,24 +494,29 @@ bool GraphicsClass::Render(float rotation)
 	// 그래픽 파이프라인에 모델을 그림
 	for (int i = 0; i < m_Models.size(); i++)
 	{
+		worldMatrix = baseWorldMat;
 		if (m_Models.at(i).name == "floor")
 		{
 			// Transtlate object
-			D3DXMatrixTranslation(&translation, 0.0f, -2.0f, 0.0f);
+			D3DXMatrixTranslation(&translation, 0.0f, 0.0f, 0.0f);
 			worldMatrix *= translation;
 		}
 		if (m_Models.at(i).name == "wood")
 		{
-			D3DXMatrixTranslation(&translation, -7.0f, 0.0f, 0.0f);
+			// Resizing the model object.
+			D3DXMatrixScaling(&scale, 2.0f, 2.0f, 2.0f);
+			worldMatrix *= scale;
+
+			D3DXMatrixTranslation(&translation, -7.0f, 1.0f, 0.0f);
 			worldMatrix *= translation;
 		}
 		if (m_Models.at(i).name == "cat")
 		{
 			// Resizing the model object.
-			D3DXMatrixScaling(&scale, 0.5f, 0.5f, 0.5f);
+			D3DXMatrixScaling(&scale, 0.1f, 0.1f, 0.1f);
 			worldMatrix *= scale;
 
-			D3DXMatrixTranslation(&translation, 0.0f, -3.0f, 0.0f);
+			D3DXMatrixTranslation(&translation, 7.0f, 0.0f, 0.0f);
 			worldMatrix *= translation;
 		}
 		if (m_Models.at(i).name == "dog")
@@ -516,7 +525,7 @@ bool GraphicsClass::Render(float rotation)
 			D3DXMatrixScaling(&scale, 0.5f, 0.5f, 0.5f);
 			worldMatrix *= scale;
 
-			D3DXMatrixTranslation(&translation, 0.0f, -3.0f, 0.0f);
+			D3DXMatrixTranslation(&translation, 0.0f, 0.0f, 0.0f);
 			worldMatrix *= translation;
 		}
 

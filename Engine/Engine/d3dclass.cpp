@@ -617,6 +617,16 @@ ID3D11DeviceContext* D3DClass::GetDeviceContext()
 	return m_deviceContext;
 }
 
+ID3D11RenderTargetView* D3DClass::GetRenderTarget()
+{
+	return m_renderTargetView;
+}
+
+ID3D11DepthStencilView* D3DClass::GetDepthStencil()
+{
+	return m_depthStencilView;
+}
+
 // 투영 행렬 반환
 void D3DClass::GetProjectionMatrix(D3DXMATRIX& projectionMatrix)
 {

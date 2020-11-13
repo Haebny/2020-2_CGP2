@@ -81,6 +81,9 @@
     <ClCompile Include="skyboxclass.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="soundclass.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shader\font.ps">
@@ -170,6 +173,9 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="skyboxclass.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="soundclass.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

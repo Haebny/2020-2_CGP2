@@ -48,25 +48,25 @@ bool SkyboxClass::Initialize(ID3D11Device* d3d11Device, ID3D11DeviceContext* d3d
 	}
 
 	//  SHADER SETTINGS
-	result = D3DX11CompileFromFile(L"../Engine/Effects.fx", 0, 0, "VS", "vs_4_0", 0, 0, 0, &VS_Buffer, 0, 0);
+	result = D3DX11CompileFromFile(L"../Engine/Shader/Effects.fx", 0, 0, "VS", "vs_4_0", 0, 0, 0, &VS_Buffer, 0, 0);
 	if (FAILED(result))
 	{
 		MessageBox(hwnd, L"Could not Load the Skybox Shader.", L"Error", MB_OK);
 		return false;
 	}
-	result = D3DX11CompileFromFile(L"../Engine/Effects.fx", 0, 0, "PS", "ps_4_0", 0, 0, 0, &PS_Buffer, 0, 0);
+	result = D3DX11CompileFromFile(L"../Engine/Shader/Effects.fx", 0, 0, "PS", "ps_4_0", 0, 0, 0, &PS_Buffer, 0, 0);
 	if (FAILED(result))
 	{
 		MessageBox(hwnd, L"Could not Load the Skybox Shader.", L"Error", MB_OK);
 		return false;
 	}
-	result = D3DX11CompileFromFile(L"../Engine/Effects.fx", 0, 0, "SKYMAP_VS", "vs_4_0", 0, 0, 0, &SKYMAP_VS_Buffer, 0, 0);
+	result = D3DX11CompileFromFile(L"../Engine/Shader/Effects.fx", 0, 0, "SKYMAP_VS", "vs_4_0", 0, 0, 0, &SKYMAP_VS_Buffer, 0, 0);
 	if (FAILED(result))
 	{
 		MessageBox(hwnd, L"Could not Load the Skybox Shader.", L"Error", MB_OK);
 		return false;
 	}
-	result = D3DX11CompileFromFile(L"../Engine/Effects.fx", 0, 0, "SKYMAP_PS", "ps_4_0", 0, 0, 0, &SKYMAP_PS_Buffer, 0, 0);
+	result = D3DX11CompileFromFile(L"../Engine/Shader/Effects.fx", 0, 0, "SKYMAP_PS", "ps_4_0", 0, 0, 0, &SKYMAP_PS_Buffer, 0, 0);
 	if (FAILED(result))
 	{
 		MessageBox(hwnd, L"Could not Load the Skybox Shader.", L"Error", MB_OK);

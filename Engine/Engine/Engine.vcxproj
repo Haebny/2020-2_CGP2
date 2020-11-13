@@ -23,7 +23,7 @@
     <ProjectGuid>{B4A3A6E9-8F71-4557-93B9-EE4707ED2784}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>Engine</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.18362.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -106,7 +106,6 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)FBX SDK 2019.0\include;$(DXSDK_DIR)Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -175,6 +174,7 @@
     <ClCompile Include="lightclass.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="skyboxclass.cpp" />
+    <ClCompile Include="soundclass.cpp" />
     <ClCompile Include="textclass.cpp" />
     <ClCompile Include="textureshaderclass.cpp" />
     <ClCompile Include="d3dclass.cpp" />
@@ -209,6 +209,7 @@
     <ClInclude Include="lightclass.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="skyboxclass.h" />
+    <ClInclude Include="soundclass.h" />
     <ClInclude Include="textclass.h" />
     <ClInclude Include="textureshaderclass.h" />
     <ClInclude Include="d3dclass.h" />

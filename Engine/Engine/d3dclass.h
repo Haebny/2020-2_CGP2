@@ -34,6 +34,8 @@ public:
 	
 	ID3D11Device* GetDevice();
 	ID3D11DeviceContext* GetDeviceContext();
+	ID3D11RenderTargetView* GetRenderTarget();
+	ID3D11DepthStencilView* GetDepthStencil();
 	
 	void GetProjectionMatrix(D3DXMATRIX&);
 	void GetWorldMatrix(D3DXMATRIX&);

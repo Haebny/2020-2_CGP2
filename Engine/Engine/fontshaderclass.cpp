@@ -23,7 +23,7 @@ bool FontShaderClass::Initialize(ID3D11Device* device, HWND hwnd)
 
 	// Initialize the vertex and pixel shaders.
 	// 셰이더 초기화 함수 호출(셰이더 파일의 이름을 넘김)
-	result = InitializeShader(device, hwnd, L"../Engine/Shader/texture.vs", L"../Engine/Shader/texture.ps");
+	result = InitializeShader(device, hwnd, L"../Engine/Shader/font.vs", L"../Engine/Shader/font.ps");
 	if (!result)
 	{
 		return false;
@@ -57,7 +57,7 @@ bool FontShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount,
 	}
 
 	// Now render the prepared buffers with the shader.
-	// 이더를 이용하여 준비된 버퍼를 그림
+	// 셰이더를 이용하여 준비된 버퍼를 그림
 	RenderShader(deviceContext, indexCount);
 
 	return true;
@@ -342,7 +342,7 @@ bool FontShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3
 
 	// Lock the constant buffer so it can be written to.
 	// 상수 버퍼의 내용을 쓸 수 있게 잠금
-	result = deviceContext->Map(m_matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	result = deviceContext->Map(m_constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if (FAILED(result))
 	{
 		return false;
