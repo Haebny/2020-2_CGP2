@@ -23,7 +23,7 @@
     <ProjectGuid>{B4A3A6E9-8F71-4557-93B9-EE4707ED2784}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>Engine</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -92,12 +92,13 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <DisableSpecificWarnings>4005;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <AdditionalIncludeDirectories>$(SolutionDir)FBX SDK 2019.0\include;$(DXSDK_DIR)Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)ode-0.13\ode\demo;$(SolutionDir)ode-0.13\include;D:\해빈\GitHub\2020-2_CGP2\Engine\PhysX-4.1\physx\source\foundation\include;D:\해빈\GitHub\2020-2_CGP2\Engine\PhysX-4.1\physx\..\pxshared\include;D:\해빈\GitHub\2020-2_CGP2\Engine\PhysX-4.1\physx\source\pvd\include;D:\해빈\GitHub\2020-2_CGP2\Engine\PhysX-4.1\physx\source\immediatemode\include;D:\해빈\GitHub\2020-2_CGP2\Engine\PhysX-4.1\physx\source\physxmetadata\core\include;D:\해빈\GitHub\2020-2_CGP2\Engine\PhysX-4.1\physx\source\scenequery\include;D:\해빈\GitHub\2020-2_CGP2\Engine\PhysX-4.1\physx\source\physxcooking\src\convex;D:\해빈\GitHub\2020-2_CGP2\Engine\PhysX-4.1\physx\source\physxcooking\src\mesh;D:\해빈\GitHub\2020-2_CGP2\Engine\PhysX-4.1\physx\source\physxcooking\src;D:\해빈\GitHub\2020-2_CGP2\Engine\PhysX-4.1\physx\source\simulationcontroller\src;D:\해빈\GitHub\2020-2_CGP2\Engine\PhysX-4.1\physx\source\simulationcontroller\include;D:\해빈\GitHub\2020-2_CGP2\Engine\PhysX-4.1\physx\source\lowleveldynamics\include;D:\해빈\GitHub\2020-2_CGP2\Engine\PhysX-4.1\physx\source\lowlevelaabb\include;D:\해빈\GitHub\2020-2_CGP2\Engine\PhysX-4.1\physx\source\lowlevel\common\include\pipeline;D:\해빈\GitHub\2020-2_CGP2\Engine\PhysX-4.1\physx\source\lowlevel\software\include;D:\해빈\GitHub\2020-2_CGP2\Engine\PhysX-4.1\physx\source\lowlevel\api\include;D:\해빈\GitHub\2020-2_CGP2\Engine\PhysX-4.1\physx\source\geomutils\src\ccd;D:\해빈\GitHub\2020-2_CGP2\Engine\PhysX-4.1\physx\source\geomutils\src\pcm;D:\해빈\GitHub\2020-2_CGP2\Engine\PhysX-4.1\physx\source\geomutils\src\hf;D:\해빈\GitHub\2020-2_CGP2\Engine\PhysX-4.1\physx\source\geomutils\src\mesh;D:\해빈\GitHub\2020-2_CGP2\Engine\PhysX-4.1\physx\source\geomutils\src\intersection;D:\해빈\GitHub\2020-2_CGP2\Engine\PhysX-4.1\physx\source\geomutils\src\gjk;D:\해빈\GitHub\2020-2_CGP2\Engine\PhysX-4.1\physx\source\geomutils\src\sweep;D:\해빈\GitHub\2020-2_CGP2\Engine\PhysX-4.1\physx\source\geomutils\src\distance;D:\해빈\GitHub\2020-2_CGP2\Engine\PhysX-4.1\physx\source\geomutils\src\convex;D:\해빈\GitHub\2020-2_CGP2\Engine\PhysX-4.1\physx\source\geomutils\src\common;D:\해빈\GitHub\2020-2_CGP2\Engine\PhysX-4.1\physx\source\geomutils\src\contact;D:\해빈\GitHub\2020-2_CGP2\Engine\PhysX-4.1\physx\source\geomutils\src;D:\해빈\GitHub\2020-2_CGP2\Engine\PhysX-4.1\physx\source\geomutils\include;D:\해빈\GitHub\2020-2_CGP2\Engine\PhysX-4.1\physx\source\physxgpu\include;D:\해빈\GitHub\2020-2_CGP2\Engine\PhysX-4.1\physx\source\physx\src\buffering;D:\해빈\GitHub\2020-2_CGP2\Engine\PhysX-4.1\physx\source\physx\src\device;D:\해빈\GitHub\2020-2_CGP2\Engine\PhysX-4.1\physx\source\common\include;D:\해빈\GitHub\2020-2_CGP2\Engine\PhysX-4.1\physx\include;$(SolutionDir)FBX SDK 2019.0\include;$(DXSDK_DIR)Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)FBX SDK 2019.0\lib\vs2015\$(PlatformShortName)\$(Configuration);$(DXSDK_DIR)Lib/x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)ode-0.13\lib\DebugDoubleDLL;$(SolutionDir)FBX SDK 2019.0\lib\vs2015\$(PlatformShortName)\$(Configuration);$(DXSDK_DIR)Lib/x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>ode_doubled.lib;drawstuffd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -173,6 +174,7 @@
     <ClCompile Include="lightshaderclass.cpp" />
     <ClCompile Include="lightclass.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="ODEclass.cpp" />
     <ClCompile Include="skyboxclass.cpp" />
     <ClCompile Include="soundclass.cpp" />
     <ClCompile Include="textclass.cpp" />
@@ -208,6 +210,7 @@
     <ClInclude Include="lightshaderclass.h" />
     <ClInclude Include="lightclass.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="ODEclass.h" />
     <ClInclude Include="skyboxclass.h" />
     <ClInclude Include="soundclass.h" />
     <ClInclude Include="textclass.h" />

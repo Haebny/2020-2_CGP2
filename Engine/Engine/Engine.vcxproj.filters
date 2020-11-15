@@ -78,10 +78,13 @@
     <ClCompile Include="cpuclass.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="skyboxclass.cpp">
+    <ClCompile Include="soundclass.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="soundclass.cpp">
+    <ClCompile Include="ODEclass.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="skyboxclass.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
@@ -172,10 +175,13 @@
     <ClInclude Include="cpuclass.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="skyboxclass.h">
+    <ClInclude Include="soundclass.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="soundclass.h">
+    <ClInclude Include="ODEclass.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="skyboxclass.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

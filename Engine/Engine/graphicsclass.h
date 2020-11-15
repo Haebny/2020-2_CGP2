@@ -10,6 +10,7 @@
 //#include "bitmapclass.h"
 #include "textclass.h"
 #include "skyboxclass.h"
+#include "ODEclass.h"
 
 #include <vector>
 using namespace std;
@@ -66,6 +67,7 @@ private:
 	//BitmapClass* m_Bitmap;
 	TextClass* m_Text;
 	SkyboxClass* m_Skybox;
+	ODEClass* m_PhyWorld;
 
 private:
 	D3DXVECTOR3 CamPos, CamRot;

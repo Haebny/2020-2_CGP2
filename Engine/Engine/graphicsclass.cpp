@@ -61,9 +61,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	bool result;
 	D3DXMATRIX baseViewMatrix;
 
-	// D3DClass == Direct3D 기능들을 다루는 클래스
 	// Create the Direct3D object.
-	// D3D 객체 생성
 	m_D3D = new D3DClass;
 	if (!m_D3D)
 	{
@@ -71,7 +69,6 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	}
 
 	// Initialize the Direct3D object.
-	// D3D 객체 초기화
 	result = m_D3D->Initialize(screenWidth, screenHeight, VSYNC_ENABLED, hwnd, FULL_SCREEN,
 		SCREEN_DEPTH, SCREEN_NEAR);
 	if (!result)
@@ -80,9 +77,33 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
+	// Create the camera object.
+	m_Camera = new CameraClass;
+	if (!m_Camera)
+	{
+		return false;
+	}
+
+	// Set the initial position of the camera.
+	m_Camera->SetPosition(0.0f, 0.0f, 0.0f);
+
+	// Initialize a base view matrix with the camera for 2D user interface rendering.
+	m_Camera->Render();
+	m_Camera->GetViewMatrix(baseViewMatrix);
+
+
+	// Create the skybox object.
+	m_Skybox = new SkyboxClass;
+	result = m_Skybox->Initialize(m_D3D->GetDevice(), m_D3D->GetDeviceContext(), hwnd);
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not Initialize Skybox.", L"Error", MB_OK);
+		return false;
+	}
+
 	// Mesh 초기화
 	std::unique_ptr<char[]> fileData;
-	std::ifstream file("../Engine/data/models/tricycle.FBX", std::ifstream::binary);
+	std::ifstream file("../Engine/data/models/bike.fbx", std::ifstream::binary);
 	size_t fileSize;
 
 	if (file)
@@ -106,30 +127,6 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 	if (FBXImporter::Import(g_mesh, fileData.get(), fileSize) == false)
 	{
-		return false;
-	}
-
-	// Create the camera object.
-	m_Camera = new CameraClass;
-	if (!m_Camera)
-	{
-		return false;
-	}
-
-	// Set the initial position of the camera.
-	m_Camera->SetPosition(CamPos.x, CamPos.y, CamPos.z);
-	m_Camera->SetRotation(CamRot.x, CamRot.y, CamRot.z);
-
-	// Initialize a base view matrix with the camera for 2D user interface rendering.
-	m_Camera->Render();
-	m_Camera->GetViewMatrix(baseViewMatrix);
-
-	// Create the skybox object.
-	m_Skybox = new SkyboxClass;
-	result = m_Skybox->Initialize(m_D3D->GetDevice(), m_D3D->GetDeviceContext(), hwnd);
-	if (!result)
-	{
-		MessageBox(hwnd, L"Could not Initialize Skybox.", L"Error", MB_OK);
 		return false;
 	}
 
@@ -279,14 +276,6 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 //모든 그래픽 객체의 해제
 void GraphicsClass::Shutdown()
 {
-	// Release the skybox object.
-	if (m_Skybox)
-	{
-		m_Skybox->Shutdown();
-		delete m_Skybox;
-		m_Skybox = 0;
-	}
-
 	// Release the text object.
 	if (m_Text)
 	{
@@ -354,6 +343,14 @@ void GraphicsClass::Shutdown()
 	}
 
 	FBXImporter::Shutdown();
+
+	// Release the skybox object.
+	if (m_Skybox)
+	{
+		m_Skybox->Shutdown();
+		delete m_Skybox;
+		m_Skybox = 0;
+	}
 
 	// Release the camera object.
 	if (m_Camera)
@@ -448,16 +445,13 @@ bool GraphicsClass::Render(float rotation)
 	lightPosition[2] = m_Light4->GetPosition();
 
 	// Clear the buffers to begin the scene.
-	// 씬 그리기를 위해 버퍼의 내용을 지움(화면을 특정 색으로 초기화)
 	m_D3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
 
 #pragma region 출력
 	// Generate the view matrix based on the camera's position.
-	// Initialize 함수에서 지정한 카메라의 위치로 뷰 행렬을 만들기 위해 호출
 	m_Camera->Render();
 
 	// Get the world, view, and projection matrices from the camera and d3d objects.
-	// D3DClass 객체로부터 월드 행렬과 투영 행렬을 복사
 	m_Camera->GetViewMatrix(viewMatrix);
 	m_D3D->GetWorldMatrix(worldMatrix);
 	m_D3D->GetProjectionMatrix(projectionMatrix);
@@ -495,6 +489,7 @@ bool GraphicsClass::Render(float rotation)
 	for (int i = 0; i < m_Models.size(); i++)
 	{
 		worldMatrix = baseWorldMat;
+
 		if (m_Models.at(i).name == "floor")
 		{
 			// Transtlate object
