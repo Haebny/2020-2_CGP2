@@ -143,7 +143,7 @@ bool SkyboxClass::Initialize(ID3D11Device* d3d11Device, ID3D11DeviceContext* d3d
 	// we are loading a texture cube.
 	ID3D11Texture2D* SMTexture = 0;
 
-	result = D3DX11CreateTextureFromFile(d3d11Device, L"../Engine/data/textures/lake.dds", &loadSMInfo, 0, (ID3D11Resource**)&SMTexture, 0);
+	result = D3DX11CreateTextureFromFile(d3d11Device, L"../Engine/data/textures/sky.dds", &loadSMInfo, 0, (ID3D11Resource**)&SMTexture, 0);
 	if (FAILED(result))
 	{
 		MessageBox(hwnd, L"Could not Create Skybox Texture.", L"Error", MB_OK);

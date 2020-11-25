@@ -12,61 +12,28 @@ GraphicsClass::GraphicsClass()
 	m_Text = 0;
 	m_Skybox = 0;
 
+	// floor model
 	floor.obj_path = "../Engine/data/models/floor.obj";
 	floor.tex_path = L"../Engine/data/textures/floor.dds";
 	floor.name = "floor";
 
-	woods.obj_path = "../Engine/data/models/woods.obj";
-	woods.tex_path = L"../Engine/data/textures/wood.dds";
-	woods.name = "woods";
+	// reindeer model
+	reindeer.obj_path = "../Engine/data/models/reindeer.obj";
+	reindeer.tex_path = L"../Engine/data/textures/reindeer.dds";
+	reindeer.name = "reindeer";
+	horns.obj_path = "../Engine/data/models/horns.obj";
+	horns.tex_path = L"../Engine/data/textures/horns.dds";
+	horns.name = "horns";
+	face.obj_path = "../Engine/data/models/face.obj";
+	face.tex_path = L"../Engine/data/textures/face.dds";
+	face.name = "face";
 
-	cushions.obj_path = "../Engine/data/models/cushions.obj";
-	cushions.tex_path = L"../Engine/data/textures/cushion.dds";
-	cushions.name = "cushions";
-
-	table.obj_path = "../Engine/data/models/table.obj";
-	table.tex_path = L"../Engine/data/textures/table.dds";
-	table.name = "table";
-
-	cat.obj_path = "../Engine/data/models/cat.obj";
-	cat.tex_path = L"../Engine/data/textures/cat.dds";
-	cat.name = "cat";
-
-	dog.obj_path = "../Engine/data/models/dog.obj";
-	dog.tex_path = L"../Engine/data/textures/dog.dds";
-	dog.name = "dog";
-
-	c_cup.obj_path = "../Engine/data/models/c_cup.obj";
-	c_cup.tex_path = L"../Engine/data/textures/beermug.dds";
-	c_cup.name = "c_cup";
-
-	d_cup.obj_path = "../Engine/data/models/d_cup.obj";
-	d_cup.tex_path = L"../Engine/data/textures/beermug.dds";
-	d_cup.name = "d_cup";
-
-	pepsi.obj_path = "../Engine/data/models/pepsi.obj";
-	pepsi.tex_path = L"../Engine/data/textures/pepsi.dds";
-	pepsi.name = "pepsi";
+	// ghost model
+	ghost.obj_path = "../Engine/data/models/ghost.obj";
+	ghost.tex_path = L"../Engine/data/textures/ghost.dds";
+	ghost.name = "ghost";
 
 	camSpeed = 0.005f;
-	playerSpeed = 0.0015f;
-	enemySpeed = 0.003f;
-	pepsiSpeed = 0.005f;
-
-	m_PlaPos.x = 5.0f;
-	m_PlaPos.z = 0.0f;
-	m_EnePos.x = -5.0f;
-	m_EnePos.z = 0.0f;
-	m_PepPos.x = 0.0f;
-	m_PepPos.z = 0.0f;
-
-	m_PepDir.x = 1.0f;
-	m_PepDir.z = 1.0f;
-
-	start = false;
-	m_result = false;
-
-	srand((unsigned int)time(NULL));
 }
 
 
@@ -127,14 +94,8 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 	// Push back models to vector container.
 	m_Models.push_back(floor);
-	m_Models.push_back(woods);
-	m_Models.push_back(cushions);
-	m_Models.push_back(table);
-	m_Models.push_back(cat);
-	m_Models.push_back(dog);
-	m_Models.push_back(c_cup);
-	m_Models.push_back(d_cup);
-	m_Models.push_back(pepsi);
+	m_Models.push_back(reindeer);
+	m_Models.push_back(ghost);
 
 	// Initialize the model object.
 	// 모델 텍스쳐도 같이 지정
@@ -223,16 +184,32 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
+	// Create the bitmap object.
+	m_TitleScene = new BitmapClass;
+	if (!m_TitleScene)
+	{
+		return false;
+	}
+
+	// Initialize the bitmap object.
+	result = m_TitleScene->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight,
+		L"../Engine/data/textures/floor.dds", screenWidth, screenHeight);
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the bitmap object.", L"Error", MB_OK);
+		return false;
+	}
+
 	//// Create the bitmap object.
-	//m_Bitmap = new BitmapClass;
-	//if (!m_Bitmap)
+	//m_ResultScene = new BitmapClass;
+	//if (!m_ResultScene)
 	//{
 	//	return false;
 	//}
 
 	//// Initialize the bitmap object.
-	//result = m_Bitmap->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight,
-	//	L"../Engine/data/textures/seafloor.dds", screenWidth, screenHeight);
+	//result = m_ResultScene->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight,
+	//	L"../Engine/data/textures/floor.dds", screenWidth, screenHeight);
 	//if (!result)
 	//{
 	//	MessageBox(hwnd, L"Could not initialize the bitmap object.", L"Error", MB_OK);
@@ -383,33 +360,6 @@ bool GraphicsClass::Frame(int mouseX, int mouseY, int fps, int cpu, float frameT
 		return false;
 	}
 
-	// Set the location of the mouse.
-	result = m_Text->SetScore(GetPlayerScore(), GetEnemyScore(), m_D3D->GetDeviceContext());
-	if (!result)
-	{
-		return false;
-	}
-
-#ifdef DEBUG
-	// Set the location of the mouse.
-	result = m_Text->SetPos(m_PepPos.x, m_PepPos.z, m_PlaPos.x, m_PlaPos.z, m_EnePos.x, m_EnePos.z, m_D3D->GetDeviceContext());
-	if (!result)
-	{
-		return false;
-	}
-#endif 
-
-	// If player win or lose, show the Result of the game.
-	if ((p_score >= 3 || e_score >= 3) && result)
-	{
-		ShowGameResult();
-	}
-
-	PepsiMoves(frameTime);
-	m_Light3->SetPosition(m_PepPos.x, 5.0f, m_PepPos.z);
-
-	EnemyMoves(frameTime);
-
 	static float rotation = 0.0f;
 
 	// Update the rotation variable each frame.
@@ -499,99 +449,19 @@ bool GraphicsClass::Render(float rotation)
 			worldMatrix *= translation;
 		}
 
-		if (m_Models.at(i).name == "woods")
+		if (m_Models.at(i).name == "reindeer")
 		{
-						// Resizing the model object.
-			D3DXMatrixScaling(&scale, 0.5f, 0.5f, 0.5f);
-			worldMatrix *= scale;
-
-			D3DXMatrixTranslation(&translation, 0.0f, -3.0f, 0.0f);
+			D3DXMatrixTranslation(&translation, -5.0f, 0.0f, 0.0f);
 			worldMatrix *= translation;
 		}
 
-		if (m_Models.at(i).name == "cushions")
+		if (m_Models.at(i).name == "ghost")
 		{
 			// Resizing the model object.
-			D3DXMatrixScaling(&scale, 0.5f, 0.5f, 0.5f);
+			D3DXMatrixScaling(&scale, 0.005f, 0.005f, 0.005f);
 			worldMatrix *= scale;
 
-			D3DXMatrixTranslation(&translation, 0.0f, -3.0f, 0.0f);
-			worldMatrix *= translation;
-		}
-
-		if (m_Models.at(i).name == "table")
-		{
-			// Resizing the model object.
-			D3DXMatrixScaling(&scale, 0.5f, 0.5f, 0.5f);
-			worldMatrix *= scale;
-
-			D3DXMatrixTranslation(&translation, 0.0f, -3.0f, 0.0f);
-			worldMatrix *= translation;
-		}
-
-		if (m_Models.at(i).name == "cat")
-		{
-			if (m_result && isPlayerWin)
-			{
-				if (angle <= 1.25f)
-					angle += 0.0001;
-				D3DXMatrixRotationX(&worldMatrix, angle);
-			}
-
-			// Resizing the model object.
-			D3DXMatrixScaling(&scale, 0.5f, 0.5f, 0.5f);
-			worldMatrix *= scale;
-
-			D3DXMatrixTranslation(&translation, 0.0f, -3.0f, 0.0f);
-			worldMatrix *= translation;
-		}
-
-		if (m_Models.at(i).name == "dog")
-		{
-			if (m_result && !isPlayerWin)
-			{
-				if (angle <= 1.25f)
-					angle += 0.0001;
-				D3DXMatrixRotationX(&worldMatrix, angle);
-			}
-
-			// Resizing the model object.
-			D3DXMatrixScaling(&scale, 0.5f, 0.5f, 0.5f);
-			worldMatrix *= scale;
-
-			D3DXMatrixTranslation(&translation, 0.0f, -3.0f, 0.0f);
-			worldMatrix *= translation;
-		}
-
-		if (m_Models.at(i).name == "c_cup")
-		{
-			// Resizing the model object.
-			D3DXMatrixScaling(&scale, 0.5f, 0.5f, 0.5f);
-			worldMatrix *= scale;
-
-			D3DXMatrixTranslation(&translation, 0.0f, -3.0f, m_EnePos.z);
-			worldMatrix *= translation;
-		}
-
-		if (m_Models.at(i).name == "d_cup")
-		{
-			// Resizing the model object.
-			D3DXMatrixScaling(&scale, 0.5f, 0.5f, 0.5f);
-			worldMatrix *= scale;
-
-			D3DXMatrixTranslation(&translation, 0.0f, -3.0f, m_PlaPos.z);
-			worldMatrix *= translation;
-		}
-
-		if (m_Models.at(i).name == "pepsi")
-		{
-			D3DXMatrixRotationY(&worldMatrix, rotation);
-			
-			// Resizing the model object.
-			D3DXMatrixScaling(&scale, 0.5f, 0.5f, 0.5f);
-			worldMatrix *= scale;
-
-			D3DXMatrixTranslation(&translation, m_PepPos.x, -3.0f, m_PepPos.z);
+			D3DXMatrixTranslation(&translation, 0.0f, 0.0f, 0.0f);
 			worldMatrix *= translation;
 		}
 
@@ -628,7 +498,7 @@ bool GraphicsClass::Render(float rotation)
 }
 
 /// Camera Movements
-void GraphicsClass::GoForward()
+void GraphicsClass::GoForward(float frameTime)
 {
 	D3DXMATRIX Dir;
 	D3DXMatrixIdentity(&Dir);
@@ -639,7 +509,7 @@ void GraphicsClass::GoForward()
 	m_CamPos += Direction * camSpeed;
 }
 
-void GraphicsClass::GoLeft()
+void GraphicsClass::GoLeft(float frameTime)
 {
 	D3DXMATRIX Dir;
 	D3DXMatrixIdentity(&Dir);
@@ -650,7 +520,7 @@ void GraphicsClass::GoLeft()
 	m_CamPos += Direction * camSpeed;
 }
 
-void GraphicsClass::GoBack()
+void GraphicsClass::GoBack(float frameTime)
 {
 	D3DXMATRIX Dir;
 	D3DXMatrixIdentity(&Dir);
@@ -661,7 +531,7 @@ void GraphicsClass::GoBack()
 	m_CamPos += Direction * camSpeed;
 }
 
-void GraphicsClass::GoRight()
+void GraphicsClass::GoRight(float frameTime)
 {
 	D3DXMATRIX Dir;
 	D3DXMatrixIdentity(&Dir);
@@ -673,182 +543,66 @@ void GraphicsClass::GoRight()
 }
 
 /// Player Movements
-void GraphicsClass::MoveLeft()
+void GraphicsClass::MoveForward()
 {
-	m_PlaPos.z -= playerSpeed;
 
-	if (m_PlaPos.z < -3.0f)
-		m_PlaPos.z = -3.0f;
 }
 
-void GraphicsClass::MoveRight()
+void GraphicsClass::MoveBack()
 {
-	m_PlaPos.z += playerSpeed;
 
-	if (m_PlaPos.z > 3.0f)
-		m_PlaPos.z = 3.0f;
 }
 
-void GraphicsClass::EnemyMoves(float frameTime)
+void GraphicsClass::EnemyFSM(float frameTime)
 {
-	if (m_EnePos.z <= m_PepPos.z)
-		m_EnePos.z += frameTime * enemySpeed;
-	else
-		m_EnePos.z -= frameTime * enemySpeed;
 
-	if (m_EnePos.z < -3.0f)
-		m_EnePos.z = -3.0f;
-
-	else if (m_EnePos.z > 3.0f)
-		m_EnePos.z = 3.0f;
-}
-
-void GraphicsClass::PepsiMoves(float frameTime)
-{
-	if (!start)
-		return;
-
-	// Pepsi moves to player or enemy.
-	m_PepPos += m_PepDir * frameTime * pepsiSpeed;
-
-
-	// Check the pepsi collided with player or enemy.
-	bool collision = CheckCollision();
-
-	if (collision)
-	{
-		turn = !turn;
-		int sign = rand() % 2;
-		if (sign == 0)
-		{
-			m_PepDir.z = -m_PepDir.z;
-		}
-		m_PepDir.x = -m_PepDir.x;
-	}
-
-	if (m_PepPos.z < -3.0f || m_PepPos.z > 3.0f)
-	{
-		m_PepDir.z = -m_PepDir.z;
-	}
-
-	// Scoring
-	if (m_PepPos.x >= 6.0f)
-	{
-		start = false;
-
-		m_PlaPos.z = 0.0f;
-		m_EnePos.z = 0.0f;
-		m_PepPos.x = 0.0f;
-		m_PepPos.z = 0.0f;
-
-		IncreaseEnemyScore();
-		turn = true;
-	}
-	else if (m_PepPos.x <= -6.0f)
-	{
-		start = false;
-
-		m_PlaPos.z = 0.0f;
-		m_EnePos.z = 0.0f;
-		m_PepPos.x = 0.0f;
-		m_PepPos.z = 0.0f;
-
-		IncreasePlayerScore();
-		turn = false;
-	}
 }
 
 bool GraphicsClass::CheckCollision()
 {
-	// Check if the pepsi collided with player.
-	// 플레이어를 향해서 어느정도 근접했을 때
-	if (turn && m_PepPos.x >= m_PlaPos.x - 0.7f && m_PepPos.x < m_PlaPos.x)
-	{
-		if (m_PlaPos.z - 0.6f < m_PepPos.z && m_PepPos.z < m_PlaPos.z + 0.6f)
-		{
-			return true;
-		}
-	}
 
-	// Check if the pepsi collided with enemy.
-	// 적을 향해 어느정도 근접했을 때
-	if (!turn && m_PepPos.x <= m_EnePos.x + 0.7f && m_PepPos.x > m_EnePos.x)
-	{
-		if (m_EnePos.z - 0.6f < m_PepPos.z && m_PepPos.z < m_EnePos.z + 0.6f)
-		{
-			return true;
-		}
-	}
 
 	return false;
 }
 
 int GraphicsClass::GetPlayerScore()
 {
-	return p_score;
-}
-
-int GraphicsClass::GetEnemyScore()
-{
-	return e_score;
+	//return p_score;
 }
 
 void GraphicsClass::IncreasePlayerScore()
 {
-	p_score += 1;
-}
-
-void GraphicsClass::IncreaseEnemyScore()
-{
-	e_score += 1;
+	//p_score += 1;
 }
 
 void GraphicsClass::ShowGameResult()
 {
-	m_result = true;
+	//m_result = true;
 
-	if (p_score >= 3)
-	{
-		m_Text->SetResult(0, m_D3D->GetDeviceContext());
-		isPlayerWin = true;
-	}
-	else if (e_score >= 3)
-	{
-		m_Text->SetResult(1, m_D3D->GetDeviceContext());
-		isPlayerWin = false;
-	}
+	//if (p_score >= 3)
+	//{
+	//	m_Text->SetResult(0, m_D3D->GetDeviceContext());
+	//	isPlayerWin = true;
+	//}
+	//else if (e_score >= 3)
+	//{
+	//	m_Text->SetResult(1, m_D3D->GetDeviceContext());
+	//	isPlayerWin = false;
+	//}
 }
 
 void GraphicsClass::RestartGame()
 {
-	start = false;
-	m_result = false;
-	
-	m_CamPos.x = 10.0f;
-	m_CamPos.y = 10.0f;
-	m_CamPos.z = 0.0f;
-
-	m_PlaPos.z = 0.0f;
-	m_EnePos.z = 0.0f;
-	m_PepPos.x = 0.0f;
-	m_PepPos.z = 0.0f;
-
-	p_score = 0;
-	e_score = 0;
-
-	angle = 0.0f;
-
-	m_Text->SetResult(-1, m_D3D->GetDeviceContext());
+	//start = false;
+	//m_result = false;
 }
 
 void GraphicsClass::StartGame()
 {
-	start = true;
-	if(p_score == 0 && e_score == 0)
-		turn = true;
+	//start = true;
 }
 
 bool GraphicsClass::GetResult()
 {
-	return m_result;
+	//return m_result;
 }

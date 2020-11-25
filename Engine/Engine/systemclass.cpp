@@ -63,20 +63,20 @@ bool SystemClass::Initialize()
 		return false;
 	}
 
-	// Create the sound object.
-	m_Sound = new SoundClass;
-	if (!m_Sound)
-	{
-		return false;
-	}
+	//// Create the sound object.
+	//m_Sound = new SoundClass;
+	//if (!m_Sound)
+	//{
+	//	return false;
+	//}
 
-	// Initialize the sound object.
-	result = m_Sound->Initialize(m_hwnd);
-	if (!result)
-	{
-		MessageBox(m_hwnd, L"Could not initialize Direct Sound.", L"Error", MB_OK);
-		return false;
-	}
+	//// Initialize the sound object.
+	//result = m_Sound->Initialize(m_hwnd);
+	//if (!result)
+	//{
+	//	MessageBox(m_hwnd, L"Could not initialize Direct Sound.", L"Error", MB_OK);
+	//	return false;
+	//}
 	
 	// Create the fps object.
 	m_Fps = new FpsClass;
@@ -202,10 +202,10 @@ void SystemClass::Run()
 		}
 		else
 		{
-			if (!m_Sound->CheckPlaying())
-			{
-				m_Sound->PlayMusic();
-			}
+			//if (!m_Sound->CheckPlaying())
+			//{
+			//	m_Sound->PlayMusic();
+			//}
 
 			// Check if the user pressed escape and wants to quit.
 			if (m_Input->IsEscapePressed() == true)
@@ -256,20 +256,20 @@ bool SystemClass::Frame()
 	if (m_Input->IsDDown())
 		m_Graphics->GoRight();
 
-	// Check the Player Movement Inputs
-	if (m_Input->IsLeftDown())
-		m_Graphics->MoveLeft();
-	
-	if (m_Input->IsRightDown())
-		m_Graphics->MoveRight();
+	//// Check the Player Movement Inputs
+	//if (m_Input->IsLeftDown())
+	//	m_Graphics->MoveLeft();
+	//
+	//if (m_Input->IsRightDown())
+	//	m_Graphics->MoveRight();
 
-	// Check the player wants to restarting Game
-	if (m_Input->IsEnterDown())
-		m_Graphics->RestartGame();
+	//// Check the player wants to restarting Game
+	//if (m_Input->IsEnterDown())
+	//	m_Graphics->RestartGame();
 
-	// Check the player wants to starting Game
-	if (m_Input->IsSpacebarDown() && !m_Graphics->GetResult())
-		m_Graphics->StartGame();
+	//// Check the player wants to starting Game
+	//if (m_Input->IsSpacebarDown() && !m_Graphics->GetResult())
+	//	m_Graphics->StartGame();
 
 	// Get the location of the mouse from the input object,
 	m_Input->GetMouseLocation(mouseX, mouseY);
