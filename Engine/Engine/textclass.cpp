@@ -462,7 +462,7 @@ bool TextClass::SetMousePosition(int mouseX, int mouseY, ID3D11DeviceContext* de
 	return true;
 }
 
-bool TextClass::SetScore(int playerScore, int enemyScore, ID3D11DeviceContext *deviceContext)
+bool TextClass::SetScore(int score, ID3D11DeviceContext *deviceContext)
 {
 	char tempString[16];
 	char scoreString[16];
@@ -475,14 +475,14 @@ bool TextClass::SetScore(int playerScore, int enemyScore, ID3D11DeviceContext *d
 	strcpy_s(scoreString, "Score");
 
 	// Update the sentence vertex buffer with the new string information.
-	result = UpdateSentence(m_sentences[4], scoreString, m_screenWidth/2, 60, 1.0f, 1.0f, 1.0f, deviceContext);
+	result = UpdateSentence(m_sentences[4], scoreString, 20, m_screenHeight-60, 0.5f, 0.5f, 0.5f, deviceContext);
 	if (!result)
 	{
 		return false;
 	}
 
 	// Convert the player's score integer to string format.
-	_itoa_s(playerScore, tempString, 10);
+	_itoa_s(score, tempString, 10);
 
 	// Setup the player's score string.
 	strcpy_s(playerString, "Dog(Player): ");
@@ -490,21 +490,6 @@ bool TextClass::SetScore(int playerScore, int enemyScore, ID3D11DeviceContext *d
 
 	// Update the sentence vertex buffer with the new string information.
 	result = UpdateSentence(m_sentences[5], playerString, m_screenWidth/3, 80, 0.0f, 0.0f, 1.0f, deviceContext);
-	if (!result)
-	{
-		return false;
-	}
-
-		
-	// Convert the enemy's score integer to string format.
-	_itoa_s(enemyScore, tempString, 10);
-
-	// Setup the enemy's score string.
-	strcpy_s(enemyString, "Cat(Enemy): ");
-	strcat_s(enemyString, tempString);
-
-	// Update the sentence vertex buffer with the new string information.
-	result = UpdateSentence(m_sentences[6], enemyString, m_screenWidth/3*2, 80, 1.0f, 0.0f, 1.0f, deviceContext);
 	if (!result)
 	{
 		return false;
@@ -531,7 +516,7 @@ bool TextClass::SetResult(int num, ID3D11DeviceContext *deviceContext)
 	{
 	case 0:
 		// Setup the player win string.
-		strcpy_s(resultString, "W I N !!!");
+		strcpy_s(resultString, "CLEAR !");
 
 		result = UpdateSentence(m_sentences[8], resultString, m_screenWidth/2, 20, 0.7f, 0.0f, 0.7f, deviceContext);
 		if (!result)
@@ -542,7 +527,7 @@ bool TextClass::SetResult(int num, ID3D11DeviceContext *deviceContext)
 	
 	case 1:
 		// Setup the player win string.
-		strcpy_s(resultString, "L O S E ...");
+		strcpy_s(resultString, "OOPS !..");
 
 		result = UpdateSentence(m_sentences[8], resultString, m_screenWidth/2, 20, 0.5f, 0.0f, 0.5f, deviceContext);
 		if (!result)
@@ -580,6 +565,56 @@ bool TextClass::SetResult(int num, ID3D11DeviceContext *deviceContext)
 
 	return true;
 }
+
+bool TextClass::SetLives(int lives, ID3D11DeviceContext* deviceContext)
+{
+	char tempString[16];
+	char livesString[16];
+	bool result;
+
+	// Convert the number of lives integer to string format.
+	_itoa_s(lives, tempString, 10);
+
+	// Setup the lives string.
+	strcpy_s(livesString, "Lives: ");
+	strcat_s(livesString, tempString);
+
+	// Update the sentence vertex buffer with the new string information.
+	result = UpdateSentence(m_sentences[10], livesString, 20, m_screenHeight-80, 0.0f, 1.0f, 0.0f, deviceContext);
+	if (!result)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+bool TextClass::SetCollision(bool collision, ID3D11DeviceContext* deviceContext)
+{
+	char collisionString[32];
+	bool result;
+
+	// Setup the cpu string.
+	strcpy_s(collisionString, "Collision: ");
+	if (collision)
+	{
+		strcat_s(collisionString, "True");
+		result = UpdateSentence(m_sentences[11], collisionString, 20, 100, 0.0f, 1.0f, 0.0f, deviceContext);
+	}
+	else
+	{
+		strcat_s(collisionString, "False");
+		result = UpdateSentence(m_sentences[11], collisionString, 20, 100, 1.0f, 0.0f, 0.5f, deviceContext);
+	}
+	
+	if (!result)
+	{
+		return false;
+	}
+
+	return true;
+}
+
 
 #ifdef DEBUG
 bool TextClass::SetPos(float pepX, float pepZ, float plaX, float plaZ, float eneX, float eneZ, ID3D11DeviceContext *deviceContext)

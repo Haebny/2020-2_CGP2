@@ -12,6 +12,7 @@
 #include "skyboxclass.h"
 
 #include <vector>
+#include <ctime>
 using namespace std;
 
 // Globals
@@ -28,6 +29,9 @@ private:
 		char* obj_path;
 		WCHAR* tex_path;
 		char* name;
+		char* tag;
+		D3DXVECTOR3 pos;
+		D3DXVECTOR3 min, max;
 	};
 
 public:
@@ -44,20 +48,26 @@ public:
 	void GoBack(float);
 	void GoRight(float);
 
-	void MoveForward();
-	void MoveBack();
+	void NevigateForward(float);
+	void NevigateLeft(float);
+	void NevigateBackward(float);
+	void NevigateRight(float);
 
-	int GetPlayerScore();
-	void IncreasePlayerScore();
+	int GetScore();
+	void IncreaseScore();
 
 	void EnemyFSM(float);
-	bool CheckCollision();
 
 	void ShowGameResult();
 	void RestartGame();
 	void StartGame();
 
-	bool GetResult();
+	int GetResult();
+
+	// 충돌 처리
+	bool CheckAABB(Model, Model);
+
+	void CountSeconds(float);
 
 public:
 	int m_input;
@@ -71,7 +81,10 @@ private:
 	vector<Model> m_Models;
 	Model floor,
 		reindeer, horns, face,
-		ghost;
+		player, horns2, eyelips, nose,
+		treetop, treebottom,
+		ghost,
+		house;
 	LightShaderClass* m_LightShader;
 	LightClass* m_Light;
 	LightClass *m_Light2, *m_Light3, *m_Light4;
@@ -81,9 +94,23 @@ private:
 	SkyboxClass* m_Skybox;
 
 private:
-	D3DXVECTOR3 m_CamPos, m_CamRot;
+	D3DXVECTOR3 m_CamPos, m_CamRot, playerPos, playerRot;
 	float PreX, PreY;
 	float camSpeed;
+
+	int m_Score, m_playerLife;
+	INT64 currentTime, m_startTime;
+	double mSecondsPerCount;
+
+	enum Result
+	{
+		Playing,
+		Failure,
+		Success
+	};
+
+	int m_Result;
+	bool isTimeOver, isCollided, isImmortal;
 };
 
 #endif 

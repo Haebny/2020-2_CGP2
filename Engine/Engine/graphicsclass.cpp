@@ -16,24 +16,74 @@ GraphicsClass::GraphicsClass()
 	floor.obj_path = "../Engine/data/models/floor.obj";
 	floor.tex_path = L"../Engine/data/textures/floor.dds";
 	floor.name = "floor";
+	floor.tag = "floor";
 
 	// reindeer model
-	reindeer.obj_path = "../Engine/data/models/reindeer.obj";
-	reindeer.tex_path = L"../Engine/data/textures/reindeer.dds";
+	reindeer.obj_path = "../Engine/data/models/reindeer/body.obj";
+	reindeer.tex_path = L"../Engine/data/textures/reindeer/fur.dds";
 	reindeer.name = "reindeer";
-	horns.obj_path = "../Engine/data/models/horns.obj";
-	horns.tex_path = L"../Engine/data/textures/horns.dds";
+	reindeer.tag = "npc";
+
+	horns.obj_path = "../Engine/data/models/reindeer/horns.obj";
+	horns.tex_path = L"../Engine/data/textures/reindeer/horn.dds";
 	horns.name = "horns";
-	face.obj_path = "../Engine/data/models/face.obj";
-	face.tex_path = L"../Engine/data/textures/face.dds";
+	horns.tag = "npc";
+
+	face.obj_path = "../Engine/data/models/reindeer/face.obj";
+	face.tex_path = L"../Engine/data/textures/reindeer/eyes.dds";
 	face.name = "face";
+	face.tag = "npc";
+
+	player.obj_path = "../Engine/data/models/reindeer/body.obj";
+	player.tex_path = L"../Engine/data/textures/reindeer/fur.dds";
+	player.name = "player";
+	player.tag = "player";
+
+	horns2.obj_path = "../Engine/data/models/reindeer/horns.obj";
+	horns2.tex_path = L"../Engine/data/textures/reindeer/horn.dds";
+	horns2.name = "player";
+	horns2.tag = "player";
+
+	eyelips.obj_path = "../Engine/data/models/reindeer/eyelips.obj";
+	eyelips.tex_path = L"../Engine/data/textures/reindeer/eyes.dds";
+	eyelips.name = "player";
+	eyelips.tag = "player";
+
+	nose.obj_path = "../Engine/data/models/reindeer/nose.obj";
+	nose.tex_path = L"../Engine/data/textures/reindeer/red.dds";
+	nose.name = "player";
+	nose.tag = "player";
+
+	// tree model
+	treetop.obj_path = "../Engine/data/models/tree/treetop.obj";
+	treetop.tex_path= L"../Engine/data/textures/tree/treetop.dds";
+	treetop.name = "treetop";
+	treetop.tag = "tree";
+
+	treebottom.obj_path = "../Engine/data/models/tree/treebottom.obj";
+	treebottom.tex_path = L"../Engine/data/textures/tree/treebottom.dds";
+	treebottom.name = "treebottom";
+	treebottom.tag = "tree";
 
 	// ghost model
 	ghost.obj_path = "../Engine/data/models/ghost.obj";
 	ghost.tex_path = L"../Engine/data/textures/ghost.dds";
 	ghost.name = "ghost";
+	ghost.tag = "ghost";
 
-	camSpeed = 0.005f;
+	// house model
+	house.obj_path = "../Engine/data/models/house.obj";
+	house.tex_path = L"../Engine/data/textures/house.dds";
+	house.name = "house";
+	house.tag = "house";
+
+	camSpeed = 0.05f;
+
+	m_Score = 0;
+	m_playerLife = 3;
+	isImmortal = false;
+	isTimeOver = false;
+	isCollided = false;
 }
 
 
@@ -94,7 +144,16 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 	// Push back models to vector container.
 	m_Models.push_back(floor);
+	m_Models.push_back(player);
+	m_Models.push_back(horns2);
+	m_Models.push_back(eyelips);
+	m_Models.push_back(nose);
 	m_Models.push_back(reindeer);
+	m_Models.push_back(horns);
+	m_Models.push_back(face);
+	m_Models.push_back(house);
+	m_Models.push_back(treebottom);
+	m_Models.push_back(treetop);
 	m_Models.push_back(ghost);
 
 	// Initialize the model object.
@@ -114,6 +173,35 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		{
 			MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
 			return false;
+		}
+
+		if (m_Models.at(i).tag == "player")
+		{
+			m_Models.at(i).min = D3DXVECTOR3(-1.0f, 0.0f, -1.0f);
+			m_Models.at(i).max = D3DXVECTOR3(1.0f, 0.0f, 1.0f);
+			m_Models.at(i).pos = D3DXVECTOR3(0.0f, 0.0f, -20.0f);
+			playerPos = m_Models.at(i).pos;
+		}
+
+		if (m_Models.at(i).tag == "npc")
+		{
+			m_Models.at(i).min = D3DXVECTOR3(-1.0f, 0.0f, -1.0f);
+			m_Models.at(i).max = D3DXVECTOR3(1.0f, 0.0f, 1.0f);
+			m_Models.at(i).pos = D3DXVECTOR3(0.0f, 0.0f, 5.0f);
+		}
+
+		if (m_Models.at(i).tag == "tree")
+		{
+			m_Models.at(i).min = D3DXVECTOR3(-10.0f, 0.0f, -10.0f);
+			m_Models.at(i).max = D3DXVECTOR3(10.0f, 0.0f, 10.0f);
+			m_Models.at(i).pos = D3DXVECTOR3(-20.0f, 0.0f, 0.0f);
+		}
+
+		if (m_Models.at(i).tag == "ghost")
+		{
+			m_Models.at(i).min = D3DXVECTOR3(-7.0f, 0.0f, -7.0f);
+			m_Models.at(i).max = D3DXVECTOR3(7.0f, 0.0f, 7.0f);
+			m_Models.at(i).pos = D3DXVECTOR3(20.0f, 5.0f, 0.0f);
 		}
 	}
 
@@ -151,7 +239,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 	m_Light2->SetDiffuseColor(1.0f, 0.0f, 0.0f, 1.0f);
-	m_Light2->SetPosition(-10.0f, 5.0f, 0.0f);
+	m_Light2->SetPosition(playerPos.x, 3.0f, playerPos.z);
 
 	m_Light3 = new LightClass;
 	if (!m_Light3)
@@ -159,7 +247,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 	m_Light3->SetDiffuseColor(0.0f, 1.0f, 0.0f, 1.0f);
-	m_Light3->SetPosition(0.0f, 5.0f, 0.0f);
+	m_Light3->SetPosition(m_Models.at(5).pos.x, 5.0f, m_Models.at(5).pos.z);
 
 	m_Light4 = new LightClass;
 	if (!m_Light4)
@@ -167,7 +255,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 	m_Light4->SetDiffuseColor(0.0f, 0.0f, 1.0f, 1.0f);
-	m_Light4->SetPosition(10.0f, 5.0f, 0.0f);
+	m_Light4->SetPosition(m_Models.at(11).pos.x, 5.0f, m_Models.at(11).pos.z);
 
 	// Create the texture shader object.
 	m_TextureShader = new TextureShaderClass;
@@ -232,9 +320,9 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
-	m_CamPos.x = 10.0f;
-	m_CamPos.y = 10.0f;
-	m_CamPos.z = 0.0f;
+	m_CamPos.x = playerPos.x;
+	m_CamPos.y = 7.0f;
+	m_CamPos.z = playerPos.z;
 
 	m_CamRot.x = 0.0f;
 	m_CamRot.y = 0.0f;
@@ -337,6 +425,11 @@ bool GraphicsClass::Frame(int mouseX, int mouseY, int fps, int cpu, float frameT
 	m_Camera->SetPosition(m_CamPos.x, m_CamPos.y, m_CamPos.z);
 	m_Camera->SetRotation(m_CamRot.x, m_CamRot.y, m_CamRot.z);
 
+	// Set point lights' position.
+	m_Light2->SetPosition(playerPos.x, 3.0f, playerPos.z);
+	m_Light3->SetPosition(m_Models.at(5).pos.x, 5.0f, m_Models.at(5).pos.z);
+	m_Light4->SetPosition(m_Models.at(11).pos.x, 5.0f, m_Models.at(11).pos.z);
+
 	// Set the skybox.
 	m_Skybox->Frame(m_CamPos);
 
@@ -358,6 +451,55 @@ bool GraphicsClass::Frame(int mouseX, int mouseY, int fps, int cpu, float frameT
 	if (!result)
 	{
 		return false;
+	}
+
+	result = m_Text->SetLives(m_playerLife, m_D3D->GetDeviceContext());
+	if (!result)
+	{
+		return false;
+	}
+
+	for (int i = 0; i < m_Models.size(); i++)
+	{
+		if (m_Models.at(i).tag == "player")
+		{
+			for (int j = 10; j < m_Models.size(); j++)
+			{
+				isCollided = CheckAABB(m_Models.at(i), m_Models.at(j));
+
+				if (isCollided && m_Models.at(j).tag == "ghost" && !isImmortal)
+				{
+					m_Result = Failure;
+					break;
+				}
+
+				else if (isCollided && m_Models.at(j).tag == "tree" && !isImmortal)
+				{
+					m_playerLife--;
+					isImmortal = true;
+					m_startTime = frameTime;
+					break;
+				}
+			}
+		}
+	}
+
+	result = m_Text->SetCollision(isCollided, m_D3D->GetDeviceContext());
+	if (!result)
+	{
+		return false;
+	}
+
+	// 부딪혔을 때 3초간 무적
+	if (isImmortal)
+	{
+		CountSeconds(frameTime);
+	}
+
+	// 결과 화면 출력
+	if (m_playerLife == 0 || m_Result == Failure)
+	{
+		ShowGameResult();
 	}
 
 	static float rotation = 0.0f;
@@ -383,7 +525,7 @@ bool GraphicsClass::Frame(int mouseX, int mouseY, int fps, int cpu, float frameT
 bool GraphicsClass::Render(float rotation)
 {
 	D3DXMATRIX viewMatrix, projectionMatrix, worldMatrix, orthoMatrix;
-	D3DXMATRIX translation, scale, baseWorldMat;
+	D3DXMATRIX translation, scale, baseWorldMat, rotate;
 	bool result = true;
 	D3DXVECTOR4 diffuseColors[3];
 	D3DXVECTOR4 lightPosition[3];
@@ -449,19 +591,57 @@ bool GraphicsClass::Render(float rotation)
 			worldMatrix *= translation;
 		}
 
-		if (m_Models.at(i).name == "reindeer")
+		if (m_Models.at(i).tag == "npc")
 		{
-			D3DXMatrixTranslation(&translation, -5.0f, 0.0f, 0.0f);
+			// Resizing the model object.
+			D3DXMatrixScaling(&scale, 4.0f, 4.0f, 4.0f);
+			worldMatrix *= scale;
+
+			D3DXMatrixTranslation(&translation, m_Models.at(i).pos.x, m_Models.at(i).pos.y, m_Models.at(i).pos.z);
 			worldMatrix *= translation;
 		}
 
-		if (m_Models.at(i).name == "ghost")
+		if (m_Models.at(i).tag == "player")
 		{
+			m_Models.at(i).pos = playerPos;
 			// Resizing the model object.
-			D3DXMatrixScaling(&scale, 0.005f, 0.005f, 0.005f);
+			D3DXMatrixScaling(&scale, 3.0f, 3.0f, 3.0f);
 			worldMatrix *= scale;
 
-			D3DXMatrixTranslation(&translation, 0.0f, 0.0f, 0.0f);
+			D3DXMatrixRotationYawPitchRoll(&rotate, playerRot.y*0.0174532925f + D3DXToRadian(180), 0.0f, 0.0f);
+			worldMatrix *= rotate;
+
+			D3DXMatrixTranslation(&translation, playerPos.x, playerPos.y, playerPos.z);
+			worldMatrix *= translation;
+		}
+
+		if (m_Models.at(i).tag == "tree")
+		{
+			// Resizing the model object.
+			D3DXMatrixScaling(&scale, 7.0f, 7.0f, 7.0f);
+			worldMatrix *= scale;
+
+			D3DXMatrixTranslation(&translation, m_Models.at(i).pos.x, m_Models.at(i).pos.y, m_Models.at(i).pos.z);
+			worldMatrix *= translation;
+		}
+
+		if (m_Models.at(i).tag == "ghost")
+		{
+			// Resizing the model object.
+			D3DXMatrixScaling(&scale, 0.01f, 0.01f, 0.01f);
+			worldMatrix *= scale;
+
+			D3DXMatrixTranslation(&translation, m_Models.at(i).pos.x, m_Models.at(i).pos.y, m_Models.at(i).pos.z);
+			worldMatrix *= translation;
+		}
+
+		if (m_Models.at(i).name == "house")
+		{
+			// Resizing the model object.
+			D3DXMatrixScaling(&scale, 0.5f, 0.5f, 0.5f);
+			worldMatrix *= scale;
+
+			D3DXMatrixTranslation(&translation, 0.0f, 0.0f, 50.0f);
 			worldMatrix *= translation;
 		}
 
@@ -497,7 +677,7 @@ bool GraphicsClass::Render(float rotation)
 	return true;
 }
 
-/// Camera Movements
+/// Player Movements
 void GraphicsClass::GoForward(float frameTime)
 {
 	D3DXMATRIX Dir;
@@ -506,7 +686,13 @@ void GraphicsClass::GoForward(float frameTime)
 	D3DXMatrixRotationYawPitchRoll(&Dir, m_CamRot.y * 0.0174532925f, m_CamRot.x * 0.0174532925f, m_CamRot.z * 0.0174532925f);
 	D3DXVec3TransformCoord(&Direction, &Direction, &Dir);
 
-	m_CamPos += Direction * camSpeed;
+	playerPos += Direction * camSpeed * frameTime;
+	playerPos.y = 0.0f;
+	playerRot.y = m_CamRot.y * 0.0174532925f + D3DXToRadian(180.0f);
+
+	m_CamPos.x = playerPos.x;
+	m_CamPos.y = 7.0f;
+	m_CamPos.z = playerPos.z;
 }
 
 void GraphicsClass::GoLeft(float frameTime)
@@ -517,7 +703,13 @@ void GraphicsClass::GoLeft(float frameTime)
 	D3DXMatrixRotationYawPitchRoll(&Dir, m_CamRot.y * 0.0174532925f, m_CamRot.x * 0.0174532925f, m_CamRot.z * 0.0174532925f);
 	D3DXVec3TransformCoord(&Direction, &Direction, &Dir);
 
-	m_CamPos += Direction * camSpeed;
+	playerPos += Direction * camSpeed * frameTime;
+	playerPos.y = 0.0f;
+	playerRot.y = m_CamRot.y * 0.0174532925f + D3DXToRadian(180.0f);
+
+	m_CamPos.x = playerPos.x;
+	m_CamPos.y = 7.0f;
+	m_CamPos.z = playerPos.z;
 }
 
 void GraphicsClass::GoBack(float frameTime)
@@ -528,7 +720,13 @@ void GraphicsClass::GoBack(float frameTime)
 	D3DXMatrixRotationYawPitchRoll(&Dir, m_CamRot.y * 0.0174532925f, m_CamRot.x * 0.0174532925f, m_CamRot.z * 0.0174532925f);
 	D3DXVec3TransformCoord(&Direction, &Direction, &Dir);
 
-	m_CamPos += Direction * camSpeed;
+	playerPos += Direction * camSpeed * frameTime;
+	playerPos.y = 0.0f;
+	playerRot.y = m_CamRot.y * 0.0174532925f + D3DXToRadian(180.0f);
+
+	m_CamPos.x = playerPos.x;
+	m_CamPos.y = 7.0f;
+	m_CamPos.z = playerPos.z;
 }
 
 void GraphicsClass::GoRight(float frameTime)
@@ -539,70 +737,159 @@ void GraphicsClass::GoRight(float frameTime)
 	D3DXMatrixRotationYawPitchRoll(&Dir, m_CamRot.y * 0.0174532925f, m_CamRot.x * 0.0174532925f, m_CamRot.z * 0.0174532925f);
 	D3DXVec3TransformCoord(&Direction, &Direction, &Dir);
 
-	m_CamPos += Direction * camSpeed;
+	playerPos += Direction * camSpeed * frameTime;
+	playerPos.y = 0.0f;
+	playerRot.y = m_CamRot.y * 0.0174532925f + D3DXToRadian(180.0f);
+
+	m_CamPos.x = playerPos.x;
+	m_CamPos.y = 7.0f;
+	m_CamPos.z = playerPos.z;
 }
 
-/// Player Movements
-void GraphicsClass::MoveForward()
+/// Camera Movements Only
+void GraphicsClass::NevigateForward(float frameTime)
 {
+	D3DXMATRIX Dir;
+	D3DXMatrixIdentity(&Dir);
+	D3DXVECTOR3 Direction(0.0f, 0.0f, 1.0f);
+	D3DXMatrixRotationYawPitchRoll(&Dir, m_CamRot.y * 0.0174532925f, m_CamRot.x * 0.0174532925f, m_CamRot.z * 0.0174532925f);
+	D3DXVec3TransformCoord(&Direction, &Direction, &Dir);
 
+	m_CamPos += Direction * camSpeed * frameTime;
 }
 
-void GraphicsClass::MoveBack()
+void GraphicsClass::NevigateLeft(float frameTime)
 {
+	D3DXMATRIX Dir;
+	D3DXMatrixIdentity(&Dir);
+	D3DXVECTOR3 Direction(-1.0f, 0.0f, 0.0f);
+	D3DXMatrixRotationYawPitchRoll(&Dir, m_CamRot.y * 0.0174532925f, m_CamRot.x * 0.0174532925f, m_CamRot.z * 0.0174532925f);
+	D3DXVec3TransformCoord(&Direction, &Direction, &Dir);
 
+	m_CamPos += Direction * camSpeed * frameTime;
+}
+
+void GraphicsClass::NevigateBackward(float frameTime)
+{
+	D3DXMATRIX Dir;
+	D3DXMatrixIdentity(&Dir);
+	D3DXVECTOR3 Direction(0.0f, 0.0f, -1.0f);
+	D3DXMatrixRotationYawPitchRoll(&Dir, m_CamRot.y * 0.0174532925f, m_CamRot.x * 0.0174532925f, m_CamRot.z * 0.0174532925f);
+	D3DXVec3TransformCoord(&Direction, &Direction, &Dir);
+
+	m_CamPos += Direction * camSpeed * frameTime;
+}
+
+void GraphicsClass::NevigateRight(float frameTime)
+{
+	D3DXMATRIX Dir;
+	D3DXMatrixIdentity(&Dir);
+	D3DXVECTOR3 Direction(1.0f, 0.0f, 0.0f);
+	D3DXMatrixRotationYawPitchRoll(&Dir, m_CamRot.y * 0.0174532925f, m_CamRot.x * 0.0174532925f, m_CamRot.z * 0.0174532925f);
+	D3DXVec3TransformCoord(&Direction, &Direction, &Dir);
+
+	m_CamPos += Direction * camSpeed * frameTime;
 }
 
 void GraphicsClass::EnemyFSM(float frameTime)
 {
-
+	
 }
 
-bool GraphicsClass::CheckCollision()
+int GraphicsClass::GetScore()
 {
-
-
-	return false;
+	return m_Score;
 }
 
-int GraphicsClass::GetPlayerScore()
+void GraphicsClass::IncreaseScore()
 {
-	//return p_score;
-}
-
-void GraphicsClass::IncreasePlayerScore()
-{
-	//p_score += 1;
+	m_Score += 1;
 }
 
 void GraphicsClass::ShowGameResult()
 {
-	//m_result = true;
+	if (m_Score == 3 && !isTimeOver)
+	{
+		m_Text->SetResult(0, m_D3D->GetDeviceContext());
+		m_Result = Success;
+	}
 
-	//if (p_score >= 3)
-	//{
-	//	m_Text->SetResult(0, m_D3D->GetDeviceContext());
-	//	isPlayerWin = true;
-	//}
-	//else if (e_score >= 3)
-	//{
-	//	m_Text->SetResult(1, m_D3D->GetDeviceContext());
-	//	isPlayerWin = false;
-	//}
+	if (isTimeOver || m_playerLife == 0)
+	{
+		m_Text->SetResult(1, m_D3D->GetDeviceContext());
+		m_Result = Failure;
+	}
+
+	return;
 }
 
 void GraphicsClass::RestartGame()
 {
-	//start = false;
-	//m_result = false;
+	m_Result = Playing;
+	m_playerLife = 3;
+	isTimeOver = false;
+
+	for (int i = 0; i < m_Models.size(); i++)
+	{
+		if (m_Models.at(i).tag == "player")
+		{
+			m_Models.at(i).min = D3DXVECTOR3(-1.0f, 0.0f, -1.0f);
+			m_Models.at(i).max = D3DXVECTOR3(1.0f, 0.0f, 1.0f);
+			m_Models.at(i).pos = D3DXVECTOR3(0.0f, 0.0f, -20.0f);
+			playerPos = m_Models.at(i).pos;
+		}
+
+		if (m_Models.at(i).tag == "npc")
+		{
+			m_Models.at(i).min = D3DXVECTOR3(-1.0f, 0.0f, -1.0f);
+			m_Models.at(i).max = D3DXVECTOR3(1.0f, 0.0f, 1.0f);
+			m_Models.at(i).pos = D3DXVECTOR3(0.0f, 0.0f, 5.0f);
+		}
+
+		if (m_Models.at(i).tag == "tree")
+		{
+			m_Models.at(i).min = D3DXVECTOR3(-10.0f, 0.0f, -10.0f);
+			m_Models.at(i).max = D3DXVECTOR3(10.0f, 0.0f, 10.0f);
+			m_Models.at(i).pos = D3DXVECTOR3(-20.0f, 0.0f, 0.0f);
+		}
+
+		if (m_Models.at(i).tag == "ghost")
+		{
+			m_Models.at(i).min = D3DXVECTOR3(-7.0f, 0.0f, -7.0f);
+			m_Models.at(i).max = D3DXVECTOR3(7.0f, 0.0f, 7.0f);
+			m_Models.at(i).pos = D3DXVECTOR3(20.0f, 5.0f, 0.0f);
+		}
+	}
 }
 
 void GraphicsClass::StartGame()
 {
-	//start = true;
+	m_Result = Playing;
 }
 
-bool GraphicsClass::GetResult()
+int GraphicsClass::GetResult()
 {
-	//return m_result;
+	return m_Result;
+}
+
+bool GraphicsClass::CheckAABB(Model a, Model b)
+{
+	return (a.pos.x + a.min.x <= b.pos.x + b.max.x &&
+		a.pos.x + a.max.x >= b.pos.x + b.min.x &&
+		a.pos.z + a.min.z <= b.pos.z + b.max.z &&
+		a.pos.z + a.max.z >= b.pos.z + b.min.z);
+}
+
+void GraphicsClass::CountSeconds(float frameTime)
+{
+	float timeDifference;
+
+	currentTime = frameTime;
+
+	timeDifference = (float)(currentTime - m_startTime);
+
+	if (timeDifference >= 3.0f)
+	{
+		isImmortal = false;
+	}
 }

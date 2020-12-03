@@ -36,8 +36,10 @@ public:
 
 	bool SetMousePosition(int, int, ID3D11DeviceContext*);
 
-	bool SetScore(int, int, ID3D11DeviceContext*);
+	bool SetScore(int, ID3D11DeviceContext*);
 	bool SetResult(int, ID3D11DeviceContext*);
+	bool SetLives(int, ID3D11DeviceContext*);
+	bool SetCollision(bool, ID3D11DeviceContext*);
 
 #ifdef DEBUG
 	bool SetPos(float, float, float, float, float, float, ID3D11DeviceContext*);

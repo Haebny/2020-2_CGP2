@@ -257,14 +257,28 @@ bool InputClass::IsDDown()
 	return false;
 }
 
-bool InputClass::IsLeftDown()
+bool InputClass::IsUpArrowDown()
+{
+	if (m_keyboardState[DIK_UPARROW] & 0x80)
+		return true;
+	return false;
+}
+
+bool InputClass::IsLeftArrowDown()
 {
 	if (m_keyboardState[DIK_LEFTARROW] & 0x80)
 		return true;
 	return false;
 }
 
-bool InputClass::IsRightDown()
+bool InputClass::IsDownArrowDown()
+{
+	if (m_keyboardState[DIK_DOWNARROW] & 0x80)
+		return true;
+	return false;
+}
+
+bool InputClass::IsRightArrowDown()
 {
 	if (m_keyboardState[DIK_RIGHTARROW] & 0x80)
 		return true;

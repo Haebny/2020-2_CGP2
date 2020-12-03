@@ -26,8 +26,10 @@ public:
 	bool IsSDown();
 	bool IsDDown();
 
-	bool IsLeftDown();
-	bool IsRightDown();
+	bool IsUpArrowDown();
+	bool IsLeftArrowDown();
+	bool IsDownArrowDown();
+	bool IsRightArrowDown();
 	bool IsEnterDown();
 	bool IsSpacebarDown();
 
