@@ -121,7 +121,6 @@ bool ModelClass::InitializeBuffers(ID3D11Device* device)
 		return false;
 	}
 
-
 	// Set up the description of the static index buffer.
 	indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
 	indexBufferDesc.ByteWidth = sizeof(unsigned long) * m_indexCount;
@@ -368,7 +367,7 @@ bool ModelClass::LoadDataStructures(char* filename, int vertexCount, int texture
 	// Read in the vertices, texture coordinates, and normals into the data structures.
 	// Important: Also convert to left hand coordinate system since Maya uses right hand coordinate system.
 	fin.get(input);
-	while (!fin.eof())
+	while (!fin.fail())
 	{
 		if (input == 'v')
 		{
@@ -426,23 +425,13 @@ bool ModelClass::LoadDataStructures(char* filename, int vertexCount, int texture
 		while (input != '\n')
 		{
 			fin.get(input);
-			if (fin.eof())
+			if (fin.fail())
 				break;
 		}
 
 		// Start reading the beginning of the next line.
 		fin.get(input);
 	}
-
-	//// Close the file.
-	//fin.close();
-	//// Open the output file.
-	//fout.open("model.txt");
-	//// Write out the file header that our model format uses.
-	//fout << "Vertex Count: " << (faceCount * 3) << endl;
-	//fout << endl;
-	//fout << "Data:" << endl;
-	//fout << endl;
 
 	m_vertexCount = faceCount * 3;
 

@@ -23,6 +23,12 @@ const float SCREEN_NEAR = 0.1f;
 
 class GraphicsClass {
 private:
+	enum State
+	{
+		Idle,
+		Trace
+	};
+
 	struct Model
 	{
 		ModelClass* model;
@@ -30,8 +36,10 @@ private:
 		WCHAR* tex_path;
 		char* name;
 		char* tag;
-		D3DXVECTOR3 pos;
+		D3DXVECTOR3 pos, startPos;
+		//D3DXMATRIX patrolPoint;
 		D3DXVECTOR3 min, max;
+		State state;
 	};
 
 public:
@@ -56,11 +64,13 @@ public:
 	int GetScore();
 	void IncreaseScore();
 
-	void EnemyFSM(float);
+	void GhostFSM(float, Model);
 
 	void ShowGameResult();
 	void RestartGame();
 	void StartGame();
+
+	void Update(float);
 
 	int GetResult();
 
@@ -80,11 +90,21 @@ private:
 	D3DClass* m_D3D;
 	vector<Model> m_Models;
 	Model floor,
-		reindeer, horns, face,
-		player, horns2, eyelips, nose,
-		treetop, treebottom,
-		ghost,
-		house;
+		reindeer, horns, face,			// npc
+		player, horns2, eyelips, nose,	// player
+		house, house2, house3, house4,	// house
+		treetop, treebottom, treetop11, treebottom11,// tree
+		treetop2, treebottom2, treetop12, treebottom12,
+		treetop3, treebottom3, treetop13, treebottom13,
+		treetop4, treebottom4, treetop14, treebottom14,
+		treetop5, treebottom5, treetop15, treebottom15,
+		treetop6, treebottom6, treetop16, treebottom16,
+		treetop7, treebottom7, treetop17, treebottom17,
+		treetop8, treebottom8, treetop18, treebottom18,
+		treetop9, treebottom9, treetop19, treebottom19,
+		treetop10, treebottom10, treetop20, treebottom20,
+		ghost, ghost2, ghost3, ghost4, ghost5, ghost6, ghost7;	// ghost
+
 	LightShaderClass* m_LightShader;
 	LightClass* m_Light;
 	LightClass *m_Light2, *m_Light3, *m_Light4;
@@ -94,9 +114,9 @@ private:
 	SkyboxClass* m_Skybox;
 
 private:
-	D3DXVECTOR3 m_CamPos, m_CamRot, playerPos, playerRot;
+	D3DXVECTOR3 m_CamPos, m_CamRot, playerPos, prePos;
 	float PreX, PreY;
-	float camSpeed;
+	float camSpeed, ghostSpeed;
 
 	int m_Score, m_playerLife;
 	INT64 currentTime, m_startTime;

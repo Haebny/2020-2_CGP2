@@ -40,10 +40,11 @@ public:
 	bool SetResult(int, ID3D11DeviceContext*);
 	bool SetLives(int, ID3D11DeviceContext*);
 	bool SetCollision(bool, ID3D11DeviceContext*);
+	bool SetState(bool, ID3D11DeviceContext*);
 
-#ifdef DEBUG
-	bool SetPos(float, float, float, float, float, float, ID3D11DeviceContext*);
-#endif
+//#ifdef DEBUG
+	bool SetPos(float, float, ID3D11DeviceContext*);
+//#endif
 
 private:
 	bool InitializeSentence(SentenceType**, int, ID3D11Device*);

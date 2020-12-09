@@ -615,41 +615,41 @@ bool TextClass::SetCollision(bool collision, ID3D11DeviceContext* deviceContext)
 	return true;
 }
 
+bool TextClass::SetState(bool immortal, ID3D11DeviceContext *deviceContext)
+{
+	char printString[32];
+	bool result;
 
-#ifdef DEBUG
-bool TextClass::SetPos(float pepX, float pepZ, float plaX, float plaZ, float eneX, float eneZ, ID3D11DeviceContext *deviceContext)
+	// Setup the time string.
+	strcpy_s(printString, "Immortal: ");
+
+	// Update the sentence vertex buffer with the new string information.
+	if (immortal)
+	{
+		strcat_s(printString, "True");
+		result = UpdateSentence(m_sentences[14], printString, 20, 160, 0.0f, 1.0f, 0.0f, deviceContext);
+	}
+	else
+	{
+		strcat_s(printString, "False");
+		result = UpdateSentence(m_sentences[14], printString, 20, 160, 1.0f, 0.0f, 0.5f, deviceContext);
+	}
+
+	if (!result)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+
+//#ifdef DEBUG
+bool TextClass::SetPos(float plaX, float plaZ, ID3D11DeviceContext *deviceContext)
 {
 	char tempString[16];
 	char printString[16];
 	bool result;
-
-	// Convert the mouseX integer to string format.
-	_itoa_s((int)pepX, tempString, 10);
-
-	// Setup the mouseX string.
-	strcpy_s(printString, "Pepsi X: ");
-	strcat_s(printString, tempString);
-
-	// Update the sentence vertex buffer with the new string information.
-	result = UpdateSentence(m_sentences[10], printString, 20, 100, 1.0f, 1.0f, 1.0f, deviceContext);
-	if (!result)
-	{
-		return false;
-	}
-
-	// Convert the mouseX integer to string format.
-	_itoa_s((int)pepZ, tempString, 10);
-
-	// Setup the mouseX string.
-	strcpy_s(printString, "Pepsi Z: ");
-	strcat_s(printString, tempString);
-
-	// Update the sentence vertex buffer with the new string information.
-	result = UpdateSentence(m_sentences[11], printString, 20, 120, 1.0f, 1.0f, 1.0f, deviceContext);
-	if (!result)
-	{
-		return false;
-	}
 
 	// Convert the mouseX integer to string format.
 	_itoa_s((int)plaX, tempString, 10);
@@ -659,7 +659,7 @@ bool TextClass::SetPos(float pepX, float pepZ, float plaX, float plaZ, float ene
 	strcat_s(printString, tempString);
 
 	// Update the sentence vertex buffer with the new string information.
-	result = UpdateSentence(m_sentences[12], printString, 20, 140, 1.0f, 1.0f, 1.0f, deviceContext);
+	result = UpdateSentence(m_sentences[12], printString, 20, 120, 1.0f, 1.0f, 1.0f, deviceContext);
 	if (!result)
 	{
 		return false;
@@ -673,35 +673,7 @@ bool TextClass::SetPos(float pepX, float pepZ, float plaX, float plaZ, float ene
 	strcat_s(printString, tempString);
 
 	// Update the sentence vertex buffer with the new string information.
-	result = UpdateSentence(m_sentences[13], printString, 20, 160, 1.0f, 1.0f, 1.0f, deviceContext);
-	if (!result)
-	{
-		return false;
-	}
-
-	// Convert the mouseX integer to string format.
-	_itoa_s((int)eneX, tempString, 10);
-
-	// Setup the mouseX string.
-	strcpy_s(printString, "Enemy X: ");
-	strcat_s(printString, tempString);
-
-	// Update the sentence vertex buffer with the new string information.
-	result = UpdateSentence(m_sentences[14], printString, 20, 180, 1.0f, 1.0f, 1.0f, deviceContext);
-	if (!result)
-	{
-		return false;
-	}
-
-	// Convert the mouseX integer to string format.
-	_itoa_s((int)eneZ, tempString, 10);
-
-	// Setup the mouseX string.
-	strcpy_s(printString, "Enemy Z: ");
-	strcat_s(printString, tempString);
-
-	// Update the sentence vertex buffer with the new string information.
-	result = UpdateSentence(m_sentences[15], printString, 20, 200, 1.0f, 1.0f, 1.0f, deviceContext);
+	result = UpdateSentence(m_sentences[13], printString, 20, 140, 1.0f, 1.0f, 1.0f, deviceContext);
 	if (!result)
 	{
 		return false;
@@ -709,4 +681,4 @@ bool TextClass::SetPos(float pepX, float pepZ, float plaX, float plaZ, float ene
 
 	return true;
 }
-#endif
+//#endif
