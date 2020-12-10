@@ -1,5 +1,5 @@
 #include "graphicsclass.h"
-#include <ctime>
+#include <math.h>
 
 GraphicsClass::GraphicsClass()
 {
@@ -19,7 +19,7 @@ GraphicsClass::GraphicsClass()
 	floor.tag = "floor";
 
 	// npc model
-	reindeer.obj_path = "../Engine/data/models/reindeer/body.obj";
+	reindeer.obj_path = "../Engine/data/models/reindeer/body2.obj";
 	reindeer.tex_path = L"../Engine/data/textures/reindeer/fur.dds";
 	reindeer.name = "reindeer";
 	reindeer.tag = "npc";
@@ -35,7 +35,7 @@ GraphicsClass::GraphicsClass()
 	face.tag = "npc";
 
 	// player model
-	player.obj_path = "../Engine/data/models/reindeer/body.obj";
+	player.obj_path = "../Engine/data/models/reindeer/body2.obj";
 	player.tex_path = L"../Engine/data/textures/reindeer/fur.dds";
 	player.name = "player";
 	player.tag = "player";
@@ -262,37 +262,37 @@ GraphicsClass::GraphicsClass()
 #pragma region ghost model
 
 	// ghost models
-	ghost.obj_path = "../Engine/data/models/ghost.obj";
+	ghost.obj_path = "../Engine/data/models/ghost2.obj";
 	ghost.tex_path = L"../Engine/data/textures/ghost.dds";
 	ghost.name = "ghost1";
 	ghost.tag = "ghost";
 
-	ghost2.obj_path = "../Engine/data/models/ghost.obj";
+	ghost2.obj_path = "../Engine/data/models/ghost2.obj";
 	ghost2.tex_path = L"../Engine/data/textures/ghost.dds";
 	ghost2.name = "ghost2";
 	ghost2.tag = "ghost";
 
-	ghost3.obj_path = "../Engine/data/models/ghost.obj";
+	ghost3.obj_path = "../Engine/data/models/ghost2.obj";
 	ghost3.tex_path = L"../Engine/data/textures/ghost.dds";
 	ghost3.name = "ghost3";
 	ghost3.tag = "ghost";
 
-	ghost4.obj_path = "../Engine/data/models/ghost.obj";
+	ghost4.obj_path = "../Engine/data/models/ghost2.obj";
 	ghost4.tex_path = L"../Engine/data/textures/ghost.dds";
 	ghost4.name = "ghost4";
 	ghost4.tag = "ghost";
 
-	ghost5.obj_path = "../Engine/data/models/ghost.obj";
+	ghost5.obj_path = "../Engine/data/models/ghost2.obj";
 	ghost5.tex_path = L"../Engine/data/textures/ghost.dds";
 	ghost5.name = "ghost5";
 	ghost5.tag = "ghost";
 
-	ghost6.obj_path = "../Engine/data/models/ghost.obj";
+	ghost6.obj_path = "../Engine/data/models/ghost2.obj";
 	ghost6.tex_path = L"../Engine/data/textures/ghost.dds";
 	ghost6.name = "ghost6";
 	ghost6.tag = "ghost";
 
-	ghost7.obj_path = "../Engine/data/models/ghost.obj";
+	ghost7.obj_path = "../Engine/data/models/ghost2.obj";
 	ghost7.tex_path = L"../Engine/data/textures/ghost.dds";
 	ghost7.name = "ghost7";
 	ghost7.tag = "ghost";
@@ -319,6 +319,22 @@ GraphicsClass::GraphicsClass()
 	house4.tex_path = L"../Engine/data/textures/house.dds";
 	house4.name = "house4";
 	house4.tag = "house";
+
+	// gift box moodels
+	gift.obj_path = "../Engine/data/models/gift.obj";
+	gift.tex_path = L"../Engine/data/textures/gift/green.png";
+	gift.name = "green";
+	gift.tag = "gift";
+
+	gift2.obj_path = "../Engine/data/models/gift.obj";
+	gift2.tex_path = L"../Engine/data/textures/gift/red.png";
+	gift2.name = "red";
+	gift2.tag = "gift";
+
+	gift3.obj_path = "../Engine/data/models/gift.obj";
+	gift3.tex_path = L"../Engine/data/textures/gift/yellow.png";
+	gift3.name = "yellow";
+	gift3.tag = "gift";
 
 	camSpeed = 0.05f;
 	ghostSpeed = 0.02;
@@ -388,7 +404,6 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 #pragma region push objects to vector container
 
-	// Push back models to vector container.
 	//floor
 	m_Models.push_back(floor);
 	//player
@@ -454,6 +469,10 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_Models.push_back(treebottom18);
 	m_Models.push_back(treebottom19);
 	m_Models.push_back(treebottom20);
+	// gift
+	m_Models.push_back(gift);
+	m_Models.push_back(gift2);
+	m_Models.push_back(gift3);
 
 #pragma endregion
 
@@ -542,7 +561,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 			switch (i % 4)
 			{
 			case 0:
-				m_Models.at(i).pos = D3DXVECTOR3(-437.611f, 0.0f, 473.122f);
+				m_Models.at(i).pos = D3DXVECTOR3(-400, 0.0f, 450);
 				break;
 			case 1:
 				m_Models.at(i).pos = D3DXVECTOR3(387.798, 0.0f, 236.138);
@@ -552,6 +571,29 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 				break;
 			case 3:
 				m_Models.at(i).pos = D3DXVECTOR3(287.665, 0.0f, -394.659);
+				break;
+			default:
+				break;
+			}
+		}
+
+		if (m_Models.at(i).tag == "gift")
+		{
+			// Set the collider of this object.
+			m_Models.at(i).min = D3DXVECTOR3(-1.0f, 0.0f, -1.0f);
+			m_Models.at(i).max = D3DXVECTOR3(1.0f, 0.0f, 1.0f);
+
+			// Set the position of this object.
+			switch (i % 3)
+			{
+			case 0:
+				m_Models.at(i).pos = D3DXVECTOR3(-450.0f, 2.0f, 380.0f);
+				break;
+			case 1:	// yellow
+				m_Models.at(i).pos = D3DXVECTOR3(-350.0f, 2.0f, 380.0f);
+				break;
+			case 2:
+				m_Models.at(i).pos = D3DXVECTOR3(-400.0f, 2.0f, 380.0f);
 				break;
 			default:
 				break;
@@ -685,7 +727,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	{
 		return false;
 	}
-	m_Light4->SetDiffuseColor(0.2f, 1.0f, 0.2f, 1.0f);	// green
+	m_Light4->SetDiffuseColor(0.1f, 1.0f, 0.1f, 1.0f);	// green
 	m_Light4->SetPosition(0.0f, 0.0f, 0.0f);
 
 	// Create the texture shader object.
@@ -868,13 +910,6 @@ bool GraphicsClass::Frame(int mouseX, int mouseY, int fps, int cpu, float frameT
 		m_CamPos.z = 495.0f;
 	}
 
-	if (isCollided)
-	{
-		playerPos = prePos;
-		m_CamPos = prePos;
-		m_CamPos.y = 7.0f;
-	}
-
 	// Set the camera movement.
 	m_CamRot.y -= (PreX - mouseX) * 0.1f;
 	m_CamRot.x -= (PreY - mouseY) * 0.1f;
@@ -914,11 +949,17 @@ bool GraphicsClass::Frame(int mouseX, int mouseY, int fps, int cpu, float frameT
 		return false;
 	}
 
+	result = m_Text->SetPos(playerPos.x, playerPos.z, m_D3D->GetDeviceContext());
+	if (!result)
+	{
+		return false;
+	}
+
 	for (int i = 0; i < m_Models.size(); i++)
 	{
 		if (m_Models.at(i).tag == "player" && !isImmortal)
 		{
-			for (int j = 10; j < m_Models.size(); j++)
+			for (int j = 6; j < m_Models.size(); j++)
 			{
 				isCollided = CheckAABB(m_Models.at(i), m_Models.at(j));
 
@@ -938,7 +979,8 @@ bool GraphicsClass::Frame(int mouseX, int mouseY, int fps, int cpu, float frameT
 			}
 		}
 
-		if (m_Models.at(i).name == "house")
+		// Set point lights' position.
+		if (m_Models.at(i).name == "house4")
 		{
 			m_Light2->SetPosition(m_Models.at(i).pos.x, 10.0f, m_Models.at(i).pos.z);
 			continue;
@@ -954,7 +996,10 @@ bool GraphicsClass::Frame(int mouseX, int mouseY, int fps, int cpu, float frameT
 			continue;
 		}
 
-		// Set point lights' position.
+		if (m_Models.at(i).tag == "ghost")
+		{
+			GhostFSM(frameTime, m_Models.at(i));
+		}
 	}
 
 	result = m_Text->SetCollision(isCollided, m_D3D->GetDeviceContext());
@@ -1084,7 +1129,14 @@ bool GraphicsClass::Render(float rotation)
 			worldMatrix *= scale;
 		}
 
-		if (m_Models.at(i).name == "house")
+		if (m_Models.at(i).tag == "gift")
+		{
+			// Resizing the model object.
+			D3DXMatrixScaling(&scale, 15.0f, 15.0f, 15.0f);
+			worldMatrix *= scale;
+		}
+
+		if (m_Models.at(i).tag == "house")
 		{
 			// Resizing the model object.
 			D3DXMatrixScaling(&scale, 0.5f, 0.5f, 0.5f);
@@ -1094,17 +1146,16 @@ bool GraphicsClass::Render(float rotation)
 		if (m_Models.at(i).tag == "player")
 		{
 			m_Models.at(i).pos = playerPos;
+
 			// Resizing the model object.
 			D3DXMatrixScaling(&scale, 3.0f, 3.0f, 3.0f);
 			worldMatrix *= scale;
 
 			D3DXMatrixRotationYawPitchRoll(&rotate, m_CamRot.y*0.0174532925f + D3DXToRadian(180), 0.0f, 0.0f);
 			worldMatrix *= rotate;
-
-			D3DXMatrixTranslation(&translation, playerPos.x, playerPos.y, playerPos.z);
-			worldMatrix *= translation;
 		}
-		else if (m_Models.at(i).name == "floor")
+		
+		if (m_Models.at(i).name == "floor")
 		{
 			// Transtlate object
 			D3DXMatrixTranslation(&translation, 0.0f, -2.0f, 0.0f);
@@ -1272,59 +1323,32 @@ void GraphicsClass::GhostFSM(float frameTime, Model model)
 	float GtoSdistance = sqrt(pow(model.startPos.x - model.pos.x, 2) + pow(model.startPos.z - model.pos.z, 2));
 
 	// Ghost <-> Player
-	if (GtoPdistance <= 20.0f)
+	if (GtoPdistance <= 150.0f)
 	{
 		model.state = Trace;
-	}
-	// Current ghost position <-> Start ghost position
-	if (GtoSdistance > 40.0f)
-	{
-		model.state = Idle;
-	}
-
-	if (model.state == Idle)
-	{
-		if (model.pos.x <= model.startPos.x)
-		{
-			model.pos.x += ghostSpeed * frameTime;
-		}
-		else
-		{
-			model.pos.x -= ghostSpeed * frameTime;
-		}
-
-		if (model.pos.z <= model.startPos.z)
-		{
-			model.pos.z += ghostSpeed * frameTime;
-		}
-		else
-		{
-			model.pos.z -= ghostSpeed * frameTime;
-		}
-	}
-	else // (model.state == Trace)
-	{
 		if (model.pos.x <= playerPos.x)
-		{
-			D3DXVECTOR3 Direction(1.0f, 0.0f, 0.0f);
-			model.pos.x += Direction.x * ghostSpeed * frameTime;
-		}
+			model.pos.x += ghostSpeed * frameTime;
 		else
-		{
-			D3DXVECTOR3 Direction(1.0f, 0.0f, 0.0f);
-			model.pos.x -= Direction.x * ghostSpeed * frameTime;
-		}
+			model.pos.x -= ghostSpeed * frameTime;
 
 		if (model.pos.z <= playerPos.z)
-		{
-			D3DXVECTOR3 Direction(0.0f, 0.0f, 1.0f);
-			model.pos.z += Direction.z * ghostSpeed * frameTime;
-		}
+			model.pos.z += ghostSpeed * frameTime;
 		else
-		{
-			D3DXVECTOR3 Direction(0.0f, 0.0f, 1.0f);
-			model.pos.z -= Direction.z * ghostSpeed * frameTime;
-		}
+			model.pos.z -= ghostSpeed * frameTime;
+	}
+	// Current ghost position <-> Start ghost position
+	else if (GtoSdistance > 100.0f)
+	{
+		model.state = Idle;
+		if (model.pos.x <= model.startPos.x)
+			model.pos.x += ghostSpeed * frameTime;
+		else
+			model.pos.x -= ghostSpeed * frameTime;
+		
+		if (model.pos.z <= model.startPos.z)
+			model.pos.z += ghostSpeed * frameTime;
+		else
+			model.pos.z -= ghostSpeed * frameTime;
 	}
 }
 
@@ -1391,11 +1415,9 @@ void GraphicsClass::CountSeconds(float frameTime)
 {
 	float timeDifference;
 
-	currentTime = frameTime;
+	timeDifference = (float)(frameTime - m_startTime);
 
-	timeDifference = (float)(currentTime - m_startTime);
-
-	if (timeDifference >= 1.5f)
+	if (timeDifference >= 3.0f)
 	{
 		isImmortal = false;
 	}

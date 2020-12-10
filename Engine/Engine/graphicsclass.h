@@ -12,7 +12,6 @@
 #include "skyboxclass.h"
 
 #include <vector>
-#include <ctime>
 using namespace std;
 
 // Globals
@@ -103,7 +102,8 @@ private:
 		treetop8, treebottom8, treetop18, treebottom18,
 		treetop9, treebottom9, treetop19, treebottom19,
 		treetop10, treebottom10, treetop20, treebottom20,
-		ghost, ghost2, ghost3, ghost4, ghost5, ghost6, ghost7;	// ghost
+		ghost, ghost2, ghost3, ghost4, ghost5, ghost6, ghost7,	// ghost
+		gift, gift2, gift3;
 
 	LightShaderClass* m_LightShader;
 	LightClass* m_Light;
