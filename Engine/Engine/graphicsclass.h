@@ -10,8 +10,11 @@
 #include "bitmapclass.h"
 #include "textclass.h"
 #include "skyboxclass.h"
+#include "particleshaderclass.h"
+#include "particlesystemclass.h"
 
 #include <vector>
+#include <directxmath.h>
 using namespace std;
 
 // Globals
@@ -24,10 +27,9 @@ class GraphicsClass {
 private:
 	enum State
 	{
-		Idle,
-		Trace
+		IDLE,
+		TRACE
 	};
-
 	struct Model
 	{
 		ModelClass* model;
@@ -36,8 +38,8 @@ private:
 		char* name;
 		char* tag;
 		D3DXVECTOR3 pos, startPos;
-		//D3DXMATRIX patrolPoint;
 		D3DXVECTOR3 min, max;
+		bool col;
 		State state;
 	};
 
@@ -60,18 +62,20 @@ public:
 	void NevigateBackward(float);
 	void NevigateRight(float);
 
+	void HoldGift();
+
 	int GetScore();
 	void IncreaseScore();
 
-	void GhostFSM(float, Model);
+	void GhostFSM(float, Model&);
 
 	void ShowGameResult();
-	void RestartGame();
 	void StartGame();
 
-	void Update(float);
-
 	int GetResult();
+	bool GetDamageTrigger();
+	bool GetCorrectTrigger();
+	bool GetSuccessTrigger();
 
 	// 충돌 처리
 	bool CheckAABB(Model, Model);
@@ -109,9 +113,12 @@ private:
 	LightClass* m_Light;
 	LightClass *m_Light2, *m_Light3, *m_Light4;
 	TextureShaderClass* m_TextureShader;
-	BitmapClass* m_TitleScene, m_ResultScene;
+	BitmapClass* m_TitleScene; // , m_ResultScene;
 	TextClass* m_Text;
 	SkyboxClass* m_Skybox;
+
+	ParticleShaderClass* m_ParticleShader;
+	ParticleSystemClass* m_ParticleSystem;
 
 private:
 	D3DXVECTOR3 m_CamPos, m_CamRot, playerPos, prePos;
@@ -129,8 +136,10 @@ private:
 		Success
 	};
 
-	int m_Result;
-	bool isTimeOver, isCollided, isImmortal;
+	int m_Result, box;
+	bool isCollided, isImmortal,
+		holdable, isHolding, isIncrease, isDamaged,
+		titleScene, resultScene;
 };
 
 #endif 

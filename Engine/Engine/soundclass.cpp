@@ -6,7 +6,7 @@ SoundClass::SoundClass()
 	m_primaryBuffer = 0;
 	m_secondaryBuffer1 = 0;
 	
-	isPlaying = true;
+	isPlaying = false;
 }
 
 SoundClass::SoundClass(const SoundClass& other)
@@ -28,19 +28,39 @@ bool SoundClass::Initialize(HWND hwnd)
 		return false;
 	}
 
+	/// BACKGROUND SOUND MUSIC
 	// Load a wave audio file onto a secondary buffer.
 	result = LoadWaveFile("../Engine/data/sounds/mainbgm.wav", &m_secondaryBuffer1);
 	if (!result)
 	{
 		return false;
 	}
-
-	// Play the wave file now that it has been loaded.
-	result = PlayWaveFile();
+	/// EFFECT SOUND
+	// Load a wave audio file onto a secondary buffer.
+	result = LoadWaveFile("../Engine/data/sounds/damage.wav", &m_secondaryBuffer2);
 	if (!result)
 	{
 		return false;
 	}
+	// Load a wave audio file onto a secondary buffer.
+	result = LoadWaveFile("../Engine/data/sounds/correct.wav", &m_secondaryBuffer3);
+	if (!result)
+	{
+		return false;
+	}
+	// Load a wave audio file onto a secondary buffer.
+	result = LoadWaveFile("../Engine/data/sounds/success.wav", &m_secondaryBuffer4);
+	if (!result)
+	{
+		return false;
+	}
+
+	//// Play the wave file now that it has been loaded.
+	//result = PlayWaveFile();
+	//if (!result)
+	//{
+	//	return false;
+	//}
 
 	return true;
 }
@@ -306,7 +326,7 @@ void SoundClass::ShutdownWaveFile(IDirectSoundBuffer8** secondaryBuffer)
 	return;
 }
 
-bool SoundClass::PlayWaveFile()
+bool SoundClass::PlayBGM()
 {
 	HRESULT result;
 
@@ -338,14 +358,107 @@ bool SoundClass::PlayWaveFile()
 	return true;
 }
 
+bool SoundClass::PlayDamageSound()
+{
+	HRESULT result;
+
+	// Set position at the beginning of the sound buffer.
+	result = m_secondaryBuffer2->SetCurrentPosition(0);
+	if (FAILED(result))
+	{
+		return false;
+	}
+
+	// Set volume of the buffer to 100%.
+	result = m_secondaryBuffer2->SetVolume(DSBVOLUME_MAX);
+	if (FAILED(result))
+	{
+		return false;
+	}
+
+	// Play the contents of the secondary sound buffer.
+	result = m_secondaryBuffer2->Play(0, 0, 0);
+	if (FAILED(result))
+	{
+		return false;
+	}
+
+	return true;
+}
+
+bool SoundClass::PlayCorrectSound()
+{
+	HRESULT result;
+
+	// Set position at the beginning of the sound buffer.
+	result = m_secondaryBuffer3->SetCurrentPosition(0);
+	if (FAILED(result))
+	{
+		return false;
+	}
+
+	// Set volume of the buffer to 100%.
+	result = m_secondaryBuffer3->SetVolume(DSBVOLUME_MAX);
+	if (FAILED(result))
+	{
+		return false;
+	}
+
+	// Play the contents of the secondary sound buffer.
+	result = m_secondaryBuffer3->Play(0, 0, 0);
+	if (FAILED(result))
+	{
+		return false;
+	}
+
+	return true;
+}
+
+bool SoundClass::PlaySuccessSound()
+{
+	HRESULT result;
+
+	// Set position at the beginning of the sound buffer.
+	result = m_secondaryBuffer4->SetCurrentPosition(0);
+	if (FAILED(result))
+	{
+		return false;
+	}
+
+	// Set volume of the buffer to 100%.
+	result = m_secondaryBuffer4->SetVolume(DSBVOLUME_MAX);
+	if (FAILED(result))
+	{
+		return false;
+	}
+
+	// Play the contents of the secondary sound buffer.
+	result = m_secondaryBuffer4->Play(0, 0, 0);
+	if (FAILED(result))
+	{
+		return false;
+	}
+
+	return true;
+}
+
 bool SoundClass::CheckPlaying()
 {
 	return isPlaying;
 }
 
 
-void SoundClass::PlayMusic()
+void SoundClass::PlayMusic(int soundType)
 {
-	if (!isPlaying)
-		PlayWaveFile();
+	if (!isPlaying && soundType == BGM)
+		PlayBGM();
+
+	if (soundType == DAMAGE)
+		PlayDamageSound();
+
+	if (soundType == CORRECT)
+		PlayCorrectSound();
+
+	if (soundType == SUCCESS)
+		PlaySuccessSound();
 }

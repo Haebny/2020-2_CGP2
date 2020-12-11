@@ -30,6 +30,14 @@ private:
 		unsigned long dataSize;
 	};
 
+	enum SoundType
+	{
+		BGM = 0,
+		DAMAGE,
+		CORRECT,
+		SUCCESS
+	};
+
 public:
 	SoundClass();
 	SoundClass(const SoundClass&);
@@ -39,7 +47,7 @@ public:
 	void Shutdown();
 
 	bool CheckPlaying();
-	void PlayMusic();
+	void PlayMusic(int soundType);
 
 private:
 	bool InitializeDirectSound(HWND);
@@ -48,12 +56,16 @@ private:
 	bool LoadWaveFile(char*, IDirectSoundBuffer8**);
 	void ShutdownWaveFile(IDirectSoundBuffer8**);
 
-	bool PlayWaveFile();
+	bool PlayBGM();
+	bool PlayDamageSound();
+	bool PlayCorrectSound();
+	bool PlaySuccessSound();
 private:
 	IDirectSound8* m_DirectSound;
 	IDirectSoundBuffer* m_primaryBuffer;
-	IDirectSoundBuffer8* m_secondaryBuffer1;
+	IDirectSoundBuffer8* m_secondaryBuffer1;	IDirectSoundBuffer8* m_secondaryBuffer2;	IDirectSoundBuffer8* m_secondaryBuffer3;	IDirectSoundBuffer8* m_secondaryBuffer4;
 	bool isPlaying;
+	SoundType soundType;
 };
 
 #endif

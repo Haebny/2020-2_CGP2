@@ -8,9 +8,11 @@ GraphicsClass::GraphicsClass()
 	m_LightShader = 0;
 	m_Light = 0;
 	m_TextureShader = 0;
-	//m_Bitmap = 0;
+	m_TitleScene = 0;
 	m_Text = 0;
 	m_Skybox = 0;
+	m_ParticleShader = 0;
+	m_ParticleSystem = 0;
 
 	// floor model
 	floor.obj_path = "../Engine/data/models/floor.obj";
@@ -337,13 +339,17 @@ GraphicsClass::GraphicsClass()
 	gift3.tag = "gift";
 
 	camSpeed = 0.05f;
-	ghostSpeed = 0.02;
+	ghostSpeed = 0.025f;
 
 	m_Score = 0;
-	m_playerLife = 3;
+	m_playerLife = 30;
 	isImmortal = false;
-	isTimeOver = false;
 	isCollided = false;
+	isHolding = false;
+	holdable = false;
+	isIncrease = false;
+	isDamaged = false;
+	titleScene = true;
 }
 
 
@@ -386,11 +392,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 	// Set the initial position of the camera.
 	m_Camera->SetPosition(0.0f, 0.0f, 0.0f);
-	//m_Camera->SetRotation(20.0f, 0.0f, 0.0f);
-
-	// Initialize a base view matrix with the camera for 2D user interface rendering.
-	m_Camera->Render();
-	m_Camera->GetViewMatrix(baseViewMatrix);
+	m_Camera->SetRotation(0.0f, 0.0f, 0.0f);
 
 
 	// Create the skybox object.
@@ -402,7 +404,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
-#pragma region push objects to vector container
+#pragma region Push objects to vector container
 
 	//floor
 	m_Models.push_back(floor);
@@ -470,9 +472,9 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_Models.push_back(treebottom19);
 	m_Models.push_back(treebottom20);
 	// gift
-	m_Models.push_back(gift);
-	m_Models.push_back(gift2);
-	m_Models.push_back(gift3);
+	m_Models.push_back(gift);	// green
+	m_Models.push_back(gift2);	// red
+	m_Models.push_back(gift3);	// yellow
 
 #pragma endregion
 
@@ -563,13 +565,13 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 			case 0:
 				m_Models.at(i).pos = D3DXVECTOR3(-400, 0.0f, 450);
 				break;
-			case 1:
+			case 1:		// red
 				m_Models.at(i).pos = D3DXVECTOR3(387.798, 0.0f, 236.138);
 				break;
-			case 2:
+			case 2:		// yellow
 				m_Models.at(i).pos = D3DXVECTOR3(-389.729, 0.0f, -330.507);
 				break;
-			case 3:
+			case 3:		// green
 				m_Models.at(i).pos = D3DXVECTOR3(287.665, 0.0f, -394.659);
 				break;
 			default:
@@ -580,20 +582,20 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		if (m_Models.at(i).tag == "gift")
 		{
 			// Set the collider of this object.
-			m_Models.at(i).min = D3DXVECTOR3(-1.0f, 0.0f, -1.0f);
-			m_Models.at(i).max = D3DXVECTOR3(1.0f, 0.0f, 1.0f);
+			m_Models.at(i).min = D3DXVECTOR3(-2.0f, 0.0f, -2.0f);
+			m_Models.at(i).max = D3DXVECTOR3(2.0f, 0.0f, 2.0f);
 
 			// Set the position of this object.
 			switch (i % 3)
 			{
-			case 0:
-				m_Models.at(i).pos = D3DXVECTOR3(-450.0f, 2.0f, 380.0f);
+			case 0:	// red
+				m_Models.at(i).pos = D3DXVECTOR3(-450.0f, 4.0f, 380.0f);
 				break;
 			case 1:	// yellow
-				m_Models.at(i).pos = D3DXVECTOR3(-350.0f, 2.0f, 380.0f);
+				m_Models.at(i).pos = D3DXVECTOR3(-350.0f, 4.0f, 380.0f);
 				break;
-			case 2:
-				m_Models.at(i).pos = D3DXVECTOR3(-400.0f, 2.0f, 380.0f);
+			case 2:	// green
+				m_Models.at(i).pos = D3DXVECTOR3(-400.0f, 4.0f, 380.0f);
 				break;
 			default:
 				break;
@@ -675,7 +677,8 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 		// Remember the start position of models.
 		m_Models.at(i).startPos = m_Models.at(i).pos;
-		m_Models.at(i).state = Idle;
+		m_Models.at(i).col = false;
+		m_Models.at(i).state = IDLE;
 	}
 
 	// Create the light shader object.
@@ -712,7 +715,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 	m_Light2->SetDiffuseColor(1.0f, 0.0f, 0.0f, 1.0f);	// red
-	m_Light2->SetPosition(0.0f, 0.0f, 0.0f);
+	m_Light2->SetPosition(387.798, 10.0f, 236.138);
 
 	m_Light3 = new LightClass;
 	if (!m_Light3)
@@ -720,7 +723,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 	m_Light3->SetDiffuseColor(1.0f, 1.0f, 0.0f, 1.0f);	// yellow
-	m_Light3->SetPosition(0.0f, 0.0f, 0.0f);
+	m_Light3->SetPosition(-389.729, 10.0f, -330.507);
 
 	m_Light4 = new LightClass;
 	if (!m_Light4)
@@ -728,7 +731,11 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 	m_Light4->SetDiffuseColor(0.1f, 1.0f, 0.1f, 1.0f);	// green
-	m_Light4->SetPosition(0.0f, 0.0f, 0.0f);
+	m_Light4->SetPosition(287.665, 10.0f, -394.659);
+
+	// Initialize a base view matrix with the camera for 2D user interface rendering.
+	m_Camera->Render();
+	m_Camera->GetViewMatrix(baseViewMatrix);
 
 	// Create the texture shader object.
 	m_TextureShader = new TextureShaderClass;
@@ -745,21 +752,51 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
-	//// Create the bitmap object.
-	//m_TitleScene = new BitmapClass;
-	//if (!m_TitleScene)
-	//{
-	//	return false;
-	//}
+	// Create the bitmap object.
+	m_TitleScene = new BitmapClass;
+	if (!m_TitleScene)
+	{
+		return false;
+	}
 
-	//// Initialize the bitmap object.
-	//result = m_TitleScene->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight,
-	//	L"../Engine/data/textures/floor.dds", screenWidth, screenHeight);
-	//if (!result)
-	//{
-	//	MessageBox(hwnd, L"Could not initialize the bitmap object.", L"Error", MB_OK);
-	//	return false;
-	//}
+	// Initialize the bitmap object.
+	result = m_TitleScene->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight,
+		L"../Engine/data/textures/reindeer/eyes.dds", screenWidth, screenHeight);
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the bitmap object.", L"Error", MB_OK);
+		return false;
+	}
+
+
+	// Create the particle shader object.
+	m_ParticleShader = new ParticleShaderClass;
+	if (!m_ParticleShader)
+	{
+		return false;
+	}
+
+	// Initialize the particle shader object.
+	result = m_ParticleShader->Initialize(m_D3D->GetDevice(), hwnd);
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the particle shader object.", L"Error", MB_OK);
+		return false;
+	}
+
+	// Create the particle system object.
+	m_ParticleSystem = new ParticleSystemClass;
+	if (!m_ParticleSystem)
+	{
+		return false;
+	}
+
+	// Initialize the particle system object.
+	result = m_ParticleSystem->Initialize(m_D3D->GetDevice(), L"../Engine/data/textures/star.dds");
+	if (!result)
+	{
+		return false;
+	}
 
 	//// Create the bitmap object.
 	//m_ResultScene = new BitmapClass;
@@ -770,7 +807,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 	//// Initialize the bitmap object.
 	//result = m_ResultScene->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight,
-	//	L"../Engine/data/textures/floor.dds", screenWidth, screenHeight);
+	//	L"../Engine/data/textures/images/failed.PNG", screenWidth, screenHeight);
 	//if (!result)
 	//{
 	//	MessageBox(hwnd, L"Could not initialize the bitmap object.", L"Error", MB_OK);
@@ -794,7 +831,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	}
 
 	m_CamPos.x = playerPos.x;
-	m_CamPos.y = 7.0f;
+	m_CamPos.y = 7.0;
 	m_CamPos.z = playerPos.z;
 
 	m_CamRot.x = 0.0f;
@@ -815,6 +852,22 @@ void GraphicsClass::Shutdown()
 		m_Skybox = 0;
 	}
 
+	// Release the particle system object.
+	if (m_ParticleSystem)
+	{
+		m_ParticleSystem->Shutdown();
+		delete m_ParticleSystem;
+		m_ParticleSystem = 0;
+	}
+
+	// Release the particle shader object.
+	if (m_ParticleShader)
+	{
+		m_ParticleShader->Shutdown();
+		delete m_ParticleShader;
+		m_ParticleShader = 0;
+	}
+
 	// Release the text object.
 	if (m_Text)
 	{
@@ -823,13 +876,13 @@ void GraphicsClass::Shutdown()
 		m_Text = 0;
 	}
 
-	//// Release the bitmap object.
-	//if (m_Bitmap)
-	//{
-	//	m_Bitmap->Shutdown();
-	//	delete m_Bitmap;
-	//	m_Bitmap = 0;
-	//}
+	// Release the bitmap object.
+	if (m_TitleScene)
+	{
+		m_TitleScene->Shutdown();
+		delete m_TitleScene;
+		m_TitleScene = 0;
+	}
 
 	// Release the texture shader object.
 	if (m_TextureShader)
@@ -910,102 +963,89 @@ bool GraphicsClass::Frame(int mouseX, int mouseY, int fps, int cpu, float frameT
 		m_CamPos.z = 495.0f;
 	}
 
-	// Set the camera movement.
-	m_CamRot.y -= (PreX - mouseX) * 0.1f;
-	m_CamRot.x -= (PreY - mouseY) * 0.1f;
-
-	PreX = (float)mouseX;
-	PreY = (float)mouseY;
-
-	m_Camera->SetPosition(m_CamPos.x, m_CamPos.y, m_CamPos.z);
-	m_Camera->SetRotation(m_CamRot.x, m_CamRot.y, m_CamRot.z);
-
 	// Set the skybox.
 	m_Skybox->Frame(m_CamPos);
 
-	// Set the frames per second.
-	result = m_Text->SetFps(fps, m_D3D->GetDeviceContext());
-	if (!result)
+	// red
+	if (m_Models.at(60).pos.x <= 400.0f &&
+		m_Models.at(60).pos.x >= 375.0f &&
+		m_Models.at(60).pos.z <= 255.0f &&
+		m_Models.at(60).pos.z >= 215.0f &&
+		!isHolding && !m_Models.at(60).col)
 	{
-		return false;
-	}
-	// Set the cpu usage.
-	result = m_Text->SetCpu(cpu, m_D3D->GetDeviceContext());
-	if (!result)
-	{
-		return false;
+		IncreaseScore();
+		m_Models.at(60).col = true;
 	}
 
-	// Set the location of the mouse.
-	result = m_Text->SetMousePosition(mouseX, mouseY, m_D3D->GetDeviceContext());
-	if (!result)
+	// yellow
+	else if (m_Models.at(61).pos.x <= -380.0f &&
+		m_Models.at(61).pos.x >= -400.0f &&
+		m_Models.at(61).pos.z <= -310.0f &&
+		m_Models.at(61).pos.z >= -350.0f &&
+		!isHolding && !m_Models.at(61).col)
 	{
-		return false;
+		IncreaseScore();
+		m_Models.at(61).col = true;
 	}
 
-	result = m_Text->SetLives(m_playerLife, m_D3D->GetDeviceContext());
-	if (!result)
+	// green
+	else if (m_Models.at(59).pos.x <= 300.0f &&
+		m_Models.at(59).pos.x >= 275.0f &&
+		m_Models.at(59).pos.z <= -370.0f &&
+		m_Models.at(59).pos.z >= -410.0f &&
+		!isHolding && !m_Models.at(59).col)
 	{
-		return false;
-	}
-
-	result = m_Text->SetPos(playerPos.x, playerPos.z, m_D3D->GetDeviceContext());
-	if (!result)
-	{
-		return false;
+		IncreaseScore();
+		m_Models.at(59).col = true;
 	}
 
 	for (int i = 0; i < m_Models.size(); i++)
 	{
-		if (m_Models.at(i).tag == "player" && !isImmortal)
+		if (m_Models.at(i).tag == "player")
 		{
 			for (int j = 6; j < m_Models.size(); j++)
 			{
 				isCollided = CheckAABB(m_Models.at(i), m_Models.at(j));
 
-				if (isCollided && m_Models.at(j).tag == "ghost")
+				if (m_Models.at(j).tag == "ghost" && isCollided && !isImmortal)
 				{
+					m_playerLife = 0;
+					isDamaged = true;
 					m_Result = Failure;
-					continue;
+					break;
 				}
 
-				else if (isCollided && m_Models.at(j).tag == "tree")
+				else if (m_Models.at(j).tag == "tree" && isCollided && !isImmortal)
 				{
-					m_playerLife--;
 					isImmortal = true;
+					isDamaged = true;
+					m_playerLife--;
 					m_startTime = frameTime;
-					continue;
+					break;
+				}
+
+				if (m_Models.at(j).tag == "gift" && isCollided)
+				{
+					box = j;
+					holdable = isCollided;
+					break;
 				}
 			}
 		}
 
-		// Set point lights' position.
-		if (m_Models.at(i).name == "house4")
-		{
-			m_Light2->SetPosition(m_Models.at(i).pos.x, 10.0f, m_Models.at(i).pos.z);
-			continue;
-		}
-		else if (m_Models.at(i).name == "house2")
-		{
-			m_Light3->SetPosition(m_Models.at(i).pos.x, 10.0f, m_Models.at(i).pos.z);
-			continue;
-		}
-		else if (m_Models.at(i).name == "house3")
-		{
-			m_Light4->SetPosition(m_Models.at(i).pos.x, 10.0f, m_Models.at(i).pos.z);
-			continue;
-		}
-
+		// 고스트 움직임
 		if (m_Models.at(i).tag == "ghost")
 		{
 			GhostFSM(frameTime, m_Models.at(i));
 		}
-	}
 
-	result = m_Text->SetCollision(isCollided, m_D3D->GetDeviceContext());
-	if (!result)
-	{
-		return false;
+		// 박스 옮기기
+		if (i == box && holdable && isHolding && isCollided)
+		{
+			m_Models.at(box).pos.x = playerPos.x;
+			m_Models.at(box).pos.y = 4.0f;
+			m_Models.at(box).pos.z = playerPos.z;
+		}
 	}
 
 	// 부딪혔을 때 3초간 무적
@@ -1014,17 +1054,70 @@ bool GraphicsClass::Frame(int mouseX, int mouseY, int fps, int cpu, float frameT
 		CountSeconds(frameTime);
 	}
 
-	result = m_Text->SetState(isImmortal, m_D3D->GetDeviceContext());
-	if (!result)
-	{
-		return false;
-	}
-
 	// 결과 화면 출력
-	if (m_playerLife == 0 || m_Result == Failure)
+	ShowGameResult();
+
+	if (titleScene == false)
 	{
-		ShowGameResult();
+		// Set the camera movement.
+		m_CamRot.y -= (PreX - mouseX) * 0.1f;
+		m_CamRot.x -= (PreY - mouseY) * 0.1f;
+
+		PreX = (float)mouseX;
+		PreY = (float)mouseY;
+
+		m_Camera->SetPosition(m_CamPos.x, m_CamPos.y, m_CamPos.z);
+		m_Camera->SetRotation(m_CamRot.x, m_CamRot.y, m_CamRot.z);
+
+		// Set the frames per second.
+		result = m_Text->SetFps(fps, m_D3D->GetDeviceContext());
+		if (!result)
+		{
+			return false;
+		}
+		// Set the cpu usage.
+		result = m_Text->SetCpu(cpu, m_D3D->GetDeviceContext());
+		if (!result)
+		{
+			return false;
+		}
+
+		//// Set the location of the mouse.
+		//result = m_Text->SetMousePosition(mouseX, mouseY, m_D3D->GetDeviceContext());
+		//if (!result)
+		//{
+		//	return false;
+		//}
+
+		result = m_Text->SetGameUI(m_playerLife, m_Score, m_D3D->GetDeviceContext());
+		if (!result)
+		{
+			return false;
+		}
+
+		result = m_Text->SetPos(playerPos.x, playerPos.z, m_D3D->GetDeviceContext());
+		if (!result)
+		{
+			return false;
+		}
+
+		result = m_Text->SetCollision(isCollided, m_D3D->GetDeviceContext());
+		if (!result)
+		{
+			return false;
+		}
+
+		result = m_Text->SetState(isImmortal, m_D3D->GetDeviceContext());
+		if (!result)
+		{
+			return false;
+		}
 	}
+	else
+	{
+		m_Text->SetTitle(0, m_D3D->GetDeviceContext());
+	}
+	
 
 	static float rotation = 0.0f;
 
@@ -1034,6 +1127,9 @@ bool GraphicsClass::Frame(int mouseX, int mouseY, int fps, int cpu, float frameT
 	{
 		rotation -= 360.0f;
 	}
+
+	// Run the frame processing for the particle system.
+	m_ParticleSystem->Frame(frameTime, m_D3D->GetDeviceContext());
 
 	// Render the graphics scene.
 	result = Render(rotation);
@@ -1079,27 +1175,6 @@ bool GraphicsClass::Render(float rotation)
 	// Render the skybox.
 	m_Skybox->Render(m_D3D->GetDeviceContext(), m_D3D->GetRenderTarget(), m_D3D->GetDepthStencil(), viewMatrix, projectionMatrix);
 
-	// Turn off the Z buffer to begin all 2D rendering.
-	m_D3D->TurnZBufferOff();
-
-	//// Put the bitmap vertex and index buffers on the graphics pipeline to prepare them for drawing.
-	//result = m_Bitmap->Render(m_D3D->GetDeviceContext(), 0, 0);
-	//if (!result)
-	//{
-	//	return false;
-	//}
-
-	//// Render the bitmap with the texture shader.
-	//result = m_TextureShader->Render(m_D3D->GetDeviceContext(), m_Bitmap->GetIndexCount(),
-	//	worldMatrix, viewMatrix, orthoMatrix, m_Bitmap->GetTexture());
-	//if (!result)
-	//{
-	//	return false;
-	//}
-
-	// Turn the Z buffer back on now that all 2D rendering has completed.
-	m_D3D->TurnZBufferOn();
-
 	baseWorldMat = worldMatrix;
 
 	// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
@@ -1132,7 +1207,7 @@ bool GraphicsClass::Render(float rotation)
 		if (m_Models.at(i).tag == "gift")
 		{
 			// Resizing the model object.
-			D3DXMatrixScaling(&scale, 15.0f, 15.0f, 15.0f);
+			D3DXMatrixScaling(&scale, 20.0f, 20.0f, 20.0f);
 			worldMatrix *= scale;
 		}
 
@@ -1183,6 +1258,17 @@ bool GraphicsClass::Render(float rotation)
 	// Turn on the alpha blending before rendering the text.
 	m_D3D->TurnOnAlphaBlending();
 
+	// Put the particle system vertex and index buffers on the graphics pipeline to prepare them for drawing.
+	m_ParticleSystem->Render(m_D3D->GetDeviceContext());
+
+	// Render the model using the texture shader.
+	result = m_ParticleShader->Render(m_D3D->GetDeviceContext(), m_ParticleSystem->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
+		m_ParticleSystem->GetTexture());
+	if (!result)
+	{
+		return false;
+	}
+
 	// Render the text strings.
 	result = m_Text->Render(m_D3D->GetDeviceContext(), baseWorldMat, orthoMatrix);
 	if (!result)
@@ -1193,6 +1279,55 @@ bool GraphicsClass::Render(float rotation)
 	// Turn off alpha blending after rendering the text.
 	m_D3D->TurnOffAlphaBlending();
 
+	// Turn off the Z buffer to begin all 2D rendering.
+	m_D3D->TurnZBufferOff();
+
+	if (titleScene)
+	{
+		// Put the bitmap vertex and index buffers on the graphics pipeline to prepare them for drawing.
+		result = m_TitleScene->Render(m_D3D->GetDeviceContext(), 0, 0);
+		if (!result)
+		{
+			return false;
+		}
+
+		// Render the bitmap with the texture shader.
+		result = m_TextureShader->Render(m_D3D->GetDeviceContext(), m_TitleScene->GetIndexCount(),
+			worldMatrix, viewMatrix, orthoMatrix, m_TitleScene->GetTexture());
+		if (!result)
+		{
+			return false;
+		}
+
+		// Render the text strings.
+		result = m_Text->Render(m_D3D->GetDeviceContext(), baseWorldMat, orthoMatrix);
+		if (!result)
+		{
+			return false;
+		}
+	}
+
+	//if (resultScene)
+	//{
+	//	// Put the bitmap vertex and index buffers on the graphics pipeline to prepare them for drawing.
+	//	result = m_ResultScene->Render(m_D3D->GetDeviceContext(), 0, 0);
+	//	if (!result)
+	//	{
+	//		return false;
+	//	}
+
+	//	// Render the bitmap with the texture shader.
+	//	result = m_TextureShader->Render(m_D3D->GetDeviceContext(), m_TitleScene->GetIndexCount(),
+	//		worldMatrix, viewMatrix, orthoMatrix, m_TitleScene->GetTexture());
+	//	if (!result)
+	//	{
+	//		return false;
+	//	}
+	//}
+
+	// Turn the Z buffer back on now that all 2D rendering has completed.
+	m_D3D->TurnZBufferOn();
+
 	// Present the rendered scene to the screen.
 	m_D3D->EndScene();
 
@@ -1202,6 +1337,9 @@ bool GraphicsClass::Render(float rotation)
 /// Player Movements
 void GraphicsClass::GoForward(float frameTime)
 {
+	if (m_playerLife <= 0 || titleScene)
+		return;
+
 	prePos = playerPos;
 
 	D3DXMATRIX Dir;
@@ -1213,13 +1351,19 @@ void GraphicsClass::GoForward(float frameTime)
 	playerPos += Direction * camSpeed * frameTime;
 	playerPos.y = 0.0f;
 
+	//D3DXVECTOR3 Distance(0.0f, 0.0f, -6.0f);
+	//m_CamPos = (Direction + Distance) + playerPos;
+	//m_CamPos.y = 10.0f;
 	m_CamPos.x = playerPos.x;
-	m_CamPos.y = 7.0f;
+	m_CamPos.y = 10.0f;
 	m_CamPos.z = playerPos.z;
 }
 
 void GraphicsClass::GoLeft(float frameTime)
 {
+	if (m_playerLife <= 0 || titleScene)
+		return;
+
 	prePos = playerPos;
 
 	D3DXMATRIX Dir;
@@ -1231,13 +1375,19 @@ void GraphicsClass::GoLeft(float frameTime)
 	playerPos += Direction * camSpeed * frameTime;
 	playerPos.y = 0.0f;
 
+	//D3DXVECTOR3 Distance(0.0f, 0.0f, -5.0f);
+	//m_CamPos = (Distance) + playerPos;
+	//m_CamPos.y = 10.0f;
 	m_CamPos.x = playerPos.x;
-	m_CamPos.y = 7.0f;
+	m_CamPos.y = 10.0f;
 	m_CamPos.z = playerPos.z;
 }
 
 void GraphicsClass::GoBack(float frameTime)
 {
+	if (m_playerLife <= 0 || titleScene)
+		return;
+
 	prePos = playerPos;
 
 	D3DXMATRIX Dir;
@@ -1249,13 +1399,19 @@ void GraphicsClass::GoBack(float frameTime)
 	playerPos += Direction * camSpeed * frameTime;
 	playerPos.y = 0.0f;
 
+	//D3DXVECTOR3 Distance(0.0f, 0.0f, -4.0f);
+	//m_CamPos = (Direction + Distance) + playerPos;
+	//m_CamPos.y = 10.0f;
 	m_CamPos.x = playerPos.x;
-	m_CamPos.y = 7.0f;
+	m_CamPos.y = 10.0f;
 	m_CamPos.z = playerPos.z;
 }
 
 void GraphicsClass::GoRight(float frameTime)
 {
+	if (m_playerLife <= 0 || titleScene)
+		return;
+
 	prePos = playerPos;
 
 	D3DXMATRIX Dir;
@@ -1267,8 +1423,11 @@ void GraphicsClass::GoRight(float frameTime)
 	playerPos += Direction * camSpeed * frameTime;
 	playerPos.y = 0.0f;
 
+	//D3DXVECTOR3 Distance(0.0f, 0.0f, -5.0f);
+	//m_CamPos = (Distance) + playerPos;
+	//m_CamPos.y = 10.0f;
 	m_CamPos.x = playerPos.x;
-	m_CamPos.y = 7.0f;
+	m_CamPos.y = 10.0f;
 	m_CamPos.z = playerPos.z;
 }
 
@@ -1317,34 +1476,41 @@ void GraphicsClass::NevigateRight(float frameTime)
 	m_CamPos += Direction * camSpeed * frameTime;
 }
 
-void GraphicsClass::GhostFSM(float frameTime, Model model)
+void GraphicsClass::HoldGift()
 {
-	float GtoPdistance = sqrt(pow(playerPos.x-model.pos.x, 2) + pow(playerPos.z - model.pos.z, 2));
-	float GtoSdistance = sqrt(pow(model.startPos.x - model.pos.x, 2) + pow(model.startPos.z - model.pos.z, 2));
-
-	// Ghost <-> Player
-	if (GtoPdistance <= 150.0f)
+	if (!holdable)
 	{
-		model.state = Trace;
-		if (model.pos.x <= playerPos.x)
+		isHolding = false;
+		return;
+	}
+
+	isHolding = !isHolding;
+}
+
+void GraphicsClass::GhostFSM(float frameTime, Model& model)
+{
+	float combackDist = 100.0f;
+	float distance = sqrt(pow(model.startPos.x - model.pos.x, 2) + pow(model.startPos.z - model.pos.z, 2));
+
+	if (combackDist > distance)
+	{
+		if (model.pos.x <= m_CamPos.x)
 			model.pos.x += ghostSpeed * frameTime;
 		else
 			model.pos.x -= ghostSpeed * frameTime;
 
-		if (model.pos.z <= playerPos.z)
+		if (model.pos.z <= m_CamPos.z)
 			model.pos.z += ghostSpeed * frameTime;
 		else
 			model.pos.z -= ghostSpeed * frameTime;
 	}
-	// Current ghost position <-> Start ghost position
-	else if (GtoSdistance > 100.0f)
+	else
 	{
-		model.state = Idle;
 		if (model.pos.x <= model.startPos.x)
 			model.pos.x += ghostSpeed * frameTime;
 		else
 			model.pos.x -= ghostSpeed * frameTime;
-		
+
 		if (model.pos.z <= model.startPos.z)
 			model.pos.z += ghostSpeed * frameTime;
 		else
@@ -1360,47 +1526,97 @@ int GraphicsClass::GetScore()
 void GraphicsClass::IncreaseScore()
 {
 	m_Score += 1;
+	isIncrease = true;
 }
 
 void GraphicsClass::ShowGameResult()
 {
-	if (m_Score == 3 && !isTimeOver)
+	if (m_Score == 3)
 	{
-		m_Text->SetResult(0, m_D3D->GetDeviceContext());
 		m_Result = Success;
+		m_Text->SetResult(0, m_D3D->GetDeviceContext());
 	}
 
-	if (isTimeOver || m_playerLife == 0)
+	if (m_playerLife == 0)
 	{
-		m_Text->SetResult(1, m_D3D->GetDeviceContext());
 		m_Result = Failure;
+		m_Text->SetResult(1, m_D3D->GetDeviceContext());
+	}
+
+	if (m_Result == Playing)
+	{
+		m_Result = Failure;
+		m_Text->SetResult(-1, m_D3D->GetDeviceContext());
 	}
 
 	return;
 }
 
-void GraphicsClass::RestartGame()
+void GraphicsClass::StartGame()
 {
+	m_Result = Playing;
+
 	m_Score = 0;
 	m_playerLife = 3;
+
 	isImmortal = false;
-	isTimeOver = false;
 	isCollided = false;
+	isHolding = false;
+	holdable = false;
+	isIncrease = false;
+	isDamaged = false;
+	titleScene = false;
 
 	for (int i = 0; i < m_Models.size(); i++)
 	{
 		m_Models.at(i).pos = m_Models.at(i).startPos;
-	}
-}
 
-void GraphicsClass::StartGame()
-{
-	m_Result = Playing;
+		if (m_Models.at(i).tag == "player")
+			playerPos = m_Models.at(i).pos;
+
+		m_Models.at(i).col = false;
+	}
+
+	m_CamPos = playerPos;
+	m_CamPos.y = 10.0f;
+
+	m_Text->SetResult(-1, m_D3D->GetDeviceContext());
+	m_Text->SetTitle(-1, m_D3D->GetDeviceContext());
 }
 
 int GraphicsClass::GetResult()
 {
 	return m_Result;
+}
+
+bool GraphicsClass::GetDamageTrigger()
+{
+	if (isDamaged)
+	{
+		isDamaged = false;
+		return true;
+	}
+	return false;
+}
+
+bool GraphicsClass::GetCorrectTrigger()
+{
+	if (isIncrease)
+	{
+		isIncrease = false;
+		return true;
+	}
+	return false;
+}
+
+bool GraphicsClass::GetSuccessTrigger()
+{
+	if (m_Result == Success)
+	{
+		return true;
+	}
+
+	return false;
 }
 
 bool GraphicsClass::CheckAABB(Model a, Model b)
@@ -1417,7 +1633,7 @@ void GraphicsClass::CountSeconds(float frameTime)
 
 	timeDifference = (float)(frameTime - m_startTime);
 
-	if (timeDifference >= 3.0f)
+	if (timeDifference >= 2.0f)
 	{
 		isImmortal = false;
 	}

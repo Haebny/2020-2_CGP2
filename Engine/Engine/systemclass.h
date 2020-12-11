@@ -39,6 +39,9 @@ private:
 	CpuClass* m_Cpu;
 	TimerClass* m_Timer;
 	SoundClass* m_Sound;
+
+private:
+	bool trigger;
 };
 
 // Function prototypes

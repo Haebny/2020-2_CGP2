@@ -566,10 +566,11 @@ bool TextClass::SetResult(int num, ID3D11DeviceContext *deviceContext)
 	return true;
 }
 
-bool TextClass::SetLives(int lives, ID3D11DeviceContext* deviceContext)
+bool TextClass::SetGameUI(int lives, int gifts, ID3D11DeviceContext* deviceContext)
 {
 	char tempString[16];
 	char livesString[16];
+	char gfitsString[32];
 	bool result;
 
 	// Convert the number of lives integer to string format.
@@ -580,7 +581,27 @@ bool TextClass::SetLives(int lives, ID3D11DeviceContext* deviceContext)
 	strcat_s(livesString, tempString);
 
 	// Update the sentence vertex buffer with the new string information.
-	result = UpdateSentence(m_sentences[10], livesString, 20, m_screenHeight-80, 0.0f, 1.0f, 0.0f, deviceContext);
+	result = UpdateSentence(m_sentences[10], livesString, 20, m_screenHeight - 80, 0.0f, 1.0f, 0.0f, deviceContext);
+	if (!result)
+	{
+		return false;
+	}
+
+	// Convert the number of gifts (left to deliver) integer to string format.
+	_itoa_s(gifts, tempString, 10);
+
+	// Setup the lives string.
+	strcpy_s(gfitsString, "Delivered: ");
+	strcat_s(gfitsString, tempString);
+	strcat_s(gfitsString, " / 3");
+
+	// Update the sentence vertex buffer with the new string information.
+	if(gifts <= 1)
+		result = UpdateSentence(m_sentences[15], gfitsString, 20, m_screenHeight - 100, 1.0f, 0.0f, 0.0f, deviceContext);
+	else if(gifts == 2)
+		result = UpdateSentence(m_sentences[15], gfitsString, 20, m_screenHeight - 100, 0.5f, 1.0f, 0.0f, deviceContext);
+	else if (gifts == 3)
+		result = UpdateSentence(m_sentences[15], gfitsString, 20, m_screenHeight - 100, 0.0f, 0.5f, 1.0f, deviceContext);
 	if (!result)
 	{
 		return false;
@@ -643,6 +664,61 @@ bool TextClass::SetState(bool immortal, ID3D11DeviceContext *deviceContext)
 	return true;
 }
 
+bool TextClass::SetTitle(int num, ID3D11DeviceContext *deviceContext)
+{
+	char resultString[32];
+	bool result;
+	
+	if (num == -1)
+	{
+		strcpy_s(resultString, "");
+		result = UpdateSentence(m_sentences[16], resultString, m_screenWidth / 3, m_screenHeight / 2 - 80, 1.0f, 1.0f, 1.0f, deviceContext);
+		if (!result)
+		{
+			return false;
+		}
+
+		strcpy_s(resultString, "");
+		result = UpdateSentence(m_sentences[17], resultString, m_screenWidth / 3, m_screenHeight / 2 - 80, 1.0f, 1.0f, 1.0f, deviceContext);
+		if (!result)
+		{
+			return false;
+		}
+
+		strcpy_s(resultString, "");
+		result = UpdateSentence(m_sentences[18], resultString, m_screenWidth / 3, m_screenHeight / 2 - 80, 1.0f, 1.0f, 1.0f, deviceContext);
+		if (!result)
+		{
+			return false;
+		}
+	}
+	else
+	{
+		strcpy_s(resultString, "<< How To Play >>");
+		result = UpdateSentence(m_sentences[16], resultString, m_screenWidth / 3+ 50, m_screenHeight / 2 - 80, 1.0f, 1.0f, 1.0f, deviceContext);
+		if (!result)
+		{
+			return false;
+		}
+
+		strcpy_s(resultString, "Move : WASD  |  Holding : Space");
+		result = UpdateSentence(m_sentences[17], resultString, m_screenWidth / 3+30, m_screenHeight / 2 - 60, 1.0f, 1.0f, 1.0f, deviceContext);
+		if (!result)
+		{
+			return false;
+		}
+
+		strcpy_s(resultString, "Press Enter to Start!");
+		result = UpdateSentence(m_sentences[18], resultString, m_screenWidth / 3 + 50, m_screenHeight / 2, 1.0f, 1.0f, 0.0f, deviceContext);
+		if (!result)
+		{
+			return false;
+		}
+	}
+
+	return false;
+}
+
 
 //#ifdef DEBUG
 bool TextClass::SetPos(float plaX, float plaZ, ID3D11DeviceContext *deviceContext)
@@ -659,7 +735,7 @@ bool TextClass::SetPos(float plaX, float plaZ, ID3D11DeviceContext *deviceContex
 	strcat_s(printString, tempString);
 
 	// Update the sentence vertex buffer with the new string information.
-	result = UpdateSentence(m_sentences[12], printString, 20, 120, 1.0f, 1.0f, 1.0f, deviceContext);
+	result = UpdateSentence(m_sentences[12], printString, 20, 60, 1.0f, 1.0f, 1.0f, deviceContext);
 	if (!result)
 	{
 		return false;
@@ -673,7 +749,7 @@ bool TextClass::SetPos(float plaX, float plaZ, ID3D11DeviceContext *deviceContex
 	strcat_s(printString, tempString);
 
 	// Update the sentence vertex buffer with the new string information.
-	result = UpdateSentence(m_sentences[13], printString, 20, 140, 1.0f, 1.0f, 1.0f, deviceContext);
+	result = UpdateSentence(m_sentences[13], printString, 20, 80, 1.0f, 1.0f, 1.0f, deviceContext);
 	if (!result)
 	{
 		return false;

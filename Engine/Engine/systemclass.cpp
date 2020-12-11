@@ -112,6 +112,8 @@ bool SystemClass::Initialize()
 		MessageBox(m_hwnd, L"Could not initialize the Timer object.", L"Error", MB_OK);
 		return false;
 	}
+
+	trigger = false;
 	
 	return true;
 }
@@ -204,7 +206,7 @@ void SystemClass::Run()
 		{
 			if (!m_Sound->CheckPlaying())
 			{
-				m_Sound->PlayMusic();
+				m_Sound->PlayMusic(0);
 			}
 
 			// Check if the user pressed escape and wants to quit.
@@ -271,11 +273,20 @@ bool SystemClass::Frame()
 
 	// Check the player wants to restarting Game
 	if (m_Input->IsEnterDown())
-		m_Graphics->RestartGame();
+		m_Graphics->StartGame();
 
 	// Check the player wants to starting Game
-	if (m_Input->IsSpacebarDown() && !m_Graphics->GetResult())
-		m_Graphics->StartGame();
+	if (m_Input->IsSpacebarDown())
+		m_Graphics->HoldGift();
+
+	if (m_Graphics->GetDamageTrigger())
+		m_Sound->PlayMusic(1);
+
+	if (m_Graphics->GetCorrectTrigger())
+		m_Sound->PlayMusic(2);
+
+	if (m_Graphics->GetSuccessTrigger())
+		m_Sound->PlayMusic(3);
 
 	// Get the location of the mouse from the input object,
 	m_Input->GetMouseLocation(mouseX, mouseY);
