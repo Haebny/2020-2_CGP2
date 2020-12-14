@@ -507,64 +507,64 @@ bool TextClass::SetScore(int score, ID3D11DeviceContext *deviceContext)
 	return true;
 }
 
-bool TextClass::SetResult(int num, ID3D11DeviceContext *deviceContext)
-{
-	char resultString[32];
-	bool result;
-
-	switch (num)
-	{
-	case 0:
-		// Setup the player win string.
-		strcpy_s(resultString, "CLEAR !");
-
-		result = UpdateSentence(m_sentences[8], resultString, m_screenWidth/2, 20, 0.7f, 0.0f, 0.7f, deviceContext);
-		if (!result)
-		{
-			return false;
-		}
-		break;
-	
-	case 1:
-		// Setup the player win string.
-		strcpy_s(resultString, "OOPS !..");
-
-		result = UpdateSentence(m_sentences[8], resultString, m_screenWidth/2, 20, 0.5f, 0.0f, 0.5f, deviceContext);
-		if (!result)
-		{
-			return false;
-		}
-		break;
-	
-	default:
-		// Erase the result string.
-		strcpy_s(resultString, "");
-
-		result = UpdateSentence(m_sentences[8], resultString, m_screenWidth / 2, 20, 0.5f, 0.0f, 0.5f, deviceContext);
-		if (!result)
-		{
-			return false;
-		}
-		break;
-	}
-
-	if (num == -1)
-	{
-		strcpy_s(resultString, "");
-	}
-	else
-	{
-		strcpy_s(resultString, "Press Enter to Restart!");
-	}
-
-	result = UpdateSentence(m_sentences[9], resultString, m_screenWidth / 2, 40, 1.0f, 0.0f, 0.0f, deviceContext);
-	if (!result)
-	{
-		return false;
-	}
-
-	return true;
-}
+//bool TextClass::SetResult(int num, ID3D11DeviceContext *deviceContext)
+//{
+//	char resultString[32];
+//	bool result;
+//
+//	switch (num)
+//	{
+//	case 0:
+//		// Setup the player win string.
+//		strcpy_s(resultString, "CLEAR !");
+//
+//		result = UpdateSentence(m_sentences[8], resultString, m_screenWidth/2, 20, 0.7f, 0.0f, 0.7f, deviceContext);
+//		if (!result)
+//		{
+//			return false;
+//		}
+//		break;
+//	
+//	case 1:
+//		// Setup the player win string.
+//		strcpy_s(resultString, "OOPS !..");
+//
+//		result = UpdateSentence(m_sentences[8], resultString, m_screenWidth/2, 20, 0.5f, 0.0f, 0.5f, deviceContext);
+//		if (!result)
+//		{
+//			return false;
+//		}
+//		break;
+//	
+//	default:
+//		// Erase the result string.
+//		strcpy_s(resultString, "");
+//
+//		result = UpdateSentence(m_sentences[8], resultString, m_screenWidth / 2, 20, 0.5f, 0.0f, 0.5f, deviceContext);
+//		if (!result)
+//		{
+//			return false;
+//		}
+//		break;
+//	}
+//
+//	if (num == -1)
+//	{
+//		strcpy_s(resultString, "");
+//	}
+//	else
+//	{
+//		strcpy_s(resultString, "Press Enter to Restart!");
+//	}
+//
+//	result = UpdateSentence(m_sentences[9], resultString, m_screenWidth / 2, 40, 1.0f, 0.0f, 0.0f, deviceContext);
+//	if (!result)
+//	{
+//		return false;
+//	}
+//
+//	return true;
+//}
 
 bool TextClass::SetGameUI(int lives, int gifts, ID3D11DeviceContext* deviceContext)
 {
@@ -664,60 +664,60 @@ bool TextClass::SetState(bool immortal, ID3D11DeviceContext *deviceContext)
 	return true;
 }
 
-bool TextClass::SetTitle(int num, ID3D11DeviceContext *deviceContext)
-{
-	char resultString[32];
-	bool result;
-	
-	if (num == -1)
-	{
-		strcpy_s(resultString, "");
-		result = UpdateSentence(m_sentences[16], resultString, m_screenWidth / 3, m_screenHeight / 2 - 80, 1.0f, 1.0f, 1.0f, deviceContext);
-		if (!result)
-		{
-			return false;
-		}
-
-		strcpy_s(resultString, "");
-		result = UpdateSentence(m_sentences[17], resultString, m_screenWidth / 3, m_screenHeight / 2 - 80, 1.0f, 1.0f, 1.0f, deviceContext);
-		if (!result)
-		{
-			return false;
-		}
-
-		strcpy_s(resultString, "");
-		result = UpdateSentence(m_sentences[18], resultString, m_screenWidth / 3, m_screenHeight / 2 - 80, 1.0f, 1.0f, 1.0f, deviceContext);
-		if (!result)
-		{
-			return false;
-		}
-	}
-	else
-	{
-		strcpy_s(resultString, "<< How To Play >>");
-		result = UpdateSentence(m_sentences[16], resultString, m_screenWidth / 3+ 50, m_screenHeight / 2 - 80, 1.0f, 1.0f, 1.0f, deviceContext);
-		if (!result)
-		{
-			return false;
-		}
-
-		strcpy_s(resultString, "Move : WASD  |  Holding : Space");
-		result = UpdateSentence(m_sentences[17], resultString, m_screenWidth / 3+30, m_screenHeight / 2 - 60, 1.0f, 1.0f, 1.0f, deviceContext);
-		if (!result)
-		{
-			return false;
-		}
-
-		strcpy_s(resultString, "Press Enter to Start!");
-		result = UpdateSentence(m_sentences[18], resultString, m_screenWidth / 3 + 50, m_screenHeight / 2, 1.0f, 1.0f, 0.0f, deviceContext);
-		if (!result)
-		{
-			return false;
-		}
-	}
-
-	return false;
-}
+//bool TextClass::SetTitle(int num, ID3D11DeviceContext *deviceContext)
+//{
+//	char resultString[32];
+//	bool result;
+//	
+//	if (num == -1)
+//	{
+//		strcpy_s(resultString, "");
+//		result = UpdateSentence(m_sentences[16], resultString, m_screenWidth / 3, m_screenHeight / 2 - 80, 1.0f, 1.0f, 1.0f, deviceContext);
+//		if (!result)
+//		{
+//			return false;
+//		}
+//
+//		strcpy_s(resultString, "");
+//		result = UpdateSentence(m_sentences[17], resultString, m_screenWidth / 3, m_screenHeight / 2 - 80, 1.0f, 1.0f, 1.0f, deviceContext);
+//		if (!result)
+//		{
+//			return false;
+//		}
+//
+//		strcpy_s(resultString, "");
+//		result = UpdateSentence(m_sentences[18], resultString, m_screenWidth / 3, m_screenHeight / 2 - 80, 1.0f, 1.0f, 1.0f, deviceContext);
+//		if (!result)
+//		{
+//			return false;
+//		}
+//	}
+//	else
+//	{
+//		strcpy_s(resultString, "<< How To Play >>");
+//		result = UpdateSentence(m_sentences[16], resultString, m_screenWidth / 3+ 50, m_screenHeight / 2 - 80, 1.0f, 1.0f, 1.0f, deviceContext);
+//		if (!result)
+//		{
+//			return false;
+//		}
+//
+//		strcpy_s(resultString, "Move : WASD  |  Holding : Space");
+//		result = UpdateSentence(m_sentences[17], resultString, m_screenWidth / 3+30, m_screenHeight / 2 - 60, 1.0f, 1.0f, 1.0f, deviceContext);
+//		if (!result)
+//		{
+//			return false;
+//		}
+//
+//		strcpy_s(resultString, "Press Enter to Start!");
+//		result = UpdateSentence(m_sentences[18], resultString, m_screenWidth / 3 + 50, m_screenHeight / 2, 1.0f, 1.0f, 0.0f, deviceContext);
+//		if (!result)
+//		{
+//			return false;
+//		}
+//	}
+//
+//	return false;
+//}
 
 
 //#ifdef DEBUG

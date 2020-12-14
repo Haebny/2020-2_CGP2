@@ -8,7 +8,7 @@ GraphicsClass::GraphicsClass()
 	m_LightShader = 0;
 	m_Light = 0;
 	m_TextureShader = 0;
-	m_TitleScene = 0;
+	m_Bitmap = 0;
 	m_Text = 0;
 	m_Skybox = 0;
 	m_ParticleShader = 0;
@@ -367,6 +367,8 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 {
 	bool result;
 	D3DXMATRIX baseViewMatrix;
+	m_screenWidth = screenWidth;
+	m_screenHeight = screenHeight;
 
 	// Create the Direct3D object.
 	m_D3D = new D3DClass;
@@ -678,7 +680,6 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		// Remember the start position of models.
 		m_Models.at(i).startPos = m_Models.at(i).pos;
 		m_Models.at(i).col = false;
-		m_Models.at(i).state = IDLE;
 	}
 
 	// Create the light shader object.
@@ -753,15 +754,15 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	}
 
 	// Create the bitmap object.
-	m_TitleScene = new BitmapClass;
-	if (!m_TitleScene)
+	m_Bitmap = new BitmapClass;
+	if (!m_Bitmap)
 	{
 		return false;
 	}
 
 	// Initialize the bitmap object.
-	result = m_TitleScene->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight,
-		L"../Engine/data/textures/reindeer/eyes.dds", screenWidth, screenHeight);
+	result = m_Bitmap->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight,
+		L"../Engine/data/textures/images/title.dds", screenWidth, screenHeight);
 	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the bitmap object.", L"Error", MB_OK);
@@ -798,22 +799,6 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
-	//// Create the bitmap object.
-	//m_ResultScene = new BitmapClass;
-	//if (!m_ResultScene)
-	//{
-	//	return false;
-	//}
-
-	//// Initialize the bitmap object.
-	//result = m_ResultScene->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight,
-	//	L"../Engine/data/textures/images/failed.PNG", screenWidth, screenHeight);
-	//if (!result)
-	//{
-	//	MessageBox(hwnd, L"Could not initialize the bitmap object.", L"Error", MB_OK);
-	//	return false;
-	//}
-
 	// Create the text object.
 	m_Text = new TextClass;
 	if (!m_Text)
@@ -833,10 +818,6 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_CamPos.x = playerPos.x;
 	m_CamPos.y = 7.0;
 	m_CamPos.z = playerPos.z;
-
-	m_CamRot.x = 0.0f;
-	m_CamRot.y = 0.0f;
-	m_CamRot.z = 0.0f;
 
 	return true;
 }
@@ -877,11 +858,11 @@ void GraphicsClass::Shutdown()
 	}
 
 	// Release the bitmap object.
-	if (m_TitleScene)
+	if (m_Bitmap)
 	{
-		m_TitleScene->Shutdown();
-		delete m_TitleScene;
-		m_TitleScene = 0;
+		m_Bitmap->Shutdown();
+		delete m_Bitmap;
+		m_Bitmap = 0;
 	}
 
 	// Release the texture shader object.
@@ -1057,7 +1038,7 @@ bool GraphicsClass::Frame(int mouseX, int mouseY, int fps, int cpu, float frameT
 	// 결과 화면 출력
 	ShowGameResult();
 
-	if (titleScene == false)
+	if (!titleScene && !resultScene)
 	{
 		// Set the camera movement.
 		m_CamRot.y -= (PreX - mouseX) * 0.1f;
@@ -1112,12 +1093,7 @@ bool GraphicsClass::Frame(int mouseX, int mouseY, int fps, int cpu, float frameT
 		{
 			return false;
 		}
-	}
-	else
-	{
-		m_Text->SetTitle(0, m_D3D->GetDeviceContext());
-	}
-	
+	}	
 
 	static float rotation = 0.0f;
 
@@ -1285,45 +1261,38 @@ bool GraphicsClass::Render(float rotation)
 	if (titleScene)
 	{
 		// Put the bitmap vertex and index buffers on the graphics pipeline to prepare them for drawing.
-		result = m_TitleScene->Render(m_D3D->GetDeviceContext(), 0, 0);
+		result = m_Bitmap->Render(m_D3D->GetDeviceContext(),0, 0);
 		if (!result)
 		{
 			return false;
 		}
 
 		// Render the bitmap with the texture shader.
-		result = m_TextureShader->Render(m_D3D->GetDeviceContext(), m_TitleScene->GetIndexCount(),
-			worldMatrix, viewMatrix, orthoMatrix, m_TitleScene->GetTexture());
-		if (!result)
-		{
-			return false;
-		}
-
-		// Render the text strings.
-		result = m_Text->Render(m_D3D->GetDeviceContext(), baseWorldMat, orthoMatrix);
+		result = m_TextureShader->Render(m_D3D->GetDeviceContext(), m_Bitmap->GetIndexCount(),
+			baseWorldMat, viewMatrix, orthoMatrix, m_Bitmap->GetTexture());
 		if (!result)
 		{
 			return false;
 		}
 	}
 
-	//if (resultScene)
-	//{
-	//	// Put the bitmap vertex and index buffers on the graphics pipeline to prepare them for drawing.
-	//	result = m_ResultScene->Render(m_D3D->GetDeviceContext(), 0, 0);
-	//	if (!result)
-	//	{
-	//		return false;
-	//	}
+	if (resultScene)
+	{
+		// Put the bitmap vertex and index buffers on the graphics pipeline to prepare them for drawing.
+		result = m_Bitmap->Render(m_D3D->GetDeviceContext(), 0, 0);
+		if (!result)
+		{
+			return false;
+		}
 
-	//	// Render the bitmap with the texture shader.
-	//	result = m_TextureShader->Render(m_D3D->GetDeviceContext(), m_TitleScene->GetIndexCount(),
-	//		worldMatrix, viewMatrix, orthoMatrix, m_TitleScene->GetTexture());
-	//	if (!result)
-	//	{
-	//		return false;
-	//	}
-	//}
+		// Render the bitmap with the texture shader.
+		result = m_TextureShader->Render(m_D3D->GetDeviceContext(), m_Bitmap->GetIndexCount(),
+			baseWorldMat, viewMatrix, orthoMatrix, m_Bitmap->GetTexture());
+		if (!result)
+		{
+			return false;
+		}
+	}
 
 	// Turn the Z buffer back on now that all 2D rendering has completed.
 	m_D3D->TurnZBufferOn();
@@ -1337,10 +1306,8 @@ bool GraphicsClass::Render(float rotation)
 /// Player Movements
 void GraphicsClass::GoForward(float frameTime)
 {
-	if (m_playerLife <= 0 || titleScene)
+	if (m_playerLife <= 0 || titleScene || resultScene)
 		return;
-
-	prePos = playerPos;
 
 	D3DXMATRIX Dir;
 	D3DXMatrixIdentity(&Dir);
@@ -1361,10 +1328,8 @@ void GraphicsClass::GoForward(float frameTime)
 
 void GraphicsClass::GoLeft(float frameTime)
 {
-	if (m_playerLife <= 0 || titleScene)
+	if (m_playerLife <= 0 || titleScene || resultScene)
 		return;
-
-	prePos = playerPos;
 
 	D3DXMATRIX Dir;
 	D3DXMatrixIdentity(&Dir);
@@ -1385,10 +1350,8 @@ void GraphicsClass::GoLeft(float frameTime)
 
 void GraphicsClass::GoBack(float frameTime)
 {
-	if (m_playerLife <= 0 || titleScene)
+	if (m_playerLife <= 0 || titleScene || resultScene)
 		return;
-
-	prePos = playerPos;
 
 	D3DXMATRIX Dir;
 	D3DXMatrixIdentity(&Dir);
@@ -1409,10 +1372,8 @@ void GraphicsClass::GoBack(float frameTime)
 
 void GraphicsClass::GoRight(float frameTime)
 {
-	if (m_playerLife <= 0 || titleScene)
+	if (m_playerLife <= 0 || titleScene || resultScene)
 		return;
-
-	prePos = playerPos;
 
 	D3DXMATRIX Dir;
 	D3DXMatrixIdentity(&Dir);
@@ -1533,20 +1494,24 @@ void GraphicsClass::ShowGameResult()
 {
 	if (m_Score == 3)
 	{
+		m_Camera->SetPosition(0.0f, 0.0f, 0.0f);
+		m_Camera->SetRotation(0.0f, 0.0f, 0.0f);
+		playerPos = D3DXVECTOR3(-379.799f, 0.0f, 378.019f);
 		m_Result = Success;
-		m_Text->SetResult(0, m_D3D->GetDeviceContext());
+		m_Bitmap->Initialize(m_D3D->GetDevice(), m_screenWidth, m_screenHeight,
+			L"../Engine/data/textures/images/success.dds", m_screenWidth, m_screenHeight);
+		resultScene = true;
 	}
 
 	if (m_playerLife == 0)
 	{
+		m_Camera->SetPosition(0.0f, 0.0f, 0.0f);
+		m_Camera->SetRotation(0.0f, 0.0f, 0.0f);
+		playerPos = D3DXVECTOR3(-379.799f, 0.0f, 378.019f);
 		m_Result = Failure;
-		m_Text->SetResult(1, m_D3D->GetDeviceContext());
-	}
-
-	if (m_Result == Playing)
-	{
-		m_Result = Failure;
-		m_Text->SetResult(-1, m_D3D->GetDeviceContext());
+		m_Bitmap->Initialize(m_D3D->GetDevice(), m_screenWidth, m_screenHeight,
+			L"../Engine/data/textures/images/failed.dds", m_screenWidth, m_screenHeight);
+		resultScene = true;
 	}
 
 	return;
@@ -1557,7 +1522,7 @@ void GraphicsClass::StartGame()
 	m_Result = Playing;
 
 	m_Score = 0;
-	m_playerLife = 3;
+	m_playerLife = 10;
 
 	isImmortal = false;
 	isCollided = false;
@@ -1566,6 +1531,7 @@ void GraphicsClass::StartGame()
 	isIncrease = false;
 	isDamaged = false;
 	titleScene = false;
+	resultScene = false;
 
 	for (int i = 0; i < m_Models.size(); i++)
 	{
@@ -1579,14 +1545,36 @@ void GraphicsClass::StartGame()
 
 	m_CamPos = playerPos;
 	m_CamPos.y = 10.0f;
-
-	m_Text->SetResult(-1, m_D3D->GetDeviceContext());
-	m_Text->SetTitle(-1, m_D3D->GetDeviceContext());
 }
 
 int GraphicsClass::GetResult()
 {
 	return m_Result;
+}
+
+void GraphicsClass::SetResult(int key)
+{
+	if (key == 1)
+	{
+		m_Result = Success;
+		m_Score = 3;
+
+		m_Camera->SetPosition(0.0f, 0.0f, 0.0f);
+		playerPos = D3DXVECTOR3(-379.799f, 0.0f, 378.019f);
+	}
+	if (key == 2)
+	{
+		m_Result = Failure;
+		m_playerLife = 0;
+
+		m_Camera->SetPosition(0.0f, 0.0f, 0.0f);
+		playerPos = D3DXVECTOR3(-379.799f, 0.0f, 378.019f);
+	}
+	else
+	{
+		m_Camera->SetPosition(m_CamPos.x, m_CamPos.y, m_CamPos.z);
+		m_Result = Playing;
+	}
 }
 
 bool GraphicsClass::GetDamageTrigger()
@@ -1611,8 +1599,9 @@ bool GraphicsClass::GetCorrectTrigger()
 
 bool GraphicsClass::GetSuccessTrigger()
 {
-	if (m_Result == Success)
+	if (m_Result == Success && m_Score == 3)
 	{
+		m_Score = 4;
 		return true;
 	}
 

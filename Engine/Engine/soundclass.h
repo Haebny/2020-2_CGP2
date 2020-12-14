@@ -63,7 +63,11 @@ private:
 private:
 	IDirectSound8* m_DirectSound;
 	IDirectSoundBuffer* m_primaryBuffer;
-	IDirectSoundBuffer8* m_secondaryBuffer1;	IDirectSoundBuffer8* m_secondaryBuffer2;	IDirectSoundBuffer8* m_secondaryBuffer3;	IDirectSoundBuffer8* m_secondaryBuffer4;
+	IDirectSoundBuffer8* m_secondaryBuffer1;
+	IDirectSoundBuffer8* m_secondaryBuffer2;
+	IDirectSoundBuffer8* m_secondaryBuffer3;
+	IDirectSoundBuffer8* m_secondaryBuffer4;
+
 	bool isPlaying;
 	SoundType soundType;
 };

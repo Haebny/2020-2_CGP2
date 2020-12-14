@@ -38,7 +38,7 @@ public:
 	ModelClass(const ModelClass&);
 	~ModelClass();
 
-	bool Initialize(ID3D11Device*, char*, WCHAR*); // 디바이스, 외부 텍스쳐, 외부 모델
+	bool Initialize(ID3D11Device*, char*, WCHAR*);
 	ID3D11ShaderResourceView* GetTexture();
 
 	bool LoadModel(char*);

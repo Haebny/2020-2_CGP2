@@ -37,11 +37,11 @@ public:
 	bool SetMousePosition(int, int, ID3D11DeviceContext*);
 
 	bool SetScore(int, ID3D11DeviceContext*);
-	bool SetResult(int, ID3D11DeviceContext*);
+	//bool SetResult(int, ID3D11DeviceContext*);
 	bool SetGameUI(int, int, ID3D11DeviceContext*);
 	bool SetCollision(bool, ID3D11DeviceContext*);
 	bool SetState(bool, ID3D11DeviceContext*);
-	bool SetTitle(int, ID3D11DeviceContext*);
+	//bool SetTitle(int, ID3D11DeviceContext*);
 
 //#ifdef DEBUG
 	bool SetPos(float, float, ID3D11DeviceContext*);

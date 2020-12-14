@@ -33,6 +33,9 @@ public:
 	bool IsEnterDown();
 	bool IsSpacebarDown();
 
+	bool Is1KeyDown();
+	bool Is2KeyDown();
+
 private:
 	bool ReadKeyboard();
 	bool ReadMouse();

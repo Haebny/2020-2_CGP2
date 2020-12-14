@@ -25,11 +25,6 @@ const float SCREEN_NEAR = 0.1f;
 
 class GraphicsClass {
 private:
-	enum State
-	{
-		IDLE,
-		TRACE
-	};
 	struct Model
 	{
 		ModelClass* model;
@@ -40,7 +35,6 @@ private:
 		D3DXVECTOR3 pos, startPos;
 		D3DXVECTOR3 min, max;
 		bool col;
-		State state;
 	};
 
 public:
@@ -73,6 +67,7 @@ public:
 	void StartGame();
 
 	int GetResult();
+	void SetResult(int);
 	bool GetDamageTrigger();
 	bool GetCorrectTrigger();
 	bool GetSuccessTrigger();
@@ -113,7 +108,7 @@ private:
 	LightClass* m_Light;
 	LightClass *m_Light2, *m_Light3, *m_Light4;
 	TextureShaderClass* m_TextureShader;
-	BitmapClass* m_TitleScene; // , m_ResultScene;
+	BitmapClass* m_Bitmap; // , m_ResultScene;
 	TextClass* m_Text;
 	SkyboxClass* m_Skybox;
 
@@ -121,7 +116,7 @@ private:
 	ParticleSystemClass* m_ParticleSystem;
 
 private:
-	D3DXVECTOR3 m_CamPos, m_CamRot, playerPos, prePos;
+	D3DXVECTOR3 m_CamPos, m_CamRot, playerPos;
 	float PreX, PreY;
 	float camSpeed, ghostSpeed;
 
@@ -140,6 +135,8 @@ private:
 	bool isCollided, isImmortal,
 		holdable, isHolding, isIncrease, isDamaged,
 		titleScene, resultScene;
+
+	int m_screenWidth, m_screenHeight;
 };
 
 #endif 

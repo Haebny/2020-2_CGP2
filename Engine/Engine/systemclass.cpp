@@ -288,6 +288,13 @@ bool SystemClass::Frame()
 	if (m_Graphics->GetSuccessTrigger())
 		m_Sound->PlayMusic(3);
 
+	// Hot keys
+	if (m_Input->Is1KeyDown())
+		m_Graphics->SetResult(1);
+
+	if (m_Input->Is2KeyDown())
+		m_Graphics->SetResult(2);
+
 	// Get the location of the mouse from the input object,
 	m_Input->GetMouseLocation(mouseX, mouseY);
 

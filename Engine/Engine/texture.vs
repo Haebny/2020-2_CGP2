@@ -10,8 +10,6 @@ cbuffer MatrixBuffer
 struct VertexInputType
 {
 	float4 position : POSITION;
-
-	// can change the zero to any number to indicate which set of coordinates you are working with as multiple texture coordinates are allowed.
 	float2 tex : TEXCOORD0;
 };
 
@@ -35,7 +33,6 @@ PixelInputType TextureVertexShader(VertexInputType input)
 	output.position = mul(output.position, projectionMatrix);
 
 	// Store the texture coordinates for the pixel shader.
-	// 복사한 텍스쳐 좌표를 픽셀 셰이더에게 전달
 	output.tex = input.tex;
 
 	return output;

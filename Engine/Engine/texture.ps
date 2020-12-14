@@ -1,6 +1,6 @@
 // Globals
-Texture2D shaderTexture; // 텍스쳐 리소스
-SamplerState SampleType; // 어떻게 씌울지
+Texture2D shaderTexture;
+SamplerState SampleType;
 
 // Type definitions
 struct PixelInputType
@@ -15,7 +15,6 @@ float4 TexturePixelShader(PixelInputType input) : SV_TARGET
 {
 	float4 textureColor;
 	
-	// Sample타입은 우리가 지정한 타입. input.tex는 좌표 컬러값.
 	// Sample the pixel color from the texture using the sampler at this texture coordinate location.
 	textureColor = shaderTexture.Sample(SampleType, input.tex);
 	

@@ -15,7 +15,7 @@ public:
 	bool Initialize(ID3D11Device*, WCHAR*);
 	void Shutdown();
 
-	ID3D11ShaderResourceView* GetTexture(); // 셰이더가 사용
+	ID3D11ShaderResourceView* GetTexture();
 
 private:
 	ID3D11ShaderResourceView* m_texture;
