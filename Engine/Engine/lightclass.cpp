@@ -40,11 +40,6 @@ void LightClass::Shutdown()
 
 	return;
 }
-// 다른 객체가 텍스쳐 셰이더 자원에 접근 필요 시 호출(ex. 텍스쳐 렌더링)
-ID3D11ShaderResourceView* LightClass::GetTexture()
-{
-	return m_texture;
-}
 
 void LightClass::SetAmbientColor(float red, float green, float blue, float alpha)
 {
@@ -69,7 +64,6 @@ void LightClass::SetSpecularColor(float red, float green, float blue, float alph
 	m_specularColor = D3DXVECTOR4(red, green, blue, alpha);
 	return;
 }
-
 void LightClass::SetSpecularPower(float power)
 {
 	m_specularPower = power;
@@ -82,11 +76,6 @@ void LightClass::SetPosition(float x, float y, float z)
 	return;
 }
 
-D3DXVECTOR4 LightClass::GetAmbientColor()
-{
-	return m_ambientColor;
-}
-
 D3DXVECTOR4 LightClass::GetDiffuseColor()
 {
 	return m_diffuseColor;
@@ -95,6 +84,11 @@ D3DXVECTOR4 LightClass::GetDiffuseColor()
 D3DXVECTOR3 LightClass::GetDirection()
 {
 	return m_direction;
+}
+
+D3DXVECTOR4 LightClass::GetAmbientColor()
+{
+	return m_ambientColor;
 }
 
 D3DXVECTOR4 LightClass::GetSpecularColor()
@@ -110,64 +104,4 @@ float LightClass::GetSpecularPower()
 D3DXVECTOR4 LightClass::GetPosition()
 {
 	return m_position;
-}
-
-void LightClass::TurnOnLight(int key, bool turnOn)
-{
-	switch (key)
-	{
-	case 1:	// ambient light
-	{
-		if (turnOn == true)
-			SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
-		else
-			SetAmbientColor(0.0f, 0.0f, 0.0f, 1.0f);
-		break;
-	}
-	case 2:	// diffuse light
-	{
-		if (turnOn == true)
-			SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
-		else
-			SetDiffuseColor(0.0f, 0.0f, 0.0f, 1.0f);
-		break;
-	}
-	case 3:	// specular light
-	{
-		if (turnOn == true)
-		{
-			SetSpecularColor(1.0f, 0.0f, 0.0f, 1.0f);
-			SetSpecularPower(32.0f);
-		}
-		else
-		{
-			SetSpecularColor(0.0f, 0.0f, 0.0f, 1.0f);
-			SetSpecularPower(5000000.0f);
-		}
-			
-		break;
-	}
-	default:
-		break;
-	}
-
-	return;
-}
-
-void LightClass::TurnOnPointLight(int key, bool turnOn)
-{
-	if (key != 4)
-		return;
-
-	if (turnOn == true)
-		SetDiffuseColor(m_storedDiffuse.x, m_storedDiffuse.y, m_storedDiffuse.z, 1.0f);
-	else
-		SetDiffuseColor(0.0f, 0.0f, 0.0f, 1.0f);
-
-	return;
-}
-
-void LightClass::StoreDiffuseColor()
-{
-	m_storedDiffuse = GetDiffuseColor();
 }

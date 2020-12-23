@@ -36,6 +36,13 @@ public:
 
 	bool SetMousePosition(int, int, ID3D11DeviceContext*);
 
+	bool SetScore(int, int, ID3D11DeviceContext*);
+	bool SetResult(int, ID3D11DeviceContext*);
+
+#ifdef DEBUG
+	bool SetPos(float, float, float, float, float, float, ID3D11DeviceContext*);
+#endif
+
 private:
 	bool InitializeSentence(SentenceType**, int, ID3D11Device*);
 	bool UpdateSentence(SentenceType*, char*, int, int, float, float, float, ID3D11DeviceContext*);

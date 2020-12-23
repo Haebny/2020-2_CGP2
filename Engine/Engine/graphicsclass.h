@@ -1,5 +1,5 @@
 #ifndef _GRAPHICSCLASS_H_
-#define _GRAPHICSCLASS_H_
+#define _GRAPHICSCLASS_H_ 
 
 #include "d3dclass.h"
 #include "cameraclass.h"
@@ -7,33 +7,29 @@
 #include "lightshaderclass.h"
 #include "lightclass.h"
 #include "textureshaderclass.h"
-//#include "bitmapclass.h"
+#include "bitmapclass.h"
 #include "textclass.h"
 #include "skyboxclass.h"
-#include "ODEclass.h"
 
 #include <vector>
 using namespace std;
 
 // Globals
-const bool FULL_SCREEN = false;			// 풀스크린 
-const bool VSYNC_ENABLED = true;
-const float SCREEN_DEPTH = 1000.0f;		// 스크린 깊이
+const bool FULL_SCREEN = false;
+const bool VSYNC_ENABLED = false;
+const float SCREEN_DEPTH = 1000.0f;
 const float SCREEN_NEAR = 0.1f;
 
-
-class GraphicsClass
-{
-public:
+class GraphicsClass {
+private:
 	struct Model
 	{
 		ModelClass* model;
-		const char* obj_path;
-		const WCHAR* tex_path;
-		const char* name;
-		D3DXVECTOR3 pos;
-		D3DXVECTOR3 rot;
+		char* obj_path;
+		WCHAR* tex_path;
+		char* name;
 	};
+
 public:
 	GraphicsClass();
 	GraphicsClass(const GraphicsClass&);
@@ -43,36 +39,33 @@ public:
 	void Shutdown();
 	bool Frame(int, int, int, int, float);
 
-	void GoForward();
-	void GoLeft();
-	void GoBack();
-	void GoRight();
+	void GoForward(float);
+	void GoLeft(float);
+	void GoBack(float);
+	void GoRight(float);
 
-	//void MovePlayer(char);
-	//void TurnLeft();
-	//void TurnRight();
-
-private:
-	bool Render(float);
+public:
+	int m_input;
 
 private:
-	D3DClass* m_D3D;
+	bool Render(float, float);
+
+private:
 	CameraClass* m_Camera;
+	D3DClass* m_D3D;
 	vector<Model> m_Models;
-	Model dog, cat, wood, floor;
+	Model floor;
 	LightShaderClass* m_LightShader;
 	LightClass* m_Light;
 	LightClass *m_Light2, *m_Light3, *m_Light4;
 	TextureShaderClass* m_TextureShader;
-	//BitmapClass* m_Bitmap;
+	BitmapClass* m_Bitmap;
 	TextClass* m_Text;
 	SkyboxClass* m_Skybox;
-	ODEClass* m_PhyWorld;
 
 private:
-	D3DXVECTOR3 CamPos, CamRot;
-	float PreX, PreY;
-	float speed;
+	D3DXVECTOR3 m_CamPos, m_CamRot;
+	float m_PreX, m_PreY, m_CamSpeed;
 };
 
-#endif
+#endif 

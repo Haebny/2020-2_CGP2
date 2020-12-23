@@ -3,7 +3,6 @@
 
 #include <d3dx10math.h>
 
-// 어떻게 우리가 장면을 보는지에 대한 정보를 DirectX 11에게 전달
 class CameraClass
 {
 public:
@@ -23,7 +22,7 @@ public:
 private:
 	float m_positionX, m_positionY, m_positionZ;
 	float m_rotationX, m_rotationY, m_rotationZ;
-	D3DXMATRIX m_viewMatrix;	// 관리하기가 편하기 때문에 행렬 사용
+	D3DXMATRIX m_viewMatrix;
 };
 
 #endif

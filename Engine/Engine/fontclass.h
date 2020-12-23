@@ -7,16 +7,16 @@
 using namespace std;
 
 #include "textureclass.h"
-
 class FontClass
 {
 private:
+	// 글꼴 인덱스 파일의 인덱스 데이터 저장
 	struct FontType
 	{
-		float left, right;
-		int size;
+		float left, right;	// 텍스쳐 U좌표
+		int size;			// 문자의 픽셀 너비
 	};
-
+		
 	struct VertexType
 	{
 		D3DXVECTOR3 position;
@@ -28,15 +28,16 @@ public:
 	FontClass(const FontClass&);
 	~FontClass();
 
-	bool Initialize(ID3D11Device*, const char*, const WCHAR*);
+	bool Initialize(ID3D11Device*, char*, WCHAR*);
 	void Shutdown();
+
 	ID3D11ShaderResourceView* GetTexture();
-	void BuildVertexArray(void*, const char*, float, float);
+	void BuildVertexArray(void*, char*, float, float);
 
 private:
-	bool LoadFontData(const char*);
+	bool LoadFontData(char*);
 	void ReleaseFontData();
-	bool LoadTexture(ID3D11Device*, const WCHAR*);
+	bool LoadTexture(ID3D11Device*, WCHAR*);
 	void ReleaseTexture();
 
 private:

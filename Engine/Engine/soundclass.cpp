@@ -29,7 +29,7 @@ bool SoundClass::Initialize(HWND hwnd)
 	}
 
 	// Load a wave audio file onto a secondary buffer.
-	result = LoadWaveFile("../Engine/data/sounds/K.K.8Bit.wav", &m_secondaryBuffer1);
+	result = LoadWaveFile("../Engine/data/sounds/__________.wav", &m_secondaryBuffer1);
 	if (!result)
 	{
 		return false;
@@ -130,7 +130,7 @@ void SoundClass::ShutdownDirectSound()
 	return;
 }
 
-bool SoundClass::LoadWaveFile(const char* filename, IDirectSoundBuffer8** secondaryBuffer)
+bool SoundClass::LoadWaveFile(char* filename, IDirectSoundBuffer8** secondaryBuffer)
 {
 	int error;
 	FILE* filePtr;

@@ -52,7 +52,7 @@ bool InputClass::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, int
 	}
 
 	// Set the cooperative level of the keyboard to not share with other programs.
-	result = m_keyboard->SetCooperativeLevel(hwnd, DISCL_FOREGROUND | DISCL_EXCLUSIVE);	// DISCL_FOREGROUND | DISCL_EXCLUSIVE로 설정하면 키보드 및 마우스 출력이 안됨
+	result = m_keyboard->SetCooperativeLevel(hwnd, DISCL_BACKGROUND | DISCL_NONEXCLUSIVE);	// DISCL_FOREGROUND | DISCL_EXCLUSIVE로 설정하면 키보드 및 마우스 출력이 안됨
 	if (FAILED(result))
 	{
 		return false;
@@ -79,7 +79,7 @@ bool InputClass::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, int
 	}
 
 	// Set the cooperative level of the mouse to share with other programs.
-	result = m_mouse->SetCooperativeLevel(hwnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
+	result = m_mouse->SetCooperativeLevel(hwnd, DISCL_BACKGROUND | DISCL_NONEXCLUSIVE);
 	if (FAILED(result))
 	{
 		return false;

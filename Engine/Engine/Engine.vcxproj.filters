@@ -60,28 +60,16 @@
     <ClCompile Include="textclass.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="FBXImporter.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Mesh.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="FBXMemoryReadStream.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="fpsclass.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="timerclass.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="cpuclass.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="soundclass.cpp">
+    <ClCompile Include="timerclass.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="ODEclass.cpp">
+    <ClCompile Include="soundclass.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="skyboxclass.cpp">
@@ -89,28 +77,22 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shader\font.ps">
+    <None Include="texture.ps">
       <Filter>리소스 파일</Filter>
     </None>
-    <None Include="Shader\font.vs">
+    <None Include="texture.vs">
       <Filter>리소스 파일</Filter>
     </None>
-    <None Include="Shader\light.ps">
+    <None Include="light.vs">
       <Filter>리소스 파일</Filter>
     </None>
-    <None Include="Shader\light.vs">
+    <None Include="light.ps">
       <Filter>리소스 파일</Filter>
     </None>
-    <None Include="Shader\texture.ps">
+    <None Include="font.vs">
       <Filter>리소스 파일</Filter>
     </None>
-    <None Include="Shader\texture.vs">
-      <Filter>리소스 파일</Filter>
-    </None>
-    <None Include="Shader\color.ps">
-      <Filter>리소스 파일</Filter>
-    </None>
-    <None Include="Shader\color.vs">
+    <None Include="font.ps">
       <Filter>리소스 파일</Filter>
     </None>
   </ItemGroup>
@@ -157,28 +139,16 @@
     <ClInclude Include="textclass.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="FBXImporter.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Mesh.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="FBXMemoryReadStream.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="fpsclass.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="timerclass.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="cpuclass.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="soundclass.h">
+    <ClInclude Include="timerclass.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="ODEclass.h">
+    <ClInclude Include="soundclass.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="skyboxclass.h">

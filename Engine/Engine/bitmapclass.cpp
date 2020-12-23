@@ -9,13 +9,15 @@ BitmapClass::BitmapClass()
 
 BitmapClass::BitmapClass(const BitmapClass& other)
 {
+
 }
 
 BitmapClass::~BitmapClass()
 {
+
 }
 
-bool BitmapClass::Initialize(ID3D11Device* device, int screenWidth, int screenHeight, const WCHAR* textureFilename, int
+bool BitmapClass::Initialize(ID3D11Device* device, int screenWidth, int screenHeight, WCHAR* textureFilename, int
 	bitmapWidth, int bitmapHeight)
 {
 	bool result;
@@ -23,7 +25,6 @@ bool BitmapClass::Initialize(ID3D11Device* device, int screenWidth, int screenHe
 	// Store the screen size.
 	m_screenWidth = screenWidth;
 	m_screenHeight = screenHeight;
-
 	// Store the size in pixels that this bitmap should be rendered at.
 	m_bitmapWidth = bitmapWidth;
 	m_bitmapHeight = bitmapHeight;
@@ -45,7 +46,6 @@ bool BitmapClass::Initialize(ID3D11Device* device, int screenWidth, int screenHe
 	{
 		return false;
 	}
-
 	return true;
 }
 
@@ -53,19 +53,17 @@ void BitmapClass::Shutdown()
 {
 	// Release the model texture.
 	ReleaseTexture();
-
 	// Shutdown the vertex and index buffers.
 	ShutdownBuffers();
-
 	return;
 }
 
 bool BitmapClass::Render(ID3D11DeviceContext* deviceContext, int positionX, int positionY)
 {
 	bool result;
+
 	// Re-build the dynamic vertex buffer for rendering to possibly a different location on the screen.
 	result = UpdateBuffers(deviceContext, positionX, positionY);
-
 	if (!result)
 	{
 		return false;
@@ -73,7 +71,6 @@ bool BitmapClass::Render(ID3D11DeviceContext* deviceContext, int positionX, int 
 
 	// Put the vertex and index buffers on the graphics pipeline to prepare them for drawing.
 	RenderBuffers(deviceContext);
-
 	return true;
 }
 
@@ -236,16 +233,20 @@ bool BitmapClass::UpdateBuffers(ID3D11DeviceContext* deviceContext, int position
 	// First triangle.
 	vertices[0].position = D3DXVECTOR3(left, top, 0.0f); // Top left.
 	vertices[0].texture = D3DXVECTOR2(0.0f, 0.0f);
+
 	vertices[1].position = D3DXVECTOR3(right, bottom, 0.0f); // Bottom right.
 	vertices[1].texture = D3DXVECTOR2(1.0f, 1.0f);
+
 	vertices[2].position = D3DXVECTOR3(left, bottom, 0.0f); // Bottom left.
 	vertices[2].texture = D3DXVECTOR2(0.0f, 1.0f);
 
 	// Second triangle.
 	vertices[3].position = D3DXVECTOR3(left, top, 0.0f); // Top left.
 	vertices[3].texture = D3DXVECTOR2(0.0f, 0.0f);
+
 	vertices[4].position = D3DXVECTOR3(right, top, 0.0f); // Top right.
 	vertices[4].texture = D3DXVECTOR2(1.0f, 0.0f);
+
 	vertices[5].position = D3DXVECTOR3(right, bottom, 0.0f); // Bottom right.
 	vertices[5].texture = D3DXVECTOR2(1.0f, 1.0f);
 
@@ -255,7 +256,6 @@ bool BitmapClass::UpdateBuffers(ID3D11DeviceContext* deviceContext, int position
 	{
 		return false;
 	}
-
 	// Get a pointer to the data in the vertex buffer.
 	verticesPtr = (VertexType*)mappedResource.pData;
 
@@ -276,24 +276,24 @@ void BitmapClass::RenderBuffers(ID3D11DeviceContext* deviceContext)
 {
 	unsigned int stride;
 	unsigned int offset;
-	
+
 	// Set vertex buffer stride and offset.
 	stride = sizeof(VertexType);
 	offset = 0;
 
 	// Set the vertex buffer to active in the input assembler so it can be rendered.
 	deviceContext->IASetVertexBuffers(0, 1, &m_vertexBuffer, &stride, &offset);
-	
+
 	// Set the index buffer to active in the input assembler so it can be rendered.
 	deviceContext->IASetIndexBuffer(m_indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-	
+
 	// Set the type of primitive that should be rendered from this vertex buffer, in this case triangles.
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	
+
 	return;
 }
 
-bool BitmapClass::LoadTexture(ID3D11Device* device, const WCHAR* filename)
+bool BitmapClass::LoadTexture(ID3D11Device* device, WCHAR* filename)
 {
 	bool result;
 
