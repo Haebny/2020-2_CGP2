@@ -7,8 +7,9 @@ GraphicsClass::GraphicsClass()
 	m_D3D = 0;
 	m_LightShader = 0;
 	m_Light = 0;
+	m_Light2, m_Light3, m_Light4 = 0;
 	m_TextureShader = 0;
-	//m_Bitmap = 0;
+	m_Bitmap = 0;
 	m_Text = 0;
 	m_Skybox = 0;
 
@@ -64,7 +65,6 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	// Initialize a base view matrix with the camera for 2D user interface rendering.
 	m_Camera->Render();
 	m_Camera->GetViewMatrix(baseViewMatrix);
-
 
 	// Create the skybox object.
 	m_Skybox = new SkyboxClass;
@@ -293,25 +293,17 @@ bool GraphicsClass::Frame(int mouseX, int mouseY, int fps, int cpu, float frameT
 {
 	bool result;
 
-	// Set the camera movement.
-	m_CamRot.y -= (m_PreX - mouseX) * 0.1f;
-	m_CamRot.x -= (m_PreY - mouseY) * 0.1f;
-
-	m_PreX = (float)mouseX;
-	m_PreY = (float)mouseY;
-
-	m_Camera->SetPosition(m_CamPos.x, m_CamPos.y, m_CamPos.z);
-	m_Camera->SetRotation(m_CamRot.x, m_CamRot.y, m_CamRot.z);
-
 	// Set the skybox.
 	m_Skybox->Frame(m_CamPos);
 
+#ifdef DEBUG
 	// Set the frames per second.
 	result = m_Text->SetFps(fps, m_D3D->GetDeviceContext());
 	if (!result)
 	{
 		return false;
 	}
+	
 	// Set the cpu usage.
 	result = m_Text->SetCpu(cpu, m_D3D->GetDeviceContext());
 	if (!result)
@@ -319,7 +311,6 @@ bool GraphicsClass::Frame(int mouseX, int mouseY, int fps, int cpu, float frameT
 		return false;
 	}
 
-#ifdef DEBUG
 	// Set the location of the mouse.
 	result = m_Text->SetPos(m_PepPos.x, m_PepPos.z, m_PlaPos.x, m_PlaPos.z, m_EnePos.x, m_EnePos.z, m_D3D->GetDeviceContext());
 	if (!result)
@@ -345,6 +336,26 @@ bool GraphicsClass::Frame(int mouseX, int mouseY, int fps, int cpu, float frameT
 	}
 
 	return true;
+}
+
+void GraphicsClass::MovePlayer(float frameTime, char key)
+{
+	if (key == 'w')
+	{
+
+	}
+	else if (key == 'a')
+	{
+
+	}
+	else if (key == 's')
+	{
+
+	}
+	else if (key == 'd')
+	{
+
+	}
 }
 
 
@@ -447,49 +458,4 @@ bool GraphicsClass::Render(float rotation, float frameTime)
 	m_D3D->EndScene();
 
 	return true;
-}
-
-/// Camera Movements
-void GraphicsClass::GoForward(float frameTime)
-{
-	D3DXMATRIX Dir;
-	D3DXMatrixIdentity(&Dir);
-	D3DXVECTOR3 Direction(0.0f, 0.0f, 1.0f);
-	D3DXMatrixRotationYawPitchRoll(&Dir, m_CamRot.y * 0.0174532925f, m_CamRot.x * 0.0174532925f, m_CamRot.z * 0.0174532925f);
-	D3DXVec3TransformCoord(&Direction, &Direction, &Dir);
-
-	m_CamPos += Direction * m_CamSpeed * frameTime;
-}
-
-void GraphicsClass::GoLeft(float frameTime)
-{
-	D3DXMATRIX Dir;
-	D3DXMatrixIdentity(&Dir);
-	D3DXVECTOR3 Direction(-1.0f, 0.0f, 0.0f);
-	D3DXMatrixRotationYawPitchRoll(&Dir, m_CamRot.y * 0.0174532925f, m_CamRot.x * 0.0174532925f, m_CamRot.z * 0.0174532925f);
-	D3DXVec3TransformCoord(&Direction, &Direction, &Dir);
-
-	m_CamPos += Direction * m_CamSpeed * frameTime;
-}
-
-void GraphicsClass::GoBack(float frameTime)
-{
-	D3DXMATRIX Dir;
-	D3DXMatrixIdentity(&Dir);
-	D3DXVECTOR3 Direction(0.0f, 0.0f, -1.0f);
-	D3DXMatrixRotationYawPitchRoll(&Dir, m_CamRot.y * 0.0174532925f, m_CamRot.x * 0.0174532925f, m_CamRot.z * 0.0174532925f);
-	D3DXVec3TransformCoord(&Direction, &Direction, &Dir);
-
-	m_CamPos += Direction * m_CamSpeed * frameTime;
-}
-
-void GraphicsClass::GoRight(float frameTime)
-{
-	D3DXMATRIX Dir;
-	D3DXMatrixIdentity(&Dir);
-	D3DXVECTOR3 Direction(1.0f, 0.0f, 0.0f);
-	D3DXMatrixRotationYawPitchRoll(&Dir, m_CamRot.y * 0.0174532925f, m_CamRot.x * 0.0174532925f, m_CamRot.z * 0.0174532925f);
-	D3DXVec3TransformCoord(&Direction, &Direction, &Dir);
-
-	m_CamPos += Direction * m_CamSpeed * frameTime;
 }

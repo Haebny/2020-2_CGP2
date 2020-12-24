@@ -245,16 +245,16 @@ bool SystemClass::Frame()
 
 	// Check the Moving Camera Inputs
 	if (m_Input->IsWDown())
-		m_Graphics->GoForward(m_Timer->GetTime());
+		m_Graphics->MovePlayer(m_Timer->GetTime(), 'w');
 
 	if (m_Input->IsADown())
-		m_Graphics->GoLeft(m_Timer->GetTime());
+		m_Graphics->MovePlayer(m_Timer->GetTime(), 'a');
 	
 	if (m_Input->IsSDown())
-		m_Graphics->GoBack(m_Timer->GetTime());
+		m_Graphics->MovePlayer(m_Timer->GetTime(), 's');
 	
 	if (m_Input->IsDDown())
-		m_Graphics->GoRight(m_Timer->GetTime());
+		m_Graphics->MovePlayer(m_Timer->GetTime(), 'd');
 
 	// Get the location of the mouse from the input object,
 	m_Input->GetMouseLocation(mouseX, mouseY);

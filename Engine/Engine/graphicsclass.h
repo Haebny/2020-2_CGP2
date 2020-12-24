@@ -39,10 +39,7 @@ public:
 	void Shutdown();
 	bool Frame(int, int, int, int, float);
 
-	void GoForward(float);
-	void GoLeft(float);
-	void GoBack(float);
-	void GoRight(float);
+	void MovePlayer(float, char);
 
 public:
 	int m_input;
