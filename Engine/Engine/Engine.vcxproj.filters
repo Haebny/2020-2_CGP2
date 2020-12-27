@@ -75,7 +75,10 @@
     <ClCompile Include="skyboxclass.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="GameManager.cpp">
+    <ClCompile Include="fbxmanagerclass.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="gamemanagerclass.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
@@ -157,7 +160,10 @@
     <ClInclude Include="skyboxclass.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="GameManager.h">
+    <ClInclude Include="fbxmanagerclass.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="gamemanagerclass.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

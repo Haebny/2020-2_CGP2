@@ -16,8 +16,6 @@ GraphicsClass::GraphicsClass()
 	floor.obj_path = "../Engine/data/models/floor.obj";
 	floor.tex_path = L"../Engine/data/textures/floor.dds";
 	floor.name = "floor";
-
-	m_CamSpeed = 0.1f;
 }
 
 
@@ -66,6 +64,17 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_Camera->Render();
 	m_Camera->GetViewMatrix(baseViewMatrix);
 
+	m_FbxManager = new FbxManagerClass;
+	m_FbxManager->Initialize(hwnd);
+
+	// Create the skybox object.
+	m_GameManager = new GameManagerClass;
+	if (!m_GameManager)
+	{
+		MessageBox(hwnd, L"Could not Create Game Manager.", L"Error", MB_OK);
+		return false;
+	}
+
 	// Create the skybox object.
 	m_Skybox = new SkyboxClass;
 	result = m_Skybox->Initialize(m_D3D->GetDevice(), m_D3D->GetDeviceContext(), hwnd);
@@ -81,7 +90,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 	// Initialize the model object.
 	// 모델 텍스쳐도 같이 지정
-	for (int i = 0; i < m_Models.size(); i++)
+	for (int i = 0; i < (int)m_Models.size(); i++)
 	{
 		// Create the model object.
 		m_Models.at(i).model = new ModelClass;
@@ -198,13 +207,8 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
-	m_CamPos.x = 10.0f;
-	m_CamPos.y = 10.0f;
-	m_CamPos.z = 0.0f;
-
-	m_CamRot.x = 0.0f;
-	m_CamRot.y = 0.0f;
-	m_CamRot.z = 0.0f;
+	m_Camera->SetPosition(10.0f, 10.0f, 0.0f);
+	m_Camera->SetRotation(0.0f, 0.0f, 0.0f);
 
 	return true;
 }
@@ -260,7 +264,7 @@ void GraphicsClass::Shutdown()
 	}
 
 	// Release the model object.
-	for (int i = 0; i < m_Models.size(); i++)
+	for (int i = 0; i < (int)m_Models.size(); i++)
 	{
 		if (m_Models.at(i).model)
 		{
@@ -293,8 +297,10 @@ bool GraphicsClass::Frame(int mouseX, int mouseY, int fps, int cpu, float frameT
 {
 	bool result;
 
+	m_GameManager->SetCamView(*m_Camera, mouseX, mouseY);
+	
 	// Set the skybox.
-	m_Skybox->Frame(m_CamPos);
+	m_Skybox->Frame(m_Camera->GetPosition());
 
 #ifdef DEBUG
 	// Set the frames per second.
@@ -336,26 +342,6 @@ bool GraphicsClass::Frame(int mouseX, int mouseY, int fps, int cpu, float frameT
 	}
 
 	return true;
-}
-
-void GraphicsClass::MovePlayer(float frameTime, char key)
-{
-	if (key == 'w')
-	{
-
-	}
-	else if (key == 'a')
-	{
-
-	}
-	else if (key == 's')
-	{
-
-	}
-	else if (key == 'd')
-	{
-
-	}
 }
 
 
@@ -417,7 +403,7 @@ bool GraphicsClass::Render(float rotation, float frameTime)
 
 	// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
 	// 그래픽 파이프라인에 모델을 그림
-	for (int i = 0; i < m_Models.size(); i++)
+	for (int i = 0; i < (int)m_Models.size(); i++)
 	{
 		worldMatrix = baseWorldMat;
 
@@ -458,4 +444,26 @@ bool GraphicsClass::Render(float rotation, float frameTime)
 	m_D3D->EndScene();
 
 	return true;
+}
+
+void GraphicsClass::MovePlayer(float frameTime, char key)
+{
+	if (key == 'w')
+	{
+		m_GameManager->GoForward(frameTime);
+	}
+	else if (key == 'a')
+	{
+		m_GameManager->GoLeft(frameTime);
+	}
+	else if (key == 's')
+	{
+		m_GameManager->GoBack(frameTime);
+	}
+	else if (key == 'd')
+	{
+		m_GameManager->GoRight(frameTime);
+	}
+
+	return;
 }

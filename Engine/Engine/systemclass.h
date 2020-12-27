@@ -12,7 +12,6 @@
 #include "timerclass.h"
 #include "soundclass.h"
 #include "cameraclass.h"
-#include "GameManager.h"
 
 class SystemClass {
 public:
@@ -41,8 +40,6 @@ private:
 	CpuClass* m_Cpu;
 	TimerClass* m_Timer;
 	SoundClass* m_Sound;
-	CameraClass* m_Camera;
-	GameManager* m_GameManager;
 };
 
 // Function prototypes

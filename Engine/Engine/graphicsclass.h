@@ -10,6 +10,8 @@
 #include "bitmapclass.h"
 #include "textclass.h"
 #include "skyboxclass.h"
+#include "gamemanagerclass.h"
+#include "fbxmanagerclass.h"
 
 #include <vector>
 using namespace std;
@@ -59,10 +61,8 @@ private:
 	BitmapClass* m_Bitmap;
 	TextClass* m_Text;
 	SkyboxClass* m_Skybox;
-
-private:
-	D3DXVECTOR3 m_CamPos, m_CamRot;
-	float m_PreX, m_PreY, m_CamSpeed;
+	GameManagerClass* m_GameManager;
+	FbxManagerClass* m_FbxManager;
 };
 
 #endif 
