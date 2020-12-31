@@ -158,3 +158,19 @@ void FbxManagerClass::ProcessControlPoints(FbxMesh* mesh)
 		position.z = static_cast<float>(mesh->GetControlPointAt(i).mData[2]); // z¡¬«•
 	}
 }
+
+D3DXVECTOR3 FbxManagerClass::ReadNormal(const FbxMesh* mesh, int controlPointIndex, int vertexCounter)
+{
+	// ≥Î∏ª¿« ∞≥ºˆ∏¶ º¿
+	if (mesh->GetElementNormalCount() < 1)
+	{
+		// NORMAL æ¯¿Ω
+	}
+
+	// Normal »πµÊ
+	const FbxGeometryElementNormal* vertexNormal = mesh->GetElementNormal(0);
+	
+	D3DXVECTOR3 normals; // ≥Î∏ª ∫§≈Õ∏¶ ¿˙¿Â«“ ∫§≈Õ
+
+	return D3DXVECTOR3();
+}

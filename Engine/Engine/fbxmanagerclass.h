@@ -17,6 +17,7 @@ public:
 
 	void LoadNode(FbxNode* node);
 	void ProcessControlPoints(FbxMesh* mesh);
+	D3DXVECTOR3 ReadNormal(const FbxMesh* mesh, int controlPointIndex, int vertexCounter);
 
 private:
 	FbxManager* m_Manager;
