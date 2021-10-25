@@ -6,4 +6,6 @@ Hongik Univ. Computer Graphics Practice(2) class
 * 유령과 나무에 부딪히지 않고 안전하게 선물을 배달하자!
 * 선물은 집 안의 바닥색과 일치해야 한다!
 
+기획 발표 : [CGP(2)_Final_Plan_B893248.pdf](https://github.com/Haebny/2020-2_CGP2/files/7406990/CGP.2._Final_Plan_B893248.pdf)
+
 Using Frameworks based on DirectX 11
